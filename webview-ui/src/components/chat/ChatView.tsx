@@ -894,8 +894,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 											padding: `${primaryButtonText || secondaryButtonText || isStreaming ? "10" : "0"}px 15px 10px 15px`,
 								}}>
 								{primaryButtonText && !isStreaming && (
-									<VSCodeButton
-										appearance="primary"
+									<StyledButton
+										$primary
 										disabled={!enableButtons}
 										style={{
 											flex: secondaryButtonText ? 1 : 2,
@@ -903,11 +903,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 										}}
 										onClick={handlePrimaryButtonClick}>
 										{primaryButtonText}
-									</VSCodeButton>
+									</StyledButton>
 								)}
 								{(secondaryButtonText || isStreaming) && (
-									<VSCodeButton
-										appearance="secondary"
+									<StyledButton
 										disabled={!enableButtons && !(isStreaming && !didClickCancel)}
 										style={{
 											flex: isStreaming ? 2 : 1,
@@ -915,7 +914,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 										}}
 										onClick={handleSecondaryButtonClick}>
 										{isStreaming ? "Cancel" : secondaryButtonText}
-									</VSCodeButton>
+									</StyledButton>
 								)}
 							</div>
 						)}
@@ -946,6 +945,56 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		</Wrapper>
 	)
 }
+
+const StyledButton = styled.button<{ $primary?: boolean }>`
+	background: ${({ $primary }) => 
+		$primary 
+			? 'linear-gradient(145deg, rgba(103, 58, 183, 0.9) 0%, rgba(81, 45, 168, 0.85) 100%)'
+			: 'linear-gradient(145deg, rgba(30, 30, 30, 0.95) 0%, rgba(25, 25, 25, 0.95) 100%)'};
+	backdrop-filter: blur(16px);
+	border-radius: 8px;
+	border: 1px solid ${({ $primary }) => 
+		$primary 
+			? 'rgba(103, 58, 183, 0.2)' 
+			: 'rgba(255, 255, 255, 0.08)'};
+	color: ${({ $primary }) => 
+		$primary 
+			? '#fff' 
+			: 'rgba(255, 255, 255, 0.9)'};
+	padding: 8px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-width: 100px;
+
+	&:hover {
+		background: ${({ $primary }) => 
+			$primary 
+				? 'linear-gradient(145deg, rgba(103, 58, 183, 1) 0%, rgba(81, 45, 168, 0.95) 100%)'
+				: 'linear-gradient(145deg, rgba(35, 35, 35, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%)'};
+		transform: translateY(-1px);
+		box-shadow: ${({ $primary }) => 
+			$primary 
+				? '0 6px 20px rgba(103, 58, 183, 0.25)'
+				: '0 6px 12px rgba(0, 0, 0, 0.15)'};
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		transform: none;
+		box-shadow: none;
+	}
+
+	&:active {
+		transform: translateY(0);
+	}
+`;
 
 const ScrollToBottomButton = styled.div`
 	background: rgba(30, 30, 30, 0.95);
