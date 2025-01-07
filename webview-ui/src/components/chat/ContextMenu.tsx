@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react"
 import { ContextMenuOptionType, ContextMenuQueryItem, getContextMenuOptions } from "../../utils/context-mentions"
 import { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
+import "./ContextMenu.css"
 
 interface ContextMenuProps {
 	onSelect: (type: ContextMenuOptionType, value?: string) => void
@@ -47,32 +48,29 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 	const renderOptionContent = (option: ContextMenuQueryItem) => {
 		switch (option.type) {
 			case ContextMenuOptionType.Problems:
-				return <span>Problems</span>
+				return <span className="menu-text">Problems</span>
 			case ContextMenuOptionType.URL:
-				return <span>Paste URL to fetch contents</span>
+				return <span className="menu-text">Paste URL to fetch contents</span>
 			case ContextMenuOptionType.NoResults:
-				return <span>No results found</span>
+				return <span className="menu-text">No results found</span>
 			case ContextMenuOptionType.File:
 			case ContextMenuOptionType.Folder:
 				if (option.value) {
 					return (
-						<>
-							<span>/</span>
-							{option.value?.startsWith("/.") && <span>.</span>}
-							<span
-								style={{
-									whiteSpace: "nowrap",
-									overflow: "hidden",
-									textOverflow: "ellipsis",
-									direction: "rtl",
-									textAlign: "left",
-								}}>
+						<div className="menu-path">
+							<span className="path-separator">/</span>
+							{option.value?.startsWith("/.") && <span className="path-dot">.</span>}
+							<span className="path-text">
 								{removeLeadingNonAlphanumeric(option.value || "") + "\u200E"}
 							</span>
-						</>
+						</div>
 					)
 				} else {
-					return <span>Add {option.type === ContextMenuOptionType.File ? "File" : "Folder"}</span>
+					return (
+						<span className="menu-text">
+							Add {option.type === ContextMenuOptionType.File ? "File" : "Folder"}
+						</span>
+					)
 				}
 		}
 	}
@@ -99,91 +97,25 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 	}
 
 	return (
-		<div
-			style={{
-				position: "absolute",
-				bottom: "calc(100% - 10px)",
-				left: 15,
-				right: 15,
-				overflowX: "hidden",
-			}}
-			onMouseDown={onMouseDown}>
-			<div
-				ref={menuRef}
-				style={{
-					backgroundColor: "var(--vscode-dropdown-background)",
-					border: "1px solid var(--vscode-editorGroup-border)",
-					borderRadius: "3px",
-					boxShadow: "0 4px 10px rgba(0, 0, 0, 0.25)",
-					zIndex: 1000,
-					display: "flex",
-					flexDirection: "column",
-					maxHeight: "200px",
-					overflowY: "auto",
-				}}>
-				{/* Can't use virtuoso since it requires fixed height and menu height is dynamic based on # of items */}
+		<div className="context-menu-wrapper" onMouseDown={onMouseDown}>
+			<div ref={menuRef} className="context-menu-container">
 				{filteredOptions.map((option, index) => (
 					<div
 						key={`${option.type}-${option.value || index}`}
+						className={`context-menu-item ${index === selectedIndex ? "selected" : ""} ${
+							isOptionSelectable(option) ? "selectable" : ""
+						}`}
 						onClick={() => isOptionSelectable(option) && onSelect(option.type, option.value)}
-						style={{
-							padding: "8px 12px",
-							cursor: isOptionSelectable(option) ? "pointer" : "default",
-							color:
-								index === selectedIndex && isOptionSelectable(option)
-									? "var(--vscode-quickInputList-focusForeground)"
-									: "",
-							borderBottom: "1px solid var(--vscode-editorGroup-border)",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "space-between",
-							backgroundColor:
-								index === selectedIndex && isOptionSelectable(option)
-									? "var(--vscode-quickInputList-focusBackground)"
-									: "",
-						}}
 						onMouseEnter={() => isOptionSelectable(option) && setSelectedIndex(index)}>
-						<div
-							style={{
-								display: "flex",
-								alignItems: "center",
-								flex: 1,
-								minWidth: 0,
-								overflow: "hidden",
-							}}>
-							<i
-								className={`codicon codicon-${getIconForOption(option)}`}
-								style={{
-									marginRight: "8px",
-									flexShrink: 0,
-									fontSize: "14px",
-								}}
-							/>
+						<div className="item-content">
+							<i className={`codicon codicon-${getIconForOption(option)}`} />
 							{renderOptionContent(option)}
 						</div>
 						{(option.type === ContextMenuOptionType.File || option.type === ContextMenuOptionType.Folder) &&
-							!option.value && (
-								<i
-									className="codicon codicon-chevron-right"
-									style={{
-										fontSize: "14px",
-										flexShrink: 0,
-										marginLeft: 8,
-									}}
-								/>
-							)}
+							!option.value && <i className="codicon codicon-chevron-right action-icon" />}
 						{(option.type === ContextMenuOptionType.Problems ||
 							((option.type === ContextMenuOptionType.File || option.type === ContextMenuOptionType.Folder) &&
-								option.value)) && (
-							<i
-								className="codicon codicon-add"
-								style={{
-									fontSize: "14px",
-									flexShrink: 0,
-									marginLeft: 8,
-								}}
-							/>
-						)}
+								option.value)) && <i className="codicon codicon-add action-icon" />}
 					</div>
 				))}
 			</div>

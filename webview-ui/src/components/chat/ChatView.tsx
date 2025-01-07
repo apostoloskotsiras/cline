@@ -35,6 +35,72 @@ interface ChatViewProps {
 
 export const MAX_IMAGES_PER_MESSAGE = 20 // Anthropic limits to 20 images
 
+const Wrapper = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(145deg, 
+		rgba(15, 15, 15, 0.98) 0%,
+		rgba(10, 10, 10, 0.98) 100%
+	);
+	color: var(--vscode-editor-foreground);
+	font-family: var(--vscode-font-family);
+	font-size: var(--vscode-font-size);
+	line-height: 1.5;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	backdrop-filter: blur(12px);
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: radial-gradient(
+			circle at 50% 0%,
+			rgba(103, 58, 183, 0.08) 0%,
+			rgba(81, 45, 168, 0.05) 25%,
+			transparent 50%
+		);
+		pointer-events: none;
+	}
+`
+
+const Container = styled.div`
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background: rgba(20, 20, 20, 0.85);
+	backdrop-filter: blur(16px);
+	position: relative;
+	border-radius: 12px;
+	margin: 12px;
+	box-shadow: 
+		0 4px 6px rgba(0, 0, 0, 0.1),
+		0 1px 3px rgba(0, 0, 0, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(103, 58, 183, 0.1) 50%,
+			transparent 100%
+		);
+	}
+`
+
 const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryView }: ChatViewProps) => {
 	const { version, clineMessages: messages, taskHistory, apiConfiguration } = useExtensionState()
 
@@ -701,208 +767,207 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	)
 
 	return (
-		<div
-			style={{
-				position: "fixed",
-				top: 0,
-				left: 0,
-				right: 0,
-				bottom: 0,
-				display: isHidden ? "none" : "flex",
-				flexDirection: "column",
-				overflow: "hidden",
-			}}>
-			{task ? (
-				<TaskHeader
-					task={task}
-					tokensIn={apiMetrics.totalTokensIn}
-					tokensOut={apiMetrics.totalTokensOut}
-					doesModelSupportPromptCache={selectedModelInfo.supportsPromptCache}
-					cacheWrites={apiMetrics.totalCacheWrites}
-					cacheReads={apiMetrics.totalCacheReads}
-					totalCost={apiMetrics.totalCost}
-					onClose={handleTaskCloseButtonClick}
-				/>
-			) : (
-				<div
-					style={{
-						flex: "1 1 0", // flex-grow: 1, flex-shrink: 1, flex-basis: 0
-						minHeight: 0,
-						overflowY: "auto",
-						display: "flex",
-						flexDirection: "column",
-						paddingBottom: "10px",
-					}}>
-					{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
-					<div style={{ padding: "0 20px", flexShrink: 0 }}>
-						<h2>What can I do for you?</h2>
-						<p>
-							Thanks to{" "}
-							<VSCodeLink
-								href="https://www-cdn.anthropic.com/fed9cc193a14b84131812372d8d5857f8f304c52/Model_Card_Claude_3_Addendum.pdf"
-								style={{ display: "inline" }}>
-								Claude 3.5 Sonnet's agentic coding capabilities,
-							</VSCodeLink>{" "}
-							I can handle complex software development tasks step-by-step. With tools that let me create & edit
-							files, explore complex projects, use the browser, and execute terminal commands (after you grant
-							permission), I can assist you in ways that go beyond code completion or tech support. I can even use
-							MCP to create new tools and extend my own capabilities.
-						</p>
-					</div>
-					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
-				</div>
-			)}
-
-			{/* 
-			// Flex layout explanation:
-			// 1. Content div above uses flex: "1 1 0" to:
-			//    - Grow to fill available space (flex-grow: 1) 
-			//    - Shrink when AutoApproveMenu needs space (flex-shrink: 1)
-			//    - Start from zero size (flex-basis: 0) to ensure proper distribution
-			//    minHeight: 0 allows it to shrink below its content height
-			//
-			// 2. AutoApproveMenu uses flex: "0 1 auto" to:
-			//    - Not grow beyond its content (flex-grow: 0)
-			//    - Shrink when viewport is small (flex-shrink: 1) 
-			//    - Use its content size as basis (flex-basis: auto)
-			//    This ensures it takes its natural height when there's space
-			//    but becomes scrollable when the viewport is too small
-			*/}
-			{!task && (
-				<AutoApproveMenu
-					style={{
-						marginBottom: -2,
-						flex: "0 1 auto", // flex-grow: 0, flex-shrink: 1, flex-basis: auto
-						minHeight: 0,
-					}}
-				/>
-			)}
-
-			{task && (
-				<>
-					<div style={{ flexGrow: 1, display: "flex" }} ref={scrollContainerRef}>
-						<Virtuoso
-							ref={virtuosoRef}
-							key={task.ts} // trick to make sure virtuoso re-renders when task changes, and we use initialTopMostItemIndex to start at the bottom
-							className="scrollable"
-							style={{
-								flexGrow: 1,
-								overflowY: "scroll", // always show scrollbar
-							}}
-							components={{
-								Footer: () => <div style={{ height: 5 }} />, // Add empty padding at the bottom
-							}}
-							// increasing top by 3_000 to prevent jumping around when user collapses a row
-							increaseViewportBy={{
-								top: 3_000,
-								bottom: Number.MAX_SAFE_INTEGER,
-							}} // hack to make sure the last message is always rendered to get truly perfect scroll to bottom animation when new messages are added (Number.MAX_SAFE_INTEGER is safe for arithmetic operations, which is all virtuoso uses this value for in src/sizeRangeSystem.ts)
-							data={groupedMessages} // messages is the raw format returned by extension, modifiedMessages is the manipulated structure that combines certain messages of related type, and visibleMessages is the filtered structure that removes messages that should not be rendered
-							itemContent={itemContent}
-							atBottomStateChange={(isAtBottom) => {
-								setIsAtBottom(isAtBottom)
-								if (isAtBottom) {
-									disableAutoScrollRef.current = false
-								}
-								setShowScrollToBottom(disableAutoScrollRef.current && !isAtBottom)
-							}}
-							atBottomThreshold={10} // anything lower causes issues with followOutput
-							initialTopMostItemIndex={groupedMessages.length - 1}
-						/>
-					</div>
-					<AutoApproveMenu />
-					{showScrollToBottom ? (
-						<div
-							style={{
-								display: "flex",
-								padding: "10px 15px 0px 15px",
+		<Wrapper style={{ display: isHidden ? "none" : "flex" }}>
+			<Container>
+				{task ? (
+					<TaskHeader
+						task={task}
+						tokensIn={apiMetrics.totalTokensIn}
+						tokensOut={apiMetrics.totalTokensOut}
+						doesModelSupportPromptCache={selectedModelInfo.supportsPromptCache}
+						cacheWrites={apiMetrics.totalCacheWrites}
+						cacheReads={apiMetrics.totalCacheReads}
+						totalCost={apiMetrics.totalCost}
+						onClose={handleTaskCloseButtonClick}
+					/>
+				) : (
+					<div
+						style={{
+							flex: "1 1 0", // flex-grow: 1, flex-shrink: 1, flex-basis: 0
+							minHeight: 0,
+							overflowY: "auto",
+							display: "flex",
+							flexDirection: "column",
+							paddingBottom: "10px",
+						}}>
+						{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
+						<div style={{ padding: "0 20px", flexShrink: 0 }}>
+							<h2 style={{ 
+								position: 'relative',
+								color: '#E0E0E0',
+								fontWeight: 500,
+								letterSpacing: '-0.015em',
+								textShadow: '0 2px 4px rgba(0,0,0,0.2)'
 							}}>
-							<ScrollToBottomButton
-								onClick={() => {
-									scrollToBottomSmooth()
-									disableAutoScrollRef.current = false
+								Hey I'm CLINE, how can I assist you today?
+							</h2>
+							<p>
+								While I can utilize multiple AI models, I work best with Claude 3.5 Sonnet. I can assist with complex coding tasks, create and edit files, explore projects, use the browser, and run terminal commands with your approval. I can also create new tools to expand my abilities.
+							</p>
+						</div>
+						{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
+					</div>
+				)}
+
+				{/* 
+				// Flex layout explanation:
+				// 1. Content div above uses flex: "1 1 0" to:
+				//    - Grow to fill available space (flex-grow: 1) 
+				//    - Shrink when AutoApproveMenu needs space (flex-shrink: 1)
+				//    - Start from zero size (flex-basis: 0) to ensure proper distribution
+				//    minHeight: 0 allows it to shrink below its content height
+				//
+				// 2. AutoApproveMenu uses flex: "0 1 auto" to:
+				//    - Not grow beyond its content (flex-grow: 0)
+				//    - Shrink when viewport is small (flex-shrink: 1) 
+				//    - Use its content size as basis (flex-basis: auto)
+				//    This ensures it takes its natural height when there's space
+				//    but becomes scrollable when the viewport is too small
+				*/}
+				{!task && (
+					<AutoApproveMenu
+						style={{
+							marginBottom: -2,
+							flex: "0 1 auto", // flex-grow: 0, flex-shrink: 1, flex-basis: auto
+							minHeight: 0,
+						}}
+					/>
+				)}
+
+				{task && (
+					<>
+						<div style={{ flexGrow: 1, display: "flex" }} ref={scrollContainerRef}>
+							<Virtuoso
+								ref={virtuosoRef}
+								key={task.ts} // trick to make sure virtuoso re-renders when task changes, and we use initialTopMostItemIndex to start at the bottom
+								className="scrollable"
+								style={{
+									flexGrow: 1,
+									overflowY: "scroll", // always show scrollbar
+								}}
+								components={{
+									Footer: () => <div style={{ height: 5 }} />, // Add empty padding at the bottom
+								}}
+								// increasing top by 3_000 to prevent jumping around when user collapses a row
+								increaseViewportBy={{
+									top: 3_000,
+									bottom: Number.MAX_SAFE_INTEGER,
+								}} // hack to make sure the last message is always rendered to get truly perfect scroll to bottom animation when new messages are added (Number.MAX_SAFE_INTEGER is safe for arithmetic operations, which is all virtuoso uses this value for in src/sizeRangeSystem.ts)
+								data={groupedMessages} // messages is the raw format returned by extension, modifiedMessages is the manipulated structure that combines certain messages of related type, and visibleMessages is the filtered structure that removes messages that should not be rendered
+								itemContent={itemContent}
+								atBottomStateChange={(isAtBottom) => {
+									setIsAtBottom(isAtBottom)
+									if (isAtBottom) {
+										disableAutoScrollRef.current = false
+									}
+									setShowScrollToBottom(disableAutoScrollRef.current && !isAtBottom)
+								}}
+								atBottomThreshold={10} // anything lower causes issues with followOutput
+								initialTopMostItemIndex={groupedMessages.length - 1}
+							/>
+						</div>
+						<AutoApproveMenu />
+						{showScrollToBottom ? (
+							<div
+								style={{
+									display: "flex",
+									padding: "10px 15px 0px 15px",
 								}}>
-								<span className="codicon codicon-chevron-down" style={{ fontSize: "18px" }}></span>
-							</ScrollToBottomButton>
-						</div>
-					) : (
-						<div
-							style={{
-								opacity:
-									primaryButtonText || secondaryButtonText || isStreaming
-										? enableButtons || (isStreaming && !didClickCancel)
-											? 1
-											: 0.5
-										: 0,
-								display: "flex",
-								padding: `${primaryButtonText || secondaryButtonText || isStreaming ? "10" : "0"}px 15px 0px 15px`,
-							}}>
-							{primaryButtonText && !isStreaming && (
-								<VSCodeButton
-									appearance="primary"
-									disabled={!enableButtons}
-									style={{
-										flex: secondaryButtonText ? 1 : 2,
-										marginRight: secondaryButtonText ? "6px" : "0",
-									}}
-									onClick={handlePrimaryButtonClick}>
-									{primaryButtonText}
-								</VSCodeButton>
-							)}
-							{(secondaryButtonText || isStreaming) && (
-								<VSCodeButton
-									appearance="secondary"
-									disabled={!enableButtons && !(isStreaming && !didClickCancel)}
-									style={{
-										flex: isStreaming ? 2 : 1,
-										marginLeft: isStreaming ? 0 : "6px",
-									}}
-									onClick={handleSecondaryButtonClick}>
-									{isStreaming ? "Cancel" : secondaryButtonText}
-								</VSCodeButton>
-							)}
-						</div>
-					)}
-				</>
-			)}
-			<ChatTextArea
-				ref={textAreaRef}
-				inputValue={inputValue}
-				setInputValue={setInputValue}
-				textAreaDisabled={textAreaDisabled}
-				placeholderText={placeholderText}
-				selectedImages={selectedImages}
-				setSelectedImages={setSelectedImages}
-				onSend={() => handleSendMessage(inputValue, selectedImages)}
-				onSelectImages={selectImages}
-				shouldDisableImages={shouldDisableImages}
-				onHeightChange={() => {
-					if (isAtBottom) {
-						scrollToBottomAuto()
-					}
-				}}
-			/>
-		</div>
+								<ScrollToBottomButton
+									onClick={() => {
+										scrollToBottomSmooth()
+										disableAutoScrollRef.current = false
+									}}>
+									<span className="codicon codicon-chevron-down" style={{ fontSize: "18px" }}></span>
+								</ScrollToBottomButton>
+							</div>
+						) : (
+							<div
+								style={{
+									opacity:
+										primaryButtonText || secondaryButtonText || isStreaming
+											? enableButtons || (isStreaming && !didClickCancel)
+												? 1
+												: 0.5
+											: 0,
+											display: "flex",
+											padding: `${primaryButtonText || secondaryButtonText || isStreaming ? "10" : "0"}px 15px 10px 15px`,
+								}}>
+								{primaryButtonText && !isStreaming && (
+									<VSCodeButton
+										appearance="primary"
+										disabled={!enableButtons}
+										style={{
+											flex: secondaryButtonText ? 1 : 2,
+											marginRight: secondaryButtonText ? "6px" : "0",
+										}}
+										onClick={handlePrimaryButtonClick}>
+										{primaryButtonText}
+									</VSCodeButton>
+								)}
+								{(secondaryButtonText || isStreaming) && (
+									<VSCodeButton
+										appearance="secondary"
+										disabled={!enableButtons && !(isStreaming && !didClickCancel)}
+										style={{
+											flex: isStreaming ? 2 : 1,
+											marginLeft: isStreaming ? 0 : "6px",
+										}}
+										onClick={handleSecondaryButtonClick}>
+										{isStreaming ? "Cancel" : secondaryButtonText}
+									</VSCodeButton>
+								)}
+							</div>
+						)}
+					</>
+				)}
+				<div style={{
+					padding: "16px",
+				}}>
+					<ChatTextArea
+						ref={textAreaRef}
+						inputValue={inputValue}
+						setInputValue={setInputValue}
+						textAreaDisabled={textAreaDisabled}
+						placeholderText={placeholderText}
+						selectedImages={selectedImages}
+						setSelectedImages={setSelectedImages}
+						onSend={() => handleSendMessage(inputValue, selectedImages)}
+						onSelectImages={selectImages}
+						shouldDisableImages={shouldDisableImages}
+						onHeightChange={() => {
+							if (isAtBottom) {
+								scrollToBottomAuto()
+							}
+						}}
+					/>
+				</div>
+			</Container>
+		</Wrapper>
 	)
 }
 
 const ScrollToBottomButton = styled.div`
-	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 55%, transparent);
-	border-radius: 3px;
-	overflow: hidden;
+	background: rgba(30, 30, 30, 0.95);
+	backdrop-filter: blur(8px);
+	border-radius: 12px;
+	padding: 8px;
 	cursor: pointer;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex: 1;
-	height: 24px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+	transition: all 0.2s ease;
 
 	&:hover {
-		background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 90%, transparent);
+		background: rgba(40, 40, 40, 0.95);
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 	}
 
-	&:active {
-		background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 70%, transparent);
+	.codicon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: rgba(255, 255, 255, 0.9);
 	}
 `
 

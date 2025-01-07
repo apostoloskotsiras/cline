@@ -126,9 +126,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 	return (
 		<div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
 			<div className="dropdown-container">
-				<label htmlFor="api-provider">
-					<span style={{ fontWeight: 500 }}>API Provider</span>
-				</label>
+				<span className="settings-label">API Provider</span>
 				<VSCodeDropdown
 					id="api-provider"
 					value={selectedProvider}

@@ -1,15 +1,47 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import React, { useState } from "react"
+import styled from "styled-components"
 
-export const TAB_NAVBAR_HEIGHT = 24
-const BUTTON_MARGIN_RIGHT = "3px"
-const LAST_BUTTON_MARGIN_RIGHT = "13px"
+export const TAB_NAVBAR_HEIGHT = 32 // Increased height for better visual balance
 
-type TabNavbarProps = {
-	onPlusClick: () => void
-	onHistoryClick: () => void
-	onSettingsClick: () => void
-}
+const NavbarContainer = styled.div`
+	position: absolute;
+	top: 4px;
+	right: 0;
+	left: 0;
+	height: ${TAB_NAVBAR_HEIGHT}px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+`
+
+const NavButton = styled(VSCodeButton)`
+	width: 32px;
+	height: 32px;
+	position: relative;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+	background: transparent;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.05);
+		transform: translateY(-1px);
+	}
+
+	&:active {
+		transform: translateY(0);
+	}
+
+	i {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 16px;
+		opacity: 0.9;
+	}
+`
 
 type TooltipProps = {
 	text: string
@@ -18,73 +50,62 @@ type TooltipProps = {
 	align?: "left" | "center" | "right"
 }
 
+const TooltipContainer = styled.div<{ isVisible: boolean; x: number; y: number; align: string }>`
+	position: fixed;
+	top: ${props => props.y}px;
+	left: ${props => props.align === "center" ? props.x + "px" : "auto"};
+	right: ${props => props.align === "right" ? "10px" : "auto"};
+	transform: ${props => props.align === "center" ? "translateX(-50%)" : "none"};
+	opacity: ${props => props.isVisible ? 1 : 0};
+	visibility: ${props => props.isVisible ? "visible" : "hidden"};
+	transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+	background-color: var(--vscode-editorHoverWidget-background);
+	color: var(--vscode-editorHoverWidget-foreground);
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	pointer-events: none;
+	z-index: 1000;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+	border: 1px solid var(--vscode-editorHoverWidget-border);
+	text-align: center;
+	white-space: nowrap;
+`
+
+const TooltipArrow = styled.div<{ align: string }>`
+	position: absolute;
+	top: -5px;
+	left: ${props => props.align === "center" ? "50%" : props.align === "left" ? "10px" : "auto"};
+	right: ${props => props.align === "right" ? "10px" : "auto"};
+	margin-left: ${props => props.align === "center" ? "-5px" : "0"};
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid var(--vscode-editorHoverWidget-border);
+
+	&::after {
+		content: '';
+		position: absolute;
+		left: -5px;
+		top: 1px;
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+		border-bottom: 5px solid var(--vscode-editorHoverWidget-background);
+	}
+`
+
 const Tooltip: React.FC<TooltipProps> = ({ text, isVisible, position, align = "center" }) => {
-	let leftPosition = position.x
-	let triangleStyle: React.CSSProperties = {
-		left: "50%",
-		marginLeft: "-5px",
-	}
-
-	if (align === "right") {
-		leftPosition = position.x - 10 // Adjust this value as needed
-		triangleStyle = {
-			right: "10px", // Adjust this value to match the tooltip's right padding
-			marginLeft: "0",
-		}
-	} else if (align === "left") {
-		leftPosition = position.x + 10 // Adjust this value as needed
-		triangleStyle = {
-			left: "10px", // Adjust this value to match the tooltip's left padding
-			marginLeft: "0",
-		}
-	}
-
 	return (
-		<div
-			style={{
-				position: "fixed",
-				top: `${position.y}px`,
-				left: align === "center" ? leftPosition + "px" : "auto",
-				right: align === "right" ? "10px" : "auto", // Ensure 10px from screen edge
-				transform: align === "center" ? "translateX(-50%)" : "none",
-				opacity: isVisible ? 1 : 0,
-				visibility: isVisible ? "visible" : "hidden",
-				transition: "opacity 0.1s ease-out 0.1s, visibility 0.1s ease-out 0.1s",
-				backgroundColor: "var(--vscode-editorHoverWidget-background)",
-				color: "var(--vscode-editorHoverWidget-foreground)",
-				padding: "4px 8px",
-				borderRadius: "3px",
-				fontSize: "12px",
-				pointerEvents: "none",
-				zIndex: 1000,
-				boxShadow: "0 2px 8px var(--vscode-widget-shadow)",
-				border: "1px solid var(--vscode-editorHoverWidget-border)",
-				textAlign: "center",
-				whiteSpace: "nowrap",
-			}}>
-			<div
-				style={{
-					position: "absolute",
-					top: "-5px",
-					...triangleStyle,
-					borderLeft: "5px solid transparent",
-					borderRight: "5px solid transparent",
-					borderBottom: "5px solid var(--vscode-editorHoverWidget-border)",
-				}}
-			/>
-			<div
-				style={{
-					position: "absolute",
-					top: "-4px",
-					...triangleStyle,
-					borderLeft: "5px solid transparent",
-					borderRight: "5px solid transparent",
-					borderBottom: "5px solid var(--vscode-editorHoverWidget-background)",
-				}}
-			/>
+		<TooltipContainer isVisible={isVisible} x={position.x} y={position.y} align={align}>
+			<TooltipArrow align={align} />
 			{text}
-		</div>
+		</TooltipContainer>
 	)
+}
+
+type TabNavbarProps = {
+	onPlusClick: () => void
+	onHistoryClick: () => void
+	onSettingsClick: () => void
 }
 
 const TabNavbar = ({ onPlusClick, onHistoryClick, onSettingsClick }: TabNavbarProps) => {
@@ -95,7 +116,7 @@ const TabNavbar = ({ onPlusClick, onHistoryClick, onSettingsClick }: TabNavbarPr
 		align: "center",
 	})
 
-	const showTooltip = (text: string, event: React.MouseEvent, align: "left" | "center" | "right" = "center") => {
+	const showTooltip = (text: string, event: React.MouseEvent<HTMLElement>, align: "left" | "center" | "right" = "center") => {
 		const rect = event.currentTarget.getBoundingClientRect()
 		setTooltip({
 			text,
@@ -109,56 +130,34 @@ const TabNavbar = ({ onPlusClick, onHistoryClick, onSettingsClick }: TabNavbarPr
 		setTooltip((prev) => ({ ...prev, isVisible: false }))
 	}
 
-	const buttonStyle = {
-		marginRight: BUTTON_MARGIN_RIGHT,
-	}
-
-	const lastButtonStyle = {
-		...buttonStyle,
-		marginRight: LAST_BUTTON_MARGIN_RIGHT,
-	}
-
 	return (
 		<>
-			<div
-				style={{
-					position: "absolute",
-					top: 4,
-					right: 0,
-					left: 0,
-					height: TAB_NAVBAR_HEIGHT,
-					display: "flex",
-					justifyContent: "flex-end",
-					alignItems: "center",
-				}}>
-				<VSCodeButton
+			<NavbarContainer>
+				<NavButton
 					appearance="icon"
 					onClick={onPlusClick}
-					style={buttonStyle}
-					onMouseEnter={(e) => showTooltip("New Chat", e, "center")}
+					onMouseEnter={(e: React.MouseEvent<HTMLElement>) => showTooltip("New Chat", e, "center")}
 					onMouseLeave={hideTooltip}
-					onMouseMove={(e) => showTooltip("New Chat", e, "center")}>
-					<span className="codicon codicon-add"></span>
-				</VSCodeButton>
-				<VSCodeButton
+					onMouseMove={(e: React.MouseEvent<HTMLElement>) => showTooltip("New Chat", e, "center")}>
+					<i className="codicon codicon-new-file"></i>
+				</NavButton>
+				<NavButton
 					appearance="icon"
 					onClick={onHistoryClick}
-					style={buttonStyle}
-					onMouseEnter={(e) => showTooltip("History", e, "center")}
+					onMouseEnter={(e: React.MouseEvent<HTMLElement>) => showTooltip("History", e, "center")}
 					onMouseLeave={hideTooltip}
-					onMouseMove={(e) => showTooltip("History", e, "center")}>
-					<span className="codicon codicon-history"></span>
-				</VSCodeButton>
-				<VSCodeButton
+					onMouseMove={(e: React.MouseEvent<HTMLElement>) => showTooltip("History", e, "center")}>
+					<i className="codicon codicon-history"></i>
+				</NavButton>
+				<NavButton
 					appearance="icon"
 					onClick={onSettingsClick}
-					style={lastButtonStyle}
-					onMouseEnter={(e) => showTooltip("Settings", e, "right")}
+					onMouseEnter={(e: React.MouseEvent<HTMLElement>) => showTooltip("Settings", e, "right")}
 					onMouseLeave={hideTooltip}
-					onMouseMove={(e) => showTooltip("Settings", e, "right")}>
-					<span className="codicon codicon-settings-gear"></span>
-				</VSCodeButton>
-			</div>
+					onMouseMove={(e: React.MouseEvent<HTMLElement>) => showTooltip("Settings", e, "right")}>
+					<i className="codicon codicon-gear"></i>
+				</NavButton>
+			</NavbarContainer>
 			<Tooltip {...tooltip} />
 		</>
 	)

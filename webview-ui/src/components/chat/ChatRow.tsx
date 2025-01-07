@@ -26,11 +26,221 @@ import McpToolRow from "../mcp/McpToolRow"
 import { highlightMentions } from "./TaskHeader"
 
 const ChatRowContainer = styled.div`
-	padding: 10px 6px 10px 15px;
+	padding: 16px 20px;
 	position: relative;
+	background: linear-gradient(145deg, 
+		rgba(30, 30, 30, 0.95) 0%,
+		rgba(25, 25, 25, 0.95) 100%
+	);
+	backdrop-filter: blur(16px);
+	border-radius: 12px;
+	margin: 12px 16px;
+	box-shadow: 
+		0 4px 6px rgba(0, 0, 0, 0.1),
+		0 1px 3px rgba(0, 0, 0, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	isolation: isolate;
 
-	&:hover ${CheckpointControls} {
-		opacity: 1;
+	&.loading-api {
+		position: relative;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			inset: -1px;
+			padding: 1px;
+			border-radius: 12px;
+			background: linear-gradient(
+				90deg,
+				#A6D8F2,
+				#12A7FC,
+				#DB7CF8,
+				#FE2C69,
+				#FEA429,
+				#A6D8F2
+			);
+			background-size: 300% 100%;
+			-webkit-mask: 
+				linear-gradient(#fff 0 0) content-box, 
+				linear-gradient(#fff 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			animation: rainbow-border 3s linear infinite;
+			opacity: 0.9;
+			z-index: 0;
+			pointer-events: none;
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: -2px;
+			padding: 2px;
+			border-radius: 13px;
+			background: linear-gradient(
+				90deg,
+				#A6D8F2,
+				#12A7FC,
+				#DB7CF8,
+				#FE2C69,
+				#FEA429,
+				#A6D8F2
+			);
+			background-size: 300% 100%;
+			filter: blur(8px);
+			animation: 
+				rainbow-border 3s linear infinite,
+				glow-pulse 2s ease-in-out infinite;
+			opacity: 0.15;
+			z-index: -1;
+			pointer-events: none;
+		}
+	}
+
+	&.completed-api {
+		position: relative;
+		border-color: var(--vscode-charts-green);
+		
+		&::before {
+			content: '';
+			position: absolute;
+			inset: -1px;
+			padding: 1px;
+			border-radius: 12px;
+			background: var(--vscode-charts-green);
+			opacity: 0.2;
+			z-index: 0;
+			pointer-events: none;
+		}
+	}
+
+	@keyframes rainbow-border {
+		0% {
+			background-position: 0% 50%;
+		}
+		100% {
+			background-position: 150% 50%;
+		}
+	}
+
+	@keyframes glow-pulse {
+		0% {
+			opacity: 0.15;
+			filter: blur(8px);
+		}
+		50% {
+			opacity: 0.25;
+			filter: blur(12px);
+		}
+		100% {
+			opacity: 0.15;
+			filter: blur(8px);
+		}
+	}
+
+	&:hover {
+		background: linear-gradient(145deg, 
+			rgba(35, 35, 35, 0.98) 0%,
+			rgba(30, 30, 30, 0.98) 100%
+		);
+		transform: translateY(-1px);
+		box-shadow: 
+			0 6px 12px rgba(0, 0, 0, 0.15),
+			0 2px 4px rgba(0, 0, 0, 0.1);
+		border-color: rgba(103, 58, 183, 0.15);
+	}
+`
+
+const QuestionContainer = styled(ChatRowContainer)`
+	background: linear-gradient(145deg, 
+		rgba(103, 58, 183, 0.12) 0%,
+		rgba(81, 45, 168, 0.08) 100%
+	);
+	backdrop-filter: blur(16px);
+	border: 1px solid rgba(103, 58, 183, 0.2);
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 85%;
+	box-shadow: 
+		0 8px 24px rgba(103, 58, 183, 0.12),
+		0 2px 8px rgba(103, 58, 183, 0.08),
+		inset 0 1px 1px rgba(255, 255, 255, 0.05);
+	color: var(--vscode-foreground);
+	
+	&:hover {
+		background: linear-gradient(145deg, 
+			rgba(103, 58, 183, 0.15) 0%,
+			rgba(81, 45, 168, 0.1) 100%
+		);
+		border-color: rgba(103, 58, 183, 0.25);
+		transform: translateY(-1px);
+		box-shadow: 
+			0 12px 32px rgba(103, 58, 183, 0.15),
+			0 4px 12px rgba(103, 58, 183, 0.1),
+			inset 0 1px 2px rgba(255, 255, 255, 0.08);
+	}
+
+	&::before {
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(103, 58, 183, 0.15) 50%,
+			transparent 100%
+		);
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		border-radius: 12px;
+		pointer-events: none;
+		background: radial-gradient(
+			circle at 50% 0%,
+			rgba(103, 58, 183, 0.08) 0%,
+			rgba(81, 45, 168, 0.05) 25%,
+			transparent 50%
+		);
+	}
+
+	transition: all 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+`
+const UserMessageContainer = styled(ChatRowContainer)`
+	background: linear-gradient(135deg, 
+		rgba(30, 30, 30, 0.95) 0%,
+		rgba(25, 25, 25, 0.95) 100%
+	);
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 85%;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	box-shadow: 
+		0 4px 20px rgba(0, 0, 0, 0.2),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	color: rgba(255, 255, 255, 0.9);
+
+	&:hover {
+		background: linear-gradient(135deg, 
+			rgba(35, 35, 35, 0.98) 0%,
+			rgba(30, 30, 30, 0.98) 100%
+		);
+		border-color: rgba(103, 58, 183, 0.15);
+		box-shadow: 
+			0 8px 30px rgba(0, 0, 0, 0.25),
+			inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	&::before {
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(103, 58, 183, 0.1) 50%,
+			transparent 100%
+		);
 	}
 `
 
@@ -48,32 +258,43 @@ interface ChatRowContentProps extends Omit<ChatRowProps, "onHeightChange"> {}
 const ChatRow = memo(
 	(props: ChatRowProps) => {
 		const { isLast, onHeightChange, message, lastModifiedMessage } = props
-		// Store the previous height to compare with the current height
-		// This allows us to detect changes without causing re-renders
 		const prevHeightRef = useRef(0)
 
-		// NOTE: for tools that are interrupted and not responded to (approved or rejected), there won't be a checkpoint hash
+		// Check if this is an API request and determine its state
+		const apiInfo = message.say === "api_req_started" ? JSON.parse(message.text || "{}") : null;
+		const isLoadingApi = message.say === "api_req_started" && 
+			!apiInfo?.cost && 
+			!apiInfo?.cancelReason &&
+			!apiInfo?.streamingFailedMessage; // Added check for streaming failure
+		const isCompletedApi = message.say === "api_req_started" && 
+			(apiInfo?.cost || apiInfo?.cancelReason || apiInfo?.streamingFailedMessage); // Consider all completion states
+
 		let shouldShowCheckpoints =
 			message.lastCheckpointHash != null &&
 			(message.say === "tool" ||
-				message.ask === "tool" ||
-				message.say === "command" ||
-				message.ask === "command" ||
-				message.say === "completion_result" ||
-				message.ask === "completion_result" ||
-				message.say === "use_mcp_server" ||
-				message.ask === "use_mcp_server")
+					message.ask === "tool" ||
+					message.say === "command" ||
+					message.ask === "command" ||
+					message.say === "completion_result" ||
+					message.ask === "completion_result" ||
+					message.say === "use_mcp_server" ||
+					message.ask === "use_mcp_server")
 
 		if (shouldShowCheckpoints && isLast) {
 			shouldShowCheckpoints =
 				lastModifiedMessage?.ask === "resume_completed_task" || lastModifiedMessage?.ask === "resume_task"
 		}
 
+		const Container = message.type === "ask" ? QuestionContainer : UserMessageContainer;
+		
+		const containerClassName = isLoadingApi ? 'loading-api' : 
+			(isCompletedApi && !apiInfo?.cancelReason && !apiInfo?.streamingFailedMessage) ? 'completed-api' : '';
+
 		const [chatrow, { height }] = useSize(
-			<ChatRowContainer>
+			<Container className={containerClassName}>
 				<ChatRowContent {...props} />
 				{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
-			</ChatRowContainer>,
+			</Container>,
 		)
 
 		useEffect(() => {
@@ -735,6 +956,8 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 									WebkitUserSelect: "none",
 									MozUserSelect: "none",
 									msUserSelect: "none",
+									position: "relative", // Add this
+									zIndex: 1, // Add this to ensure content stays above glow effects
 								}}
 								onClick={onToggleExpand}>
 								<div
@@ -839,14 +1062,14 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 				case "user_feedback":
 					return (
 						<div
-							style={{
-								backgroundColor: "var(--vscode-badge-background)",
-								color: "var(--vscode-badge-foreground)",
-								borderRadius: "3px",
-								padding: "9px",
-								whiteSpace: "pre-line",
-								wordWrap: "break-word",
-							}}>
+						style={{
+							backgroundColor: "transparent",
+							color: "rgba(255, 214, 102, 0.95)",
+							borderRadius: "3px",
+							padding: "9px",
+							whiteSpace: "pre-line",
+							overflowWrap: "break-word",
+						}}>
 							<span style={{ display: "block" }}>{highlightMentions(message.text)}</span>
 							{message.images && message.images.length > 0 && (
 								<Thumbnails images={message.images} style={{ marginTop: "8px" }} />
@@ -888,44 +1111,54 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 						</>
 					)
 				case "diff_error":
+					const DiffErrorContainer = styled.div`
+						display: flex;
+						flex-direction: column;
+						background: linear-gradient(145deg, 
+							rgba(255, 145, 0, 0.15) 0%,
+							rgba(255, 100, 0, 0.1) 100%
+						);
+						padding: 12px;
+						border-radius: 6px;
+						font-size: 13px;
+						border: 1px solid rgba(255, 145, 0, 0.2);
+						box-shadow: 
+							0 4px 6px rgba(255, 145, 0, 0.05),
+							0 1px 3px rgba(255, 145, 0, 0.03);
+
+						&:hover {
+							background: linear-gradient(145deg, 
+								rgba(255, 145, 0, 0.2) 0%,
+								rgba(255, 100, 0, 0.15) 100%
+							);
+							border-color: rgba(255, 145, 0, 0.3);
+						}
+					`;
+
+					const DiffErrorHeader = styled.div`
+						display: flex;
+						align-items: center;
+						gap: 8px;
+						margin-bottom: 6px;
+						font-weight: 500;
+						color: rgba(255, 200, 100, 0.95);
+					`;
+
+					const DiffErrorMessage = styled.div`
+						line-height: 1.4;
+						color: rgba(255, 200, 100, 0.85);
+					`;
+
 					return (
-						<>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									backgroundColor: "rgba(255, 191, 0, 0.1)",
-									padding: 8,
-									borderRadius: 3,
-									fontSize: 12,
-								}}>
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										marginBottom: 4,
-									}}>
-									<i
-										className="codicon codicon-error"
-										style={{
-											marginRight: 8,
-											fontSize: 18,
-											color: "#FFA500",
-										}}></i>
-									<span
-										style={{
-											fontWeight: 500,
-											color: "#FFA500",
-										}}>
-										Diff Edit Failed
-									</span>
-								</div>
-								<div>
-									This usually happens when the model uses search patterns that don't match anything in the
-									file. Retrying...
-								</div>
-							</div>
-						</>
+						<DiffErrorContainer>
+							<DiffErrorHeader>
+								<i className="codicon codicon-warning" style={{ fontSize: 16 }} />
+								<span>Diff Edit Failed</span>
+							</DiffErrorHeader>
+							<DiffErrorMessage>
+								This usually happens when the search patterns don't match the file content. The system will automatically retry with adjusted parameters.
+							</DiffErrorMessage>
+						</DiffErrorContainer>
 					)
 				case "completion_result":
 					const hasChanges = message.text?.endsWith(COMPLETION_RESULT_CHANGES_FLAG) ?? false

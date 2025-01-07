@@ -1,5 +1,6 @@
 import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import DynamicTextArea from "react-textarea-autosize"
+import styled from "styled-components"
 import { mentionRegex, mentionRegexGlobal } from "../../../../src/shared/context-mentions"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import {
@@ -13,6 +14,134 @@ import { MAX_IMAGES_PER_MESSAGE } from "./ChatView"
 import ContextMenu from "./ContextMenu"
 import Thumbnails from "../common/Thumbnails"
 
+const StyledSvg = styled.svg`
+	color: var(--vscode-input-foreground);
+	transition: opacity 0.2s ease;
+
+	&:hover {
+		opacity: 0.8;
+	}
+`
+
+const TextContainer = styled.div`
+	position: relative;
+	width: 100%;
+	
+	.mention-context-textarea-highlight {
+		background: rgb(75 89 97);
+		border-radius: 4px;
+		padding: 1px 2px;
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		color: var(--vscode-input-foreground);
+		white-space: nowrap;
+		margin: 0 1px;
+		position: relative;
+		z-index: 2;
+		min-width: 0;
+		max-width: fit-content;
+		backdrop-filter: none;
+	}
+
+	.mention-text {
+		opacity: 0;
+		position: absolute;
+		pointer-events: none;
+		user-select: none;
+		visibility: hidden;
+		width: 0;
+		height: 0;
+		overflow: hidden;
+	}
+
+	.mention-display {
+		font-size: 0.95em;
+		opacity: 1;
+		color: var(--vscode-editor-foreground);
+		font-weight: 500;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.mention-icon {
+		width: 12px;
+		height: 12px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0.9;
+		color: var(--vscode-editor-foreground);
+		flex-shrink: 0;
+	}
+
+	textarea {
+		color: transparent;
+		caret-color: var(--vscode-input-foreground);
+		background: transparent;
+		
+		&::selection {
+			background-color: var(--vscode-editor-selectionBackground);
+			color: transparent;
+		}
+	}
+	
+	@keyframes disintegrate {
+		0% {
+			clip-path: inset(0 0 0 0);
+			opacity: 1;
+			transform: translateX(0);
+		}
+		20% {
+			clip-path: inset(0 0% 0 0);
+			opacity: 0.95;
+			transform: translateX(0);
+		}
+		99.9% {
+			clip-path: inset(0 100% 0 0);
+			opacity: 0;
+			transform: translateX(2px);
+			visibility: visible;
+		}
+		100% {
+			clip-path: inset(0 100% 0 0);
+			opacity: 0;
+			transform: translateX(2px);
+			visibility: hidden;
+		}
+	}
+
+	&.disintegrating {
+		animation: disintegrate 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+		transform-origin: right;
+	}
+`
+
+const SendSvg = styled(StyledSvg)`
+	@keyframes fly {
+		0% {
+			transform: scale(1) translate(0, 0);
+			opacity: 1;
+		}
+		40% {
+			transform: scale(0.8) translate(100%, -100%);
+			opacity: 0;
+		}
+		40.1% {
+			transform: scale(0.8) translate(0, 0);
+			opacity: 0;
+		}
+		100% {
+			transform: scale(1) translate(0, 0);
+			opacity: 1;
+		}
+	}
+
+	&.flying {
+		animation: fly 0.8s ease-in-out forwards;
+	}
+`
+
 interface ChatTextAreaProps {
 	inputValue: string
 	setInputValue: (value: string) => void
@@ -25,6 +154,53 @@ interface ChatTextAreaProps {
 	shouldDisableImages: boolean
 	onHeightChange?: (height: number) => void
 }
+
+const ChatTextAreaContainer = styled.div<{ disabled: boolean }>`
+	padding: 8px 12px;
+	opacity: ${props => props.disabled ? 0.6 : 1};
+	position: relative;
+	display: flex;
+	transition: all 0.2s ease;
+	box-shadow: none;
+	border-radius: 8px;
+	background: ${props => props.disabled 
+		? "rgba(30, 30, 30, 0.95)"
+		: "rgba(40, 40, 40, 0.4)"};
+	backdrop-filter: blur(16px);
+	border: ${props => props.disabled
+		? "1px solid rgba(255, 255, 255, 0.08)"
+		: "1px solid rgba(255, 255, 255, 0.1)"};
+	box-shadow: ${props => props.disabled
+		? "none"
+		: "0 1px 4px rgba(0, 0, 0, 0.1)"};
+	transform: ${props => props.disabled ? "none" : "translateY(0)"};
+
+	&:hover {
+		background: ${props => props.disabled
+			? "rgba(30, 30, 30, 0.95)"
+			: "rgba(45, 45, 45, 0.5)"};
+		border-color: ${props => props.disabled
+			? "rgba(255, 255, 255, 0.08)"
+			: "rgba(255, 255, 255, 0.15)"};
+		transform: ${props => props.disabled ? "none" : "translateY(-1px)"};
+		box-shadow: ${props => props.disabled
+			? "none"
+			: "0 2px 8px rgba(0, 0, 0, 0.15)"};
+	}
+`
+
+const ActionButton = styled.div<{ disabled: boolean }>`
+	width: 16px;
+	height: 16px;
+	opacity: ${props => props.disabled ? 0.5 : 1};
+	cursor: ${props => props.disabled ? "not-allowed" : "pointer"};
+	transition: all 0.2s ease;
+
+	&:hover {
+		transform: ${props => props.disabled ? "none" : "scale(1.1)"};
+		opacity: ${props => props.disabled ? 0.5 : 0.8};
+	}
+`
 
 const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 	(
@@ -133,11 +309,36 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			[setInputValue, cursorPosition],
 		)
 
+		const handleSendWithAnimation = useCallback(() => {
+			const svg = document.querySelector('.send-icon');
+			const textContainer = document.querySelector('.text-container');
+			
+			if (svg) {
+				svg.classList.add('flying');
+				setTimeout(() => {
+					svg.classList.remove('flying');
+				}, 800);
+			}
+			
+			if (textContainer) {
+				textContainer.classList.add('disintegrating');
+				// Call onSend just before the animation completes
+				setTimeout(() => {
+					onSend();
+					// Remove the class after the text is cleared
+					requestAnimationFrame(() => {
+						textContainer.classList.remove('disintegrating');
+					});
+				}, 590); // Slightly before animation ends
+			} else {
+				onSend();
+			}
+		}, [onSend]);
+
 		const handleKeyDown = useCallback(
 			(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
 				if (showContextMenu) {
 					if (event.key === "Escape") {
-						// event.preventDefault()
 						setSelectedType(null)
 						setSelectedMenuIndex(3) // File by default
 						return
@@ -152,21 +353,18 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 
 							if (optionsLength === 0) return prevIndex
 
-							// Find selectable options (non-URL types)
 							const selectableOptions = options.filter(
 								(option) =>
 									option.type !== ContextMenuOptionType.URL && option.type !== ContextMenuOptionType.NoResults,
 							)
 
-							if (selectableOptions.length === 0) return -1 // No selectable options
+							if (selectableOptions.length === 0) return -1
 
-							// Find the index of the next selectable option
 							const currentSelectableIndex = selectableOptions.findIndex((option) => option === options[prevIndex])
 
 							const newSelectableIndex =
 								(currentSelectableIndex + direction + selectableOptions.length) % selectableOptions.length
 
-							// Find the index of the selected option in the original options array
 							return options.findIndex((option) => option === selectableOptions[newSelectableIndex])
 						})
 						return
@@ -186,9 +384,47 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 				}
 
 				const isComposing = event.nativeEvent?.isComposing ?? false
-				if (event.key === "Enter" && !event.shiftKey && !isComposing) {
+
+				// Handle arrow key navigation through mentions
+				if ((event.key === "ArrowLeft" || event.key === "ArrowRight") && !isComposing) {
+					const text = textAreaRef.current?.value || "";
+					const currentPos = textAreaRef.current?.selectionStart || 0;
+					
+					// Find all mention matches with their positions
+					const mentions: { start: number; end: number }[] = [];
+					let match;
+					while ((match = mentionRegexGlobal.exec(text)) !== null) {
+						mentions.push({
+							start: match.index,
+							end: match.index + match[0].length
+						});
+					}
+
+					// Check if we're at the edge of a mention
+					for (const mention of mentions) {
+						if (event.key === "ArrowLeft") {
+							// If cursor is at the end or inside a mention, jump to its start
+							if (currentPos <= mention.end && currentPos > mention.start) {
+								event.preventDefault();
+								const newPos = mention.start;
+								textAreaRef.current?.setSelectionRange(newPos, newPos);
+								return;
+							}
+						} else { // ArrowRight
+							// If cursor is at the start or inside a mention, jump to its end
+							if (currentPos >= mention.start && currentPos < mention.end) {
+								event.preventDefault();
+								const newPos = mention.end;
+								textAreaRef.current?.setSelectionRange(newPos, newPos);
+								return;
+							}
+						}
+					}
+				}
+
+				if (event.key === "Enter" && !event.shiftKey && !isComposing && !textAreaDisabled) {
 					event.preventDefault()
-					onSend()
+					handleSendWithAnimation()
 				}
 
 				if (event.key === "Backspace" && !isComposing) {
@@ -239,6 +475,8 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 				setInputValue,
 				justDeletedSpaceAfterMention,
 				queryItems,
+				textAreaDisabled,
+				handleSendWithAnimation,
 			],
 		)
 
@@ -378,11 +616,38 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 
 			const text = textAreaRef.current.value
 
-			highlightLayerRef.current.innerHTML = text
+			const folderIcon = `<svg class="mention-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`
+			const fileIcon = `<svg class="mention-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>`
+			const problemsIcon = `<svg class="mention-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`
+
+			const processedText = text
 				.replace(/\n$/, "\n\n")
 				.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c] || c)
-				.replace(mentionRegexGlobal, '<mark class="mention-context-textarea-highlight">$&</mark>')
+				.replace(mentionRegexGlobal, (match) => {
+					let icon = fileIcon;
+					let displayText = match;
 
+					if (match === '@problems') {
+						icon = problemsIcon;
+						displayText = 'problems';
+					} else {
+						// Remove just the @ prefix but keep the full path
+						displayText = match.substring(1);
+						
+						// If it ends with a slash, it's a folder
+						if (match.endsWith('/')) {
+							icon = folderIcon;
+						}
+					}
+
+					return `<mark class="mention-context-textarea-highlight">
+						${icon}
+						<span class="mention-display">${displayText}</span>
+						<span class="mention-text">${match}</span>
+					</mark>`;
+				})
+
+			highlightLayerRef.current.innerHTML = processedText
 			highlightLayerRef.current.scrollTop = textAreaRef.current.scrollTop
 			highlightLayerRef.current.scrollLeft = textAreaRef.current.scrollLeft
 		}, [])
@@ -407,13 +672,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		)
 
 		return (
-			<div
-				style={{
-					padding: "10px 15px",
-					opacity: textAreaDisabled ? 0.5 : 1,
-					position: "relative",
-					display: "flex",
-				}}>
+			<ChatTextAreaContainer disabled={textAreaDisabled}>
 				{showContextMenu && (
 					<div ref={contextMenuContainerRef}>
 						<ContextMenu
@@ -431,103 +690,99 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					<div
 						style={{
 							position: "absolute",
-							inset: "10px 15px",
-							border: "1px solid var(--vscode-input-border)",
-							borderRadius: 2,
+							inset: "12px 16px",
+							border: "none",
+							borderRadius: "12px",
 							pointerEvents: "none",
 							zIndex: 5,
+							transition: "all 0.2s ease",
+							opacity: 0.5
 						}}
 					/>
 				)}
-				<div
-					ref={highlightLayerRef}
-					style={{
-						position: "absolute",
-						top: 10,
-						left: 15,
-						right: 15,
-						bottom: 10,
-						pointerEvents: "none",
-						whiteSpace: "pre-wrap",
-						wordWrap: "break-word",
-						color: "transparent",
-						overflow: "hidden",
-						backgroundColor: "var(--vscode-input-background)",
-						fontFamily: "var(--vscode-font-family)",
-						fontSize: "var(--vscode-editor-font-size)",
-						lineHeight: "var(--vscode-editor-line-height)",
-						borderRadius: 2,
-						borderLeft: 0,
-						borderRight: 0,
-						borderTop: 0,
-						borderColor: "transparent",
-						borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
-						padding: "9px 49px 3px 9px",
-					}}
-				/>
-				<DynamicTextArea
-					ref={(el) => {
-						if (typeof ref === "function") {
-							ref(el)
-						} else if (ref) {
-							ref.current = el
-						}
-						textAreaRef.current = el
-					}}
-					value={inputValue}
-					disabled={textAreaDisabled}
-					onChange={(e) => {
-						handleInputChange(e)
-						updateHighlights()
-					}}
-					onKeyDown={handleKeyDown}
-					onKeyUp={handleKeyUp}
-					onFocus={() => setIsTextAreaFocused(true)}
-					onBlur={handleBlur}
-					onPaste={handlePaste}
-					onSelect={updateCursorPosition}
-					onMouseUp={updateCursorPosition}
-					onHeightChange={(height) => {
-						if (textAreaBaseHeight === undefined || height < textAreaBaseHeight) {
-							setTextAreaBaseHeight(height)
-						}
-						onHeightChange?.(height)
-					}}
-					placeholder={placeholderText}
-					maxRows={10}
-					autoFocus={true}
-					style={{
-						width: "100%",
-						boxSizing: "border-box",
-						backgroundColor: "transparent",
-						color: "var(--vscode-input-foreground)",
-						//border: "1px solid var(--vscode-input-border)",
-						borderRadius: 2,
-						fontFamily: "var(--vscode-font-family)",
-						fontSize: "var(--vscode-editor-font-size)",
-						lineHeight: "var(--vscode-editor-line-height)",
-						resize: "none",
-						overflowX: "hidden",
-						overflowY: "scroll",
-						scrollbarWidth: "none",
-						// Since we have maxRows, when text is long enough it starts to overflow the bottom padding, appearing behind the thumbnails. To fix this, we use a transparent border to push the text up instead. (https://stackoverflow.com/questions/42631947/maintaining-a-padding-inside-of-text-area/52538410#52538410)
-						// borderTop: "9px solid transparent",
-						borderLeft: 0,
-						borderRight: 0,
-						borderTop: 0,
-						borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
-						borderColor: "transparent",
-						// borderRight: "54px solid transparent",
-						// borderLeft: "9px solid transparent", // NOTE: react-textarea-autosize doesn't calculate correct height when using borderLeft/borderRight so we need to use horizontal padding instead
-						// Instead of using boxShadow, we use a div with a border to better replicate the behavior when the textarea is focused
-						// boxShadow: "0px 0px 0px 1px var(--vscode-input-border)",
-						padding: "9px 49px 3px 9px",
-						cursor: textAreaDisabled ? "not-allowed" : undefined,
-						flex: 1,
-						zIndex: 1,
-					}}
-					onScroll={() => updateHighlights()}
-				/>
+				<TextContainer className="text-container">
+					<div
+						ref={highlightLayerRef}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 0,
+							pointerEvents: "none",
+							whiteSpace: "pre-wrap",
+							wordWrap: "break-word",
+							color: "transparent",
+							overflow: "hidden",
+							backgroundColor: "transparent",
+							fontFamily: "var(--vscode-font-family)",
+							fontSize: "var(--vscode-editor-font-size)",
+							lineHeight: "var(--vscode-editor-line-height)",
+							borderRadius: "6px",
+							border: "none",
+							borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
+							padding: "6px 52px 6px 8px",
+							transition: "all 0.2s ease",
+							width: "100%",
+							boxSizing: "border-box",
+						}}
+					/>
+					<DynamicTextArea
+						ref={(el) => {
+							if (typeof ref === "function") {
+								ref(el)
+							} else if (ref) {
+								ref.current = el
+							}
+							textAreaRef.current = el
+						}}
+						value={inputValue}
+						disabled={textAreaDisabled}
+						onChange={(e) => {
+							handleInputChange(e)
+							updateHighlights()
+						}}
+						onKeyDown={handleKeyDown}
+						onKeyUp={handleKeyUp}
+						onFocus={() => setIsTextAreaFocused(true)}
+						onBlur={handleBlur}
+						onPaste={handlePaste}
+						onSelect={updateCursorPosition}
+						onMouseUp={updateCursorPosition}
+						onHeightChange={(height) => {
+							if (textAreaBaseHeight === undefined || height < textAreaBaseHeight) {
+								setTextAreaBaseHeight(height)
+							}
+							onHeightChange?.(height)
+						}}
+						placeholder={placeholderText}
+						maxRows={10}
+						autoFocus={true}
+						style={{
+							width: "100%",
+							boxSizing: "border-box",
+							background: "transparent",
+							color: "var(--vscode-input-foreground)",
+							fontFamily: "var(--vscode-font-family)",
+							fontSize: "var(--vscode-editor-font-size)",
+							lineHeight: "var(--vscode-editor-line-height)",
+							resize: "none",
+							overflowX: "hidden",
+							overflowY: "scroll",
+							scrollbarWidth: "none",
+							borderRadius: "6px",
+							border: "none",
+							borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
+							padding: "6px 52px 6px 8px",
+							cursor: textAreaDisabled ? "not-allowed" : "text",
+							flex: 1,
+							outline: "none",
+							zIndex: 1,
+							transition: "all 0.2s ease",
+						}}
+						onScroll={() => updateHighlights()}
+					/>
+				</TextContainer>
 				{selectedImages.length > 0 && (
 					<Thumbnails
 						images={selectedImages}
@@ -536,9 +791,9 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						style={{
 							position: "absolute",
 							paddingTop: 4,
-							bottom: 14,
-							left: 22,
-							right: 67, // (54 + 9) + 4 extra padding
+							bottom: 12,
+							left: 18,
+							right: 60,
 							zIndex: 2,
 						}}
 					/>
@@ -546,11 +801,11 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 				<div
 					style={{
 						position: "absolute",
-						right: 23,
+						right: 18,
 						display: "flex",
 						alignItems: "flex-center",
 						height: textAreaBaseHeight || 31,
-						bottom: 9.5, // should be 10 but doesnt look good on mac
+						bottom: 8,
 						zIndex: 2,
 					}}>
 					<div
@@ -558,30 +813,49 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							display: "flex",
 							flexDirection: "row",
 							alignItems: "center",
+							gap: "10px"
 						}}>
-						<div
-							className={`input-icon-button ${shouldDisableImages ? "disabled" : ""} codicon codicon-device-camera`}
+						<ActionButton
+							disabled={shouldDisableImages}
 							onClick={() => {
 								if (!shouldDisableImages) {
 									onSelectImages()
 								}
 							}}
-							style={{
-								marginRight: 5.5,
-								fontSize: 16.5,
-							}}
-						/>
-						<div
-							className={`input-icon-button ${textAreaDisabled ? "disabled" : ""} codicon codicon-send`}
+						>
+							<StyledSvg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+								<circle cx="8.5" cy="8.5" r="1.5" stroke="none" fill="currentColor"/>
+								<path d="M21 15l-5-5L5 21" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+							</StyledSvg>
+						</ActionButton>
+						<ActionButton
+							disabled={textAreaDisabled}
 							onClick={() => {
 								if (!textAreaDisabled) {
-									onSend()
+									handleSendWithAnimation();
 								}
 							}}
-							style={{ fontSize: 15 }}></div>
+						>
+							<SendSvg 
+								className="send-icon"
+								width="16" 
+								height="16" 
+								viewBox="0 0 24 24" 
+								fill="none" 
+								stroke="currentColor"
+							>
+								<path
+									d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+							</SendSvg>
+						</ActionButton>
 					</div>
 				</div>
-			</div>
+			</ChatTextAreaContainer>
 		)
 	},
 )

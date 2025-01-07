@@ -132,9 +132,93 @@ const OpenRouterModelPicker: React.FC = () => {
 		<>
 			<style>
 				{`
-				.model-item-highlight {
-					background-color: var(--vscode-editor-findMatchHighlightBackground);
-					color: inherit;
+
+				.model-search-field {
+					background: rgba(30, 30, 30, 0.6) !important;
+					border: 1px solid rgba(255, 255, 255, 0.06) !important;
+					border-radius: 4px !important;
+					transition: all 0.2s ease !important;
+				}
+
+				.model-search-field:hover {
+					background: rgba(35, 35, 35, 0.7) !important;
+					border-color: rgba(103, 58, 183, 0.2) !important;
+				}
+
+				.model-search-field:focus-within {
+					border-color: rgba(103, 58, 183, 0.3) !important;
+					background: rgba(40, 40, 40, 0.8) !important;
+				}
+
+				.model-search-field .control,
+				vscode-text-field::part(control) {
+					background: transparent !important;
+					border: none !important;
+					color: var(--vscode-foreground) !important;
+					font-family: var(--vscode-font-family) !important;
+					font-size: 13px !important;
+				}
+
+				vscode-text-field::part(control) {
+					background: transparent !important;
+					--input-background: transparent !important;
+				}
+
+				.model-search-field input::placeholder {
+					color: var(--vscode-input-placeholderForeground);
+					opacity: 0.6;
+				}
+
+				.see-more-container {
+					position: absolute;
+					right: 0;
+					bottom: 0;
+					display: flex;
+					align-items: center;
+					background: linear-gradient(to right, 
+						rgba(25, 25, 25, 0) 0%,
+						rgba(25, 25, 25, 0.85) 20%,
+						rgba(25, 25, 25, 0.98) 60%
+					);
+					padding: 4px 8px 4px 24px;
+				}
+
+				.see-more-button {
+					padding: 3px 8px;
+					font-size: 11px;
+					border-radius: 4px;
+					background: rgba(103, 58, 183, 0.15);
+					border: 1px solid rgba(103, 58, 183, 0.25);
+					color: var(--vscode-foreground);
+					cursor: pointer;
+					display: flex;
+					align-items: center;
+					gap: 4px;
+					transition: all 0.2s ease;
+					opacity: 0.9;
+					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				}
+
+				.see-more-button:hover {
+					background: rgba(103, 58, 183, 0.25);
+					border-color: rgba(103, 58, 183, 0.35);
+					opacity: 1;
+					box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+				}
+
+				.see-more-button .codicon {
+					font-size: 11px;
+					opacity: 0.9;
+					transition: transform 0.2s ease;
+				}
+
+				.see-more-button:hover .codicon {
+					transform: translateY(1px);
+				}
+
+				.see-more-button span {
+					font-weight: 500;
+					letter-spacing: 0.2px;
 				}
 				`}
 			</style>
@@ -145,6 +229,7 @@ const OpenRouterModelPicker: React.FC = () => {
 				<DropdownWrapper ref={dropdownRef}>
 					<VSCodeTextField
 						id="model-search"
+						className="model-search-field"
 						placeholder="Search and select a model..."
 						value={searchTerm}
 						onInput={(e) => {
@@ -172,6 +257,9 @@ const OpenRouterModelPicker: React.FC = () => {
 									justifyContent: "center",
 									alignItems: "center",
 									height: "100%",
+									opacity: 0.8,
+									cursor: "pointer",
+									transition: "opacity 0.2s ease",
 								}}
 							/>
 						)}
@@ -242,60 +330,54 @@ export const OPENROUTER_MODEL_PICKER_Z_INDEX = 1_000
 
 const DropdownList = styled.div`
 	position: absolute;
-	top: calc(100% - 3px);
+	top: calc(100% + 4px);
 	left: 0;
-	width: calc(100% - 2px);
+	width: 100%;
 	max-height: 200px;
 	overflow-y: auto;
-	background-color: var(--vscode-dropdown-background);
-	border: 1px solid var(--vscode-list-activeSelectionBackground);
+	background: rgba(30, 30, 30, 0.95);
+	border: 1px solid rgba(103, 58, 183, 0.2);
+	border-radius: 4px;
 	z-index: ${OPENROUTER_MODEL_PICKER_Z_INDEX - 1};
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
+	backdrop-filter: blur(16px);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 `
 
 const DropdownItem = styled.div<{ isSelected: boolean }>`
-	padding: 5px 10px;
+	padding: 8px 12px;
 	cursor: pointer;
 	word-break: break-all;
 	white-space: normal;
+	transition: all 0.2s ease;
+	font-size: 13px;
 
-	background-color: ${({ isSelected }) => (isSelected ? "var(--vscode-list-activeSelectionBackground)" : "inherit")};
+	background: ${({ isSelected }) => 
+		isSelected ? 'rgba(103, 58, 183, 0.15)' : 'transparent'};
 
 	&:hover {
-		background-color: var(--vscode-list-activeSelectionBackground);
+		background: rgba(103, 58, 183, 0.1);
 	}
 `
 
 // Markdown
 
 const StyledMarkdown = styled.div`
-	font-family:
-		var(--vscode-font-family),
-		system-ui,
-		-apple-system,
-		BlinkMacSystemFont,
-		"Segoe UI",
-		Roboto,
-		Oxygen,
-		Ubuntu,
-		Cantarell,
-		"Open Sans",
-		"Helvetica Neue",
-		sans-serif;
+	font-family: var(--vscode-font-family);
 	font-size: 12px;
 	color: var(--vscode-descriptionForeground);
 
-	p,
-	li,
-	ol,
-	ul {
-		line-height: 1.25;
+	p, li, ol, ul {
+		line-height: 1.4;
 		margin: 0;
 	}
 
-	ol,
-	ul {
+	ol, ul {
 		padding-left: 1.5em;
 		margin-left: 0;
 	}
@@ -306,9 +388,11 @@ const StyledMarkdown = styled.div`
 
 	a {
 		text-decoration: none;
-	}
-	a {
+		color: var(--vscode-textLink-foreground);
+		transition: opacity 0.2s ease;
+
 		&:hover {
+			opacity: 0.8;
 			text-decoration: underline;
 		}
 	}
@@ -372,33 +456,14 @@ export const ModelDescriptionMarkdown = memo(
 						{reactContent}
 					</div>
 					{!isExpanded && showSeeMore && (
-						<div
-							style={{
-								position: "absolute",
-								right: 0,
-								bottom: 0,
-								display: "flex",
-								alignItems: "center",
-							}}>
-							<div
-								style={{
-									width: 30,
-									height: "1.2em",
-									background: "linear-gradient(to right, transparent, var(--vscode-sideBar-background))",
-								}}
-							/>
-							<VSCodeLink
-								style={{
-									// cursor: "pointer",
-									// color: "var(--vscode-textLink-foreground)",
-									fontSize: "inherit",
-									paddingRight: 0,
-									paddingLeft: 3,
-									backgroundColor: "var(--vscode-sideBar-background)",
-								}}
-								onClick={() => setIsExpanded(true)}>
-								See more
-							</VSCodeLink>
+						<div className="see-more-container">
+							<button 
+								className="see-more-button"
+								onClick={() => setIsExpanded(true)}
+							>
+								<i className="codicon codicon-chevron-down" style={{ fontSize: '10px' }} />
+								<span>See more</span>
+							</button>
 						</div>
 					)}
 				</div>
