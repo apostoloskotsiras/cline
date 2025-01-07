@@ -44,6 +44,7 @@ const ChatRowContainer = styled.div`
 
 	&.loading-api {
 		position: relative;
+		transition: all 0.3s ease;
 		
 		&::before {
 			content: '';
@@ -101,7 +102,14 @@ const ChatRowContainer = styled.div`
 	&.completed-api {
 		position: relative;
 		border-color: var(--vscode-charts-green);
+		animation: none !important;
+		transition: border-color 0.3s ease, box-shadow 0.3s ease;
 		
+		&::before,
+		&::after {
+			content: none !important;
+		}
+
 		&::before {
 			content: '';
 			position: absolute;
@@ -112,6 +120,7 @@ const ChatRowContainer = styled.div`
 			opacity: 0.2;
 			z-index: 0;
 			pointer-events: none;
+			transition: opacity 0.3s ease;
 		}
 	}
 
