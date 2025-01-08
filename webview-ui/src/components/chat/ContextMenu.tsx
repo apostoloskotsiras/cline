@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react"
 import { ContextMenuOptionType, ContextMenuQueryItem, getContextMenuOptions } from "../../utils/context-mentions"
-import { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
+import { cleanPathPrefix } from "../common/CodeAccordian"
 import "./ContextMenu.css"
 
 interface ContextMenuProps {
@@ -57,11 +57,18 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 			case ContextMenuOptionType.Folder:
 				if (option.value) {
 					return (
-						<div className="menu-path">
-							<span className="path-separator">/</span>
-							{option.value?.startsWith("/.") && <span className="path-dot">.</span>}
-							<span className="path-text">
-								{removeLeadingNonAlphanumeric(option.value || "") + "\u200E"}
+						<div>
+							<span>/</span>
+							{option.value?.startsWith("/.") && <span>.</span>}
+							<span
+								style={{
+									whiteSpace: "nowrap",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									direction: "rtl",
+									textAlign: "left",
+								}}>
+								{cleanPathPrefix(option.value || "") + "\u200E"}
 							</span>
 						</div>
 					)
