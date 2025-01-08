@@ -27,22 +27,12 @@ const TextContainer = styled.div`
 	position: relative;
 	width: 100%;
 	
-	.mention-context-textarea-highlight {
-		background: rgb(75 89 97);
-		border-radius: 4px;
-		padding: 1px 2px;
-		display: inline-flex;
-		align-items: center;
-		gap: 3px;
-		color: var(--vscode-input-foreground);
-		white-space: nowrap;
-		margin: 0 1px;
-		position: relative;
-		z-index: 2;
-		min-width: 0;
-		max-width: fit-content;
-		backdrop-filter: none;
-	}
+				.mention-context-textarea-highlight {
+					background-color: color-mix(in srgb, var(--vscode-badge-foreground) 30%, transparent);
+					border-radius: 3px;
+					box-shadow: 0 0 0 0.5px color-mix(in srgb, var(--vscode-badge-foreground) 30%, transparent);
+					color: transparent;
+				}
 
 	.mention-text {
 		opacity: 0;
@@ -616,38 +606,11 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 
 			const text = textAreaRef.current.value
 
-			const folderIcon = `<svg class="mention-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`
-			const fileIcon = `<svg class="mention-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>`
-			const problemsIcon = `<svg class="mention-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`
-
-			const processedText = text
+			highlightLayerRef.current.innerHTML = text
 				.replace(/\n$/, "\n\n")
-				.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c] || c)
-				.replace(mentionRegexGlobal, (match) => {
-					let icon = fileIcon;
-					let displayText = match;
+				.replace(/[<>&]/g, (c) => ({ "<": "<", ">": ">", "&": "&" })[c] || c)
+				.replace(mentionRegexGlobal, '<mark class="mention-context-textarea-highlight">$&</mark>')
 
-					if (match === '@problems') {
-						icon = problemsIcon;
-						displayText = 'problems';
-					} else {
-						// Remove just the @ prefix but keep the full path
-						displayText = match.substring(1);
-						
-						// If it ends with a slash, it's a folder
-						if (match.endsWith('/')) {
-							icon = folderIcon;
-						}
-					}
-
-					return `<mark class="mention-context-textarea-highlight">
-						${icon}
-						<span class="mention-display">${displayText}</span>
-						<span class="mention-text">${match}</span>
-					</mark>`;
-				})
-
-			highlightLayerRef.current.innerHTML = processedText
 			highlightLayerRef.current.scrollTop = textAreaRef.current.scrollTop
 			highlightLayerRef.current.scrollLeft = textAreaRef.current.scrollLeft
 		}, [])
