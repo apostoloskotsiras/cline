@@ -34,37 +34,6 @@ const TextContainer = styled.div`
 					color: transparent;
 				}
 
-	.mention-text {
-		opacity: 0;
-		position: absolute;
-		pointer-events: none;
-		user-select: none;
-		visibility: hidden;
-		width: 0;
-		height: 0;
-		overflow: hidden;
-	}
-
-	.mention-display {
-		font-size: 0.95em;
-		opacity: 1;
-		color: var(--vscode-editor-foreground);
-		font-weight: 500;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.mention-icon {
-		width: 12px;
-		height: 12px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		opacity: 0.9;
-		color: var(--vscode-editor-foreground);
-		flex-shrink: 0;
-	}
-
 	textarea {
 		color: transparent;
 		caret-color: var(--vscode-input-foreground);

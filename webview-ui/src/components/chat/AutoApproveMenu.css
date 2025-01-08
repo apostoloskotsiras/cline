@@ -1,0 +1,878 @@
+/* Animation container */
+.menu-content {
+    overflow: hidden;
+    opacity: 0;
+    max-height: 0;
+    transform: translate3d(0, -10px, 0);
+    transition: 
+        opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity, max-height;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    contain: content;
+    background: rgba(30, 30, 30, 0.95);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .menu-content {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+}
+
+.menu-content.expanded {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .menu-content.expanded {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.menu-content-inner {
+    padding-top: 8px;
+    max-height: 450px;
+    overflow-y: auto;
+    will-change: transform;
+    background: rgba(30, 30, 30, 0.95);
+    border-radius: 8px;
+    margin: 8px;
+    padding: 12px;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-content-inner:hover {
+    background: rgba(35, 35, 35, 0.95);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .menu-content-inner {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .menu-content-inner:hover {
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Custom Checkbox Styling */
+vscode-checkbox {
+    --checkbox-size: 16px;
+    --checkbox-bg: rgba(30, 30, 30, 0.6);
+    --checkbox-border: rgba(255, 255, 255, 0.1);
+    --checkbox-hover-bg: rgba(35, 35, 35, 0.7);
+    --checkbox-checked-bg: rgba(103, 58, 183, 0.2);
+    --checkbox-checked-border: rgba(103, 58, 183, 0.3);
+    --checkbox-disabled-bg: rgba(30, 30, 30, 0.3);
+    --checkbox-disabled-border: rgba(255, 255, 255, 0.05);
+    --checkmark-color: rgba(103, 58, 183, 0.9);
+    --checkmark-hover-color: rgba(103, 58, 183, 1);
+    --checkmark-size: 4px 8px;
+    --checkmark-position: 5px 2px;
+    transition: all 0.2s ease;
+}
+
+vscode-checkbox:hover {
+    --checkbox-bg: rgba(35, 35, 35, 0.7);
+    --checkbox-border: rgba(103, 58, 183, 0.2);
+}
+
+vscode-checkbox[checked]:hover {
+    --checkbox-checked-bg: rgba(103, 58, 183, 0.25);
+    --checkbox-checked-border: rgba(103, 58, 183, 0.35);
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    vscode-checkbox {
+        --checkbox-bg: rgba(255, 255, 255, 0.8);
+        --checkbox-border: rgba(0, 0, 0, 0.1);
+        --checkbox-hover-bg: rgba(255, 255, 255, 0.9);
+        --checkbox-checked-bg: rgba(103, 58, 183, 0.1);
+        --checkbox-checked-border: rgba(103, 58, 183, 0.2);
+        --checkbox-disabled-bg: rgba(255, 255, 255, 0.5);
+        --checkbox-disabled-border: rgba(0, 0, 0, 0.05);
+        --checkmark-color: rgba(103, 58, 183, 0.8);
+        --checkmark-hover-color: rgba(103, 58, 183, 0.9);
+    }
+    
+    vscode-checkbox:hover {
+        --checkbox-bg: rgba(255, 255, 255, 0.9);
+        --checkbox-border: rgba(103, 58, 183, 0.15);
+    }
+    
+    vscode-checkbox[checked]:hover {
+        --checkbox-checked-bg: rgba(103, 58, 183, 0.15);
+        --checkbox-checked-border: rgba(103, 58, 183, 0.25);
+    }
+}
+
+vscode-checkbox::part(control) {
+    background: var(--checkbox-bg);
+    border: 1px solid var(--checkbox-border);
+    border-radius: 4px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+    position: relative;
+    cursor: pointer;
+}
+
+vscode-checkbox:hover::part(control) {
+    background: var(--checkbox-hover-bg);
+    border-color: var(--checkbox-checked-border);
+}
+
+vscode-checkbox[checked]::part(control) {
+    background: var(--checkbox-checked-bg);
+    border-color: var(--checkbox-checked-border);
+    animation: checkmarkPulse 0.3s ease;
+}
+
+@keyframes checkmarkPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Toggle state feedback */
+vscode-checkbox[checked]::part(label) {
+    position: relative;
+}
+
+vscode-checkbox[checked]::part(label)::after {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 50%;
+    width: 2px;
+    height: 100%;
+    background: var(--checkbox-checked-border);
+    transform: translateY(-50%);
+    opacity: 0;
+    animation: toggleIndicator 0.3s ease forwards;
+}
+
+@keyframes toggleIndicator {
+    0% { opacity: 0; transform: translateY(-50%) scaleY(0); }
+    100% { opacity: 1; transform: translateY(-50%) scaleY(1); }
+}
+
+/* Focus state */
+vscode-checkbox:focus-within::part(control) {
+    outline: 2px solid var(--checkbox-checked-border);
+    outline-offset: 2px;
+}
+
+vscode-checkbox[checked]:hover::part(control) {
+    background: var(--checkbox-checked-bg);
+    border-color: var(--checkbox-checked-border);
+    opacity: 0.9;
+}
+
+vscode-checkbox[disabled]::part(control) {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--checkbox-disabled-bg);
+    border-color: var(--checkbox-disabled-border);
+}
+
+vscode-checkbox[disabled]::part(input) {
+    cursor: not-allowed;
+}
+
+/* Custom checkmark */
+vscode-checkbox[checked]::part(control)::after {
+    content: '';
+    position: absolute;
+    left: var(--checkmark-position-x, 5px);
+    top: var(--checkmark-position-y, 2px);
+    width: var(--checkmark-width, 4px);
+    height: var(--checkmark-height, 8px);
+    border: solid var(--checkmark-color, rgba(103, 58, 183, 0.9));
+    border-width: 0 var(--checkmark-border-width, 2px) var(--checkmark-border-width, 2px) 0;
+    transform: rotate(45deg);
+    transition: border-color 0.2s ease;
+}
+
+vscode-checkbox[checked]:hover::part(control)::after {
+    border-color: var(--checkmark-hover-color, rgba(103, 58, 183, 1));
+}
+
+/* Label styling */
+vscode-checkbox::part(label) {
+    color: var(--vscode-foreground) !important;
+    font-size: 13px !important;
+    padding-left: 8px !important;
+    cursor: pointer !important;
+    transition: opacity 0.2s ease !important;
+}
+
+vscode-checkbox:hover::part(label) {
+    opacity: 0.9 !important;
+}
+
+vscode-checkbox[disabled]::part(label) {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Text Field Styling */
+vscode-text-field {
+    background: rgba(30, 30, 30, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+    --input-placeholder-color: rgba(255, 255, 255, 0.4);
+}
+
+vscode-text-field:hover {
+    background: rgba(35, 35, 35, 0.7) !important;
+    border-color: rgba(103, 58, 183, 0.2) !important;
+}
+
+vscode-text-field:focus-within {
+    border-color: rgba(103, 58, 183, 0.3) !important;
+    background: rgba(40, 40, 40, 0.8) !important;
+    box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.15);
+}
+
+vscode-text-field::part(control) {
+    background: transparent !important;
+    --input-background: transparent !important;
+    border: none !important;
+    color: var(--vscode-foreground) !important;
+    font-family: var(--vscode-font-family) !important;
+    font-size: 13px !important;
+    padding: 6px 8px;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    vscode-text-field {
+        background: rgba(255, 255, 255, 0.8) !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        --input-placeholder-color: rgba(0, 0, 0, 0.4);
+    }
+    
+    vscode-text-field:hover {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-color: rgba(103, 58, 183, 0.15) !important;
+    }
+    
+    vscode-text-field:focus-within {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-color: rgba(103, 58, 183, 0.2) !important;
+        box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.1);
+    }
+}
+
+/* Section Styling */
+.settings-section {
+    margin: 5px 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: rgba(30, 30, 30, 0.4);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.4) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1;
+}
+
+.section-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.2) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation-delay: 0.3s;
+    z-index: 2;
+}
+
+.section-header:hover {
+    background: rgba(35, 35, 35, 0.5);
+    border-color: rgba(103, 58, 183, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 0 12px rgba(103, 58, 183, 0.1);
+    transform: translateY(-1px);
+}
+
+.section-header:hover::before {
+    opacity: 1;
+    transform: translateX(200%);
+}
+
+.section-header:hover::after {
+    opacity: 0.8;
+    transform: translateX(200%);
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--vscode-foreground);
+    letter-spacing: 0.25px;
+    transition: opacity 0.2s ease;
+}
+
+.section-header:hover h3 {
+    opacity: 0.9;
+}
+
+.section-header .codicon {
+    color: rgba(103, 58, 183, 0.9);
+    font-size: 16px;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.section-header:hover .codicon {
+    color: rgba(103, 58, 183, 1);
+    opacity: 0.9;
+}
+
+.auto-approve-section {
+    background: rgba(25, 25, 25, 0.95);
+    border: 1px solid rgba(103, 58, 183, 0.15);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    transition: all 0.2s ease;
+}
+
+.auto-approve-section:hover {
+    border-color: rgba(103, 58, 183, 0.25);
+    background: rgba(28, 28, 28, 0.95);
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .section-header {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .section-header:hover {
+        background: rgba(255, 255, 255, 0.9);
+    }
+    
+    .auto-approve-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(103, 58, 183, 0.1);
+    }
+    
+    .auto-approve-section:hover {
+        background: rgba(255, 255, 255, 0.98);
+        border-color: rgba(103, 58, 183, 0.15);
+    }
+}
+
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+    padding: 0 8px;
+}
+
+.settings-group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: rgba(30, 30, 30, 0.3);
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-group-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.35) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1;
+}
+
+.settings-group-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.18) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation-delay: 0.3s;
+    z-index: 2;
+}
+
+.settings-group-header:hover {
+    background: rgba(35, 35, 35, 0.4);
+    border-color: rgba(103, 58, 183, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 8px rgba(103, 58, 183, 0.1);
+    transform: translateY(-1px);
+}
+
+.settings-group-header:hover::before {
+    opacity: 0.8;
+    transform: translateX(200%);
+}
+
+.settings-group-header:hover::after {
+    opacity: 0.6;
+    transform: translateX(200%);
+}
+
+.settings-group-header h4 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vscode-foreground);
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.settings-group-header:hover h4 {
+    opacity: 1;
+}
+
+.settings-group-header .codicon {
+    color: rgba(103, 58, 183, 0.8);
+    font-size: 14px;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.settings-group-header:hover .codicon {
+    color: rgba(103, 58, 183, 0.9);
+    opacity: 1;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .settings-group-header {
+        background: rgba(255, 255, 255, 0.7);
+    }
+    
+    .settings-group-header:hover {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .settings-group-header h4 {
+        opacity: 0.95;
+    }
+    
+    .settings-group-header .codicon {
+        color: rgba(103, 58, 183, 0.7);
+    }
+}
+
+.description-text {
+    color: var(--vscode-descriptionForeground);
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 8px 0;
+    opacity: 0.85;
+}
+
+.divider {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.15) 50%,
+        transparent 100%
+    );
+    margin: 15px 0;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.6) 50%,
+        transparent 100%
+    );
+    animation: dividerFlow 2.4s ease-in-out infinite;
+    z-index: 1;
+}
+
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.4) 50%,
+        transparent 100%
+    );
+    animation: dividerFlow 2.4s ease-in-out infinite;
+    animation-delay: 0.6s;
+    z-index: 2;
+}
+
+@keyframes dividerFlow {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+.divider:hover {
+    opacity: 1;
+    transform: scaleY(1.2);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .divider {
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(103, 58, 183, 0.08) 50%,
+            transparent 100%
+        );
+    }
+}
+
+.checkbox-description {
+    margin-left: 28px;
+    padding: 8px 12px;
+    color: var(--vscode-descriptionForeground);
+    font-size: 12px;
+    line-height: 1.4;
+    opacity: 0.85;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.checkbox-description::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.25) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1;
+}
+
+.checkbox-description::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.12) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation-delay: 0.3s;
+    z-index: 2;
+}
+
+.checkbox-description:hover {
+    background: rgba(35, 35, 35, 0.1);
+    border-color: rgba(103, 58, 183, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 8px rgba(103, 58, 183, 0.1);
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.checkbox-description:hover::before {
+    opacity: 0.6;
+    transform: translateX(200%);
+}
+
+.checkbox-description:hover::after {
+    opacity: 0.4;
+    transform: translateX(200%);
+}
+
+.checkbox-description a {
+    color: rgba(103, 58, 183, 0.8);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.checkbox-description a:hover {
+    color: rgba(103, 58, 183, 0.9);
+    text-decoration: underline;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .checkbox-description {
+        opacity: 0.9;
+    }
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.25) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1;
+}
+
+.settings-row::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(103, 58, 183, 0.12) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation-delay: 0.3s;
+    z-index: 2;
+}
+
+.settings-row:hover {
+    background: rgba(35, 35, 35, 0.1);
+    border-color: rgba(103, 58, 183, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 8px rgba(103, 58, 183, 0.1);
+    transform: translateY(-1px);
+}
+
+.settings-row:hover::before {
+    opacity: 0.6;
+    transform: translateX(200%);
+}
+
+.settings-row:hover::after {
+    opacity: 0.4;
+    transform: translateX(200%);
+}
+
+.settings-row .codicon {
+    color: rgba(103, 58, 183, 0.8);
+    font-size: 14px;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.settings-row:hover .codicon {
+    color: rgba(103, 58, 183, 0.9);
+    opacity: 1;
+}
+
+.settings-row .settings-label {
+    transition: opacity 0.2s ease;
+}
+
+.settings-row:hover .settings-label {
+    opacity: 1;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .settings-row:hover {
+        background: rgba(103, 58, 183, 0.05);
+    }
+}
+
+.settings-label {
+    color: var(--vscode-foreground);
+    font-size: 13px;
+    flex-shrink: 1;
+    min-width: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .settings-label {
+        opacity: 0.95;
+    }
+    
+    .settings-label:hover {
+        opacity: 1;
+    }
+}
+
+/* Chevron icon */
+.chevron-icon {
+    color: var(--vscode-descriptionForeground);
+    transition: color 0.2s ease, opacity 0.2s ease;
+    opacity: 0.8;
+}
+
+.chevron-icon:hover {
+    color: var(--vscode-foreground);
+    opacity: 1;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .chevron-icon {
+        opacity: 0.9;
+    }
+    
+    .chevron-icon:hover {
+        opacity: 1;
+    }
+}
+
+/* Collapsible section hover effect */
+.collapsible-section {
+    transition: color 0.2s ease;
+}
+
+.collapsible-section:hover .chevron-icon {
+    opacity: 1;
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .collapsible-section:hover .chevron-icon {
+        color: rgba(103, 58, 183, 0.8);
+    }
+}
+
+/* Smooth transition for the header padding */
+.menu-header {
+    transition: padding 0.35s cubic-bezier(0.33, 1, 0.68, 1);
+    background: rgba(30, 30, 30, 0.95);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px;
+}
+
+.menu-header:hover {
+    background: rgba(35, 35, 35, 0.95);
+}
+
+/* Light Theme Overrides */
+@media (prefers-color-scheme: light) {
+    .menu-header {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .menu-header:hover {
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+}

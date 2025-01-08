@@ -8,6 +8,7 @@ import { formatLargeNumber } from "../../utils/format"
 import { formatSize } from "../../utils/size"
 import { vscode } from "../../utils/vscode"
 import Thumbnails from "../common/Thumbnails"
+import "./TaskHeader.css"
 
 interface TaskHeaderProps {
 	task: ClineMessage
@@ -72,26 +73,36 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 	const { height: windowHeight, width: windowWidth } = useWindowSize()
 
 	useEffect(() => {
-		if (isTextExpanded && textContainerRef.current) {
-			const maxHeight = windowHeight * (1 / 2)
-			textContainerRef.current.style.maxHeight = `${maxHeight}px`
+		if (!textContainerRef.current) return;
+		
+		if (isTextExpanded) {
+			// When expanded, set max height to fit content or 50% of window height
+			const contentHeight = textRef.current?.scrollHeight || 0;
+			const maxHeight = Math.min(contentHeight, windowHeight * 0.5);
+			textContainerRef.current.style.maxHeight = `${maxHeight}px`;
+			textContainerRef.current.style.overflowY = 'auto';
+		} else {
+			// When collapsed, set max height to show 3 lines
+			textContainerRef.current.style.maxHeight = '4.5em'; // 3 lines * 1.5 line-height
+			textContainerRef.current.style.overflowY = 'hidden';
 		}
-	}, [isTextExpanded, windowHeight])
+	}, [isTextExpanded, windowHeight, task.text]);
 
 	useEffect(() => {
-		if (textRef.current && textContainerRef.current) {
-			let textContainerHeight = textContainerRef.current.clientHeight
-			if (!textContainerHeight) {
-				textContainerHeight = textContainerRef.current.getBoundingClientRect().height
-			}
-			const isOverflowing = textRef.current.scrollHeight > textContainerHeight
-			// necessary to show see more button again if user resizes window to expand and then back to collapse
-			if (!isOverflowing) {
-				setIsTextExpanded(false)
-			}
-			setShowSeeMore(isOverflowing)
+		if (!textRef.current || !textContainerRef.current) return;
+		
+		// Calculate if text is overflowing in collapsed state
+		const lineHeight = parseFloat(getComputedStyle(textRef.current).lineHeight);
+		const collapsedHeight = lineHeight * 3; // 3 lines
+		const isOverflowing = textRef.current.scrollHeight > collapsedHeight;
+		
+		setShowSeeMore(isOverflowing);
+		
+		// If text is not overflowing, ensure it's not in expanded state
+		if (!isOverflowing) {
+			setIsTextExpanded(false);
 		}
-	}, [task.text, windowWidth])
+	}, [task.text, windowWidth]);
 
 	const isCostAvailable = useMemo(() => {
 		return (
@@ -105,73 +116,21 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 	const shouldShowPromptCacheInfo = doesModelSupportPromptCache && apiConfiguration?.apiProvider !== "openrouter"
 
 	return (
-		<div style={{ padding: "10px 13px 10px 13px" }}>
-			<div
-				style={{
-					backgroundColor: "var(--vscode-badge-background)",
-					color: "var(--vscode-badge-foreground)",
-					borderRadius: "3px",
-					padding: "9px 10px 9px 14px",
-					display: "flex",
-					flexDirection: "column",
-					gap: 6,
-					position: "relative",
-					zIndex: 1,
-				}}>
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-					}}>
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							cursor: "pointer",
-							marginLeft: -2,
-							userSelect: "none",
-							WebkitUserSelect: "none",
-							MozUserSelect: "none",
-							msUserSelect: "none",
-							flexGrow: 1,
-							minWidth: 0, // This allows the div to shrink below its content size
-						}}
+		<div className="task-header-container">
+			<div className="task-header-content">
+				<div className="task-header-top">
+					<div className="task-header-title"
 						onClick={() => setIsTaskExpanded(!isTaskExpanded)}>
-						<div
-							style={{
-								display: "flex",
-								alignItems: "center",
-								flexShrink: 0,
-							}}>
+						<div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
 							<span className={`codicon codicon-chevron-${isTaskExpanded ? "down" : "right"}`}></span>
 						</div>
-						<div
-							style={{
-								marginLeft: 6,
-								whiteSpace: "nowrap",
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-								flexGrow: 1,
-								minWidth: 0, // This allows the div to shrink below its content size
-							}}>
+						<div className="task-header-title-text">
 							<span style={{ fontWeight: "bold" }}>Task{!isTaskExpanded && ":"}</span>
 							{!isTaskExpanded && <span style={{ marginLeft: 4 }}>{highlightMentions(task.text, false)}</span>}
 						</div>
 					</div>
 					{!isTaskExpanded && isCostAvailable && (
-						<div
-							style={{
-								marginLeft: 10,
-								backgroundColor: "color-mix(in srgb, var(--vscode-badge-foreground) 70%, transparent)",
-								color: "var(--vscode-badge-background)",
-								padding: "2px 4px",
-								borderRadius: "500px",
-								fontSize: "11px",
-								fontWeight: 500,
-								display: "inline-block",
-								flexShrink: 0,
-							}}>
+					<div className="task-header-cost-badge">
 							${totalCost?.toFixed(4)}
 						</div>
 					)}
@@ -183,51 +142,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 					<>
 						<div
 							ref={textContainerRef}
-							style={{
-								marginTop: -2,
-								fontSize: "var(--vscode-font-size)",
-								overflowY: isTextExpanded ? "auto" : "hidden",
-								wordBreak: "break-word",
-								overflowWrap: "anywhere",
-								position: "relative",
-							}}>
+							className={`task-text-container ${isTextExpanded ? 'task-text-expanded' : ''}`}
+							style={{ overflowY: isTextExpanded ? "auto" : "hidden" }}>
 							<div
 								ref={textRef}
-								style={{
-									display: "-webkit-box",
-									WebkitLineClamp: isTextExpanded ? "unset" : 3,
-									WebkitBoxOrient: "vertical",
-									overflow: "hidden",
-									whiteSpace: "pre-wrap",
-									wordBreak: "break-word",
-									overflowWrap: "anywhere",
-								}}>
+								className="task-text-content">
 								{highlightMentions(task.text, false)}
 							</div>
 							{!isTextExpanded && showSeeMore && (
-								<div
-									style={{
-										position: "absolute",
-										right: 0,
-										bottom: 0,
-										display: "flex",
-										alignItems: "center",
-									}}>
-									<div
-										style={{
-											width: 30,
-											height: "1.2em",
-											background: "linear-gradient(to right, transparent, var(--vscode-badge-background))",
-										}}
-									/>
-									<div
-										style={{
-											cursor: "pointer",
-											color: "var(--vscode-textLink-foreground)",
-											paddingRight: 0,
-											paddingLeft: 3,
-											backgroundColor: "var(--vscode-badge-background)",
-										}}
+								<div className="see-more-container">
+									<div className="see-more-gradient" />
+									<div className="see-more-text"
 										onClick={() => setIsTextExpanded(!isTextExpanded)}>
 										See more
 									</div>
@@ -235,45 +160,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 							)}
 						</div>
 						{isTextExpanded && showSeeMore && (
-							<div
-								style={{
-									cursor: "pointer",
-									color: "var(--vscode-textLink-foreground)",
-									marginLeft: "auto",
-									textAlign: "right",
-									paddingRight: 2,
-								}}
+								<div className="see-less-text"
 								onClick={() => setIsTextExpanded(!isTextExpanded)}>
 								See less
 							</div>
 						)}
 						{task.images && task.images.length > 0 && <Thumbnails images={task.images} />}
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								gap: "4px",
-							}}>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									alignItems: "center",
-								}}>
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "4px",
-										flexWrap: "wrap",
-									}}>
+						<div className="task-metrics-container">
+							<div className="task-metrics-row">
+								<div className="task-metrics-label">
 									<span style={{ fontWeight: "bold" }}>Tokens:</span>
-									<span
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "3px",
-										}}>
+									<span className="task-metrics-value">
 										<i
 											className="codicon codicon-arrow-up"
 											style={{
@@ -284,12 +181,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										/>
 										{formatLargeNumber(tokensIn || 0)}
 									</span>
-									<span
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "3px",
-										}}>
+									<span className="task-metrics-value">
 										<i
 											className="codicon codicon-arrow-down"
 											style={{
@@ -307,20 +199,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 							</div>
 
 							{shouldShowPromptCacheInfo && (cacheReads !== undefined || cacheWrites !== undefined) && (
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "4px",
-										flexWrap: "wrap",
-									}}>
+								<div className="task-metrics-label">
 									<span style={{ fontWeight: "bold" }}>Cache:</span>
-									<span
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "3px",
-										}}>
+									<span className="task-metrics-value">
 										<i
 											className="codicon codicon-database"
 											style={{
@@ -331,12 +212,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										/>
 										+{formatLargeNumber(cacheWrites || 0)}
 									</span>
-									<span
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "3px",
-										}}>
+									<span className="task-metrics-value">
 										<i
 											className="codicon codicon-arrow-right"
 											style={{
@@ -350,18 +226,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 								</div>
 							)}
 							{isCostAvailable && (
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "space-between",
-										alignItems: "center",
-									}}>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "4px",
-										}}>
+								<div className="task-metrics-row">
+									<div className="task-metrics-label">
 										<span style={{ fontWeight: "bold" }}>API Cost:</span>
 										<span>${totalCost?.toFixed(4)}</span>
 									</div>
@@ -369,14 +235,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 								</div>
 							)}
 							{checkpointTrackerErrorMessage && (
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "8px",
-										color: "var(--vscode-editorWarning-foreground)",
-										fontSize: "11px",
-									}}>
+								<div className="task-error-message">
 									<i className="codicon codicon-warning" />
 									<span>
 										{checkpointTrackerErrorMessage}
@@ -461,16 +320,8 @@ const DeleteButton: React.FC<{
 	<VSCodeButton
 		appearance="icon"
 		onClick={() => vscode.postMessage({ type: "deleteTaskWithId", text: taskId })}
-		style={{ padding: "0px 0px" }}>
-		<div
-			style={{
-				display: "flex",
-				alignItems: "center",
-				gap: "3px",
-				fontSize: "10px",
-				fontWeight: "bold",
-				opacity: 0.6,
-			}}>
+		className="delete-button-container">
+		<div className="delete-button-content">
 			<i className={`codicon codicon-trash`} />
 			{taskSize}
 		</div>

@@ -44,7 +44,7 @@ const ChatRowContainer = styled.div`
 
 	&.loading-api {
 		position: relative;
-		transition: all 0.3s ease;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		
 		&::before {
 			content: '';
@@ -71,6 +71,7 @@ const ChatRowContainer = styled.div`
 			opacity: 0.9;
 			z-index: 0;
 			pointer-events: none;
+			transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		&::after {
@@ -96,20 +97,15 @@ const ChatRowContainer = styled.div`
 			opacity: 0.15;
 			z-index: -1;
 			pointer-events: none;
+			transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 	}
 
 	&.completed-api {
 		position: relative;
 		border-color: var(--vscode-charts-green);
-		animation: none !important;
-		transition: border-color 0.3s ease, box-shadow 0.3s ease;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		
-		&::before,
-		&::after {
-			content: none !important;
-		}
-
 		&::before {
 			content: '';
 			position: absolute;
@@ -117,10 +113,24 @@ const ChatRowContainer = styled.div`
 			padding: 1px;
 			border-radius: 12px;
 			background: var(--vscode-charts-green);
-			opacity: 0.2;
+			opacity: 0;
 			z-index: 0;
 			pointer-events: none;
-			transition: opacity 0.3s ease;
+			transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: -2px;
+			padding: 2px;
+			border-radius: 13px;
+			background: var(--vscode-charts-green);
+			filter: blur(8px);
+			opacity: 0;
+			z-index: -1;
+			pointer-events: none;
+			transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 	}
 
