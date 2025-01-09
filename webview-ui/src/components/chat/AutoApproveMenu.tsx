@@ -50,6 +50,18 @@ const ACTION_METADATA: {
 	},
 ]
 
+// Add severity mapping for descriptions
+const getDescriptionSeverity = (actionId: string): 'critical' | 'warning' | 'info' => {
+	const severityMap: Record<string, 'critical' | 'warning' | 'info'> = {
+		'editFiles': 'critical',
+		'executeCommands': 'critical',
+		'readFiles': 'warning',
+		'useBrowser': 'warning',
+		'useMcp': 'warning'
+	};
+	return severityMap[actionId] || 'info';
+};
+
 const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 	const { autoApprovalSettings } = useExtensionState()
 	const [isExpanded, setIsExpanded] = useState(false)
@@ -127,232 +139,240 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 	return (
 		<div
 			style={{
-				padding: "0 15px 5px",
 				userSelect: "none",
-				borderTop: isExpanded
-					? `1px solid rgba(103, 58, 183, 0.15)`
-					: "none",
+				borderTop: isExpanded ? `1px solid var(--vscode-panel-border)` : "none",
 				overflowY: "auto",
 				...style,
 			}}>
 			<div
 				className="menu-header"
-				style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "12px",
-					cursor: !hasEnabledActions ? "pointer" : "default",
-					position: "relative",
-				}}
-				onMouseEnter={() => {
-					if (!hasEnabledActions) {
-						setIsHoveringCollapsibleSection(true)
+				role="button"
+				tabIndex={0}
+				aria-expanded={isExpanded}
+				aria-controls="auto-approve-content"
+				onMouseEnter={() => setIsHoveringCollapsibleSection(true)}
+				onMouseLeave={() => setIsHoveringCollapsibleSection(false)}
+				onClick={(e) => {
+					// Don't toggle if clicking the checkbox
+					if ((e.target as HTMLElement).closest('vscode-checkbox')) {
+						return;
 					}
+					setIsExpanded((prev) => !prev);
 				}}
-				onMouseLeave={() => {
-					if (!hasEnabledActions) {
-						setIsHoveringCollapsibleSection(false)
-					}
-				}}
-				onClick={() => {
-					if (!hasEnabledActions) {
-						setIsExpanded((prev) => !prev)
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						setIsExpanded((prev) => !prev);
 					}
 				}}>
-				<VSCodeCheckbox
-					style={{
-						pointerEvents: hasEnabledActions ? "auto" : "none",
-					}}
-					checked={hasEnabledActions && autoApprovalSettings.enabled}
-					disabled={!hasEnabledActions}
-					onClick={(e) => {
-						if (!hasEnabledActions) return
-						e.stopPropagation()
-						updateEnabled(!autoApprovalSettings.enabled)
-					}}
-				/>
-				<CollapsibleSection
-					isHovered={isHoveringCollapsibleSection}
-					style={{ cursor: "pointer" }}
-					onClick={() => {
-						if (hasEnabledActions) {
-							setIsExpanded((prev) => !prev)
-						}
-					}}>
-					<span
-						style={{
-							color: "var(--vscode-foreground)",
-							whiteSpace: "nowrap",
-							fontWeight: 500,
-						}}>
-						Auto-approve:
-					</span>
-					<span
-						style={{
-							whiteSpace: "nowrap",
-							overflow: "hidden",
-							textOverflow: "ellipsis",
-						}}>
-						{enabledActions.length === 0 ? "None" : (
-							enabledActions.map((action) => {
-								const severityMap: Record<string, 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast'> = {
-									'Read': 'success',
-									'Edit': 'danger',
-									'Commands': 'warning',
-									'Browser': 'info',
-									'MCP': 'secondary'
-								};
-								const severity = severityMap[action.shortName] || 'secondary';
-								return (
-									<Tag 
-										key={action.id}
-										value={action.shortName} 
-										severity={severity}
-										rounded
-										style={{ marginLeft: '4px' }}
-									/>
-								)
-							})
-						)}
-					</span>
-					<span
-						className={`codicon ${isExpanded ? 'codicon-chevron-down' : 'codicon-chevron-right'} chevron-icon`}
-						style={{
-							flexShrink: 0,
-							marginLeft: "4px",
-							transition: "transform 0.2s ease"
+				<div className="checkbox-container">
+					<VSCodeCheckbox
+						checked={hasEnabledActions && autoApprovalSettings.enabled}
+						disabled={!hasEnabledActions}
+						onClick={(e) => {
+							e.stopPropagation();
+							if (!hasEnabledActions) return;
+							updateEnabled(!autoApprovalSettings.enabled);
 						}}
 					/>
-				</CollapsibleSection>
+					<span className="label-text">Auto-approve:</span>
+				</div>
+				<div className="tag-container">
+					{enabledActions.length === 0 ? (
+						<span style={{ color: 'var(--vscode-descriptionForeground)', fontSize: '12px' }}>None</span>
+					) : (
+						enabledActions.map((action) => {
+							const severityMap: Record<string, 'success' | 'info' | 'warning' | 'danger' | 'secondary'> = {
+								'Read': 'success',
+								'Edit': 'danger',
+								'Commands': 'warning',
+								'Browser': 'info',
+								'MCP': 'info'
+							};
+							const severity = severityMap[action.shortName] || 'secondary';
+							return (
+								<Tag 
+									key={action.id}
+									value={action.shortName} 
+									severity={severity}
+									rounded
+								/>
+							)
+						})
+					)}
+				</div>
+				<span
+					className={`codicon ${isExpanded ? 'codicon-chevron-down' : 'codicon-chevron-right'}`}
+					style={{
+						marginLeft: "auto",
+						fontSize: "12px",
+						opacity: 0.8,
+						transition: "transform 0.2s ease"
+					}}
+					aria-hidden="true"
+				/>
 			</div>
-			<div className={`menu-content ${isExpanded ? 'expanded' : ''}`}>
+			<div 
+				id="auto-approve-content"
+				className={`menu-content ${isExpanded ? 'expanded' : ''}`}
+				role="region"
+				aria-label="Auto-approve settings">
 				<div className="menu-content-inner">
 					<div className="description-text">
-						Auto-approve allows Cline to perform the following actions without asking for permission. Please use with
-						caution and only enable if you understand the risks.
+						<div className="checkbox-description">
+							Auto-approve allows Cline to perform the following actions without asking for permission. Please use with
+							caution and only enable if you understand the risks.
+						</div>
 					</div>
 
 					{/* Permissions Section */}
-					<div className="auto-approve-section">
-						<div className="settings-section">
-							<div className="section-header">
-								<span className="codicon codicon-files" />
+					<div className="auto-approve-section" role="region" aria-label="Permission Settings">
+						<div className="settings-section" role="group" aria-labelledby="file-operations-header">
+							<div className="section-header" id="file-operations-header">
+								<span className="codicon codicon-files" aria-hidden="true" />
 								<h3>File Operations</h3>
+								<span className="section-badge" aria-label="2 options available">2</span>
 							</div>
-							{ACTION_METADATA.slice(0, 2).map((action) => (
-								<div key={action.id} style={{ margin: "8px 0" }}>
-									<VSCodeCheckbox
-										checked={autoApprovalSettings.actions[action.id]}
-										onChange={(e) => {
-											const checked = (e.target as HTMLInputElement).checked
-											updateAction(action.id, checked)
-										}}>
-										{action.label}
-									</VSCodeCheckbox>
-									<div className="checkbox-description">
-										{action.description}
+							<div className="settings-options-group">
+								{ACTION_METADATA.slice(0, 2).map((action) => (
+									<div key={action.id} className="settings-option">
+										<VSCodeCheckbox
+											checked={autoApprovalSettings.actions[action.id]}
+											onChange={(e) => {
+												const checked = (e.target as HTMLInputElement).checked
+												updateAction(action.id, checked)
+											}}
+											aria-describedby={`${action.id}-description`}>
+											{action.label}
+										</VSCodeCheckbox>
+										<div 
+											id={`${action.id}-description`} 
+											className={`checkbox-description severity-${getDescriptionSeverity(action.id)}`}>
+											{action.description}
+										</div>
 									</div>
-								</div>
-							))}
+								))}
+							</div>
 						</div>
 
-						<div className="settings-section">
-							<div className="section-header">
-								<span className="codicon codicon-terminal" />
+						<div className="settings-section" role="group" aria-labelledby="system-access-header">
+							<div className="section-header" id="system-access-header">
+								<span className="codicon codicon-terminal" aria-hidden="true" />
 								<h3>System Access</h3>
+								<span className="section-badge" aria-label="2 options available">2</span>
 							</div>
-							{ACTION_METADATA.slice(2, 4).map((action) => (
-								<div key={action.id} style={{ margin: "8px 0" }}>
-									<VSCodeCheckbox
-										checked={autoApprovalSettings.actions[action.id]}
-										onChange={(e) => {
-											const checked = (e.target as HTMLInputElement).checked
-											updateAction(action.id, checked)
-										}}>
-										{action.label}
-									</VSCodeCheckbox>
-									<div className="checkbox-description">
-										{action.description}
+							<div className="settings-options-group">
+								{ACTION_METADATA.slice(2, 4).map((action) => (
+									<div key={action.id} className="settings-option">
+										<VSCodeCheckbox
+											checked={autoApprovalSettings.actions[action.id]}
+											onChange={(e) => {
+												const checked = (e.target as HTMLInputElement).checked
+												updateAction(action.id, checked)
+											}}
+											aria-describedby={`${action.id}-description`}>
+											{action.label}
+										</VSCodeCheckbox>
+										<div 
+											id={`${action.id}-description`} 
+											className={`checkbox-description severity-${getDescriptionSeverity(action.id)}`}>
+											{action.description}
+										</div>
 									</div>
-								</div>
-							))}
+								))}
+							</div>
 						</div>
 
-						<div className="settings-section">
-							<div className="section-header">
-								<span className="codicon codicon-settings-gear" />
+						<div className="settings-section" role="group" aria-labelledby="advanced-features-header">
+							<div className="section-header" id="advanced-features-header">
+								<span className="codicon codicon-settings-gear" aria-hidden="true" />
 								<h3>Advanced Features</h3>
+								<span className="section-badge" aria-label="1 option available">1</span>
 							</div>
-							{ACTION_METADATA.slice(4).map((action) => (
-								<div key={action.id} style={{ margin: "8px 0" }}>
-									<VSCodeCheckbox
-										checked={autoApprovalSettings.actions[action.id]}
-										onChange={(e) => {
-											const checked = (e.target as HTMLInputElement).checked
-											updateAction(action.id, checked)
-										}}>
-										{action.label}
-									</VSCodeCheckbox>
-									<div className="checkbox-description">
-										{action.description}
+							<div className="settings-options-group">
+								{ACTION_METADATA.slice(4).map((action) => (
+									<div key={action.id} className="settings-option">
+										<VSCodeCheckbox
+											checked={autoApprovalSettings.actions[action.id]}
+											onChange={(e) => {
+												const checked = (e.target as HTMLInputElement).checked
+												updateAction(action.id, checked)
+											}}
+											aria-describedby={`${action.id}-description`}>
+											{action.label}
+										</VSCodeCheckbox>
+										<div 
+											id={`${action.id}-description`} 
+											className={`checkbox-description severity-${getDescriptionSeverity(action.id)}`}>
+											{action.description}
+										</div>
 									</div>
-								</div>
-							))}
+								))}
+							</div>
 						</div>
 					</div>
 
-					<div className="divider" />
+					{/* <div className="divider" role="separator" aria-hidden="true" /> */}
 
 					{/* Limits Section */}
-					<div className="settings-section">
-						<div className="section-header">
-							<span className="codicon codicon-graph" />
+					<div className="settings-section" role="group" aria-labelledby="limits-header">
+						<div className="section-header" id="limits-header">
+							<span className="codicon codicon-graph" aria-hidden="true" />
 							<h3>Limits</h3>
 						</div>
-						<div className="settings-row">
-							<span className="settings-label">Max Requests:</span>
-							<VSCodeTextField
-								value={autoApprovalSettings.maxRequests.toString()}
-								onInput={(e) => {
-									const input = e.target as HTMLInputElement
-									input.value = input.value.replace(/[^0-9]/g, "")
-									const value = parseInt(input.value)
-									if (!isNaN(value) && value > 0) {
-										updateMaxRequests(value)
-									}
-								}}
-								onKeyDown={(e) => {
-									if (!/^\d$/.test(e.key) && !["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-										e.preventDefault()
-									}
-								}}
-								style={{ flex: 1 }}
-							/>
-						</div>
-						<div className="description-text">
-							Cline will automatically make this many API requests before asking for approval to proceed with the task.
+						<div className="settings-options-group">
+							<div className="settings-row">
+								<label htmlFor="max-requests" className="settings-label">Max Requests:</label>
+								<VSCodeTextField
+									id="max-requests"
+									value={autoApprovalSettings.maxRequests.toString()}
+									onInput={(e) => {
+										const input = e.target as HTMLInputElement
+										input.value = input.value.replace(/[^0-9]/g, "")
+										const value = parseInt(input.value)
+										if (!isNaN(value) && value > 0) {
+											updateMaxRequests(value)
+										}
+									}}
+									onKeyDown={(e) => {
+										if (!/^\d$/.test(e.key) && !["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+											e.preventDefault()
+										}
+									}}
+									style={{ flex: 1 }}
+									aria-describedby="max-requests-description"
+								/>
+							</div>
+							<div id="max-requests-description" className="checkbox-description severity-info">
+								Cline will automatically make this many API requests before asking for approval to proceed with the task.
+							</div>
 						</div>
 					</div>
 
-					<div className="divider" />
+					{/* <div className="divider" role="separator" aria-hidden="true" /> */}
 
 					{/* Notifications Section */}
-					<div className="settings-section">
-						<div className="section-header">
-							<span className="codicon codicon-bell" />
+					<div className="settings-section" role="group" aria-labelledby="notifications-header">
+						<div className="section-header" id="notifications-header">
+							<span className="codicon codicon-bell" aria-hidden="true" />
 							<h3>Notifications</h3>
 						</div>
-						<div style={{ margin: "8px 0" }}>
-							<VSCodeCheckbox
-								checked={autoApprovalSettings.enableNotifications}
-								onChange={(e) => {
-									const checked = (e.target as HTMLInputElement).checked
-									updateNotifications(checked)
-								}}>
-								Enable Notifications
-							</VSCodeCheckbox>
-							<div className="checkbox-description">
-								Receive system notifications when Cline requires approval to proceed or when a task is completed.
+						<div className="settings-options-group">
+							<div className="settings-option">
+								<VSCodeCheckbox
+									checked={autoApprovalSettings.enableNotifications}
+									onChange={(e) => {
+										const checked = (e.target as HTMLInputElement).checked
+										updateNotifications(checked)
+									}}
+									aria-describedby="notifications-description">
+									Enable Notifications
+								</VSCodeCheckbox>
+								<div 
+									id="notifications-description" 
+									className={`checkbox-description severity-${getDescriptionSeverity('enableNotifications')}`}>
+									Receive system notifications when Cline requires approval to proceed or when a task is completed.
+								</div>
 							</div>
 						</div>
 					</div>

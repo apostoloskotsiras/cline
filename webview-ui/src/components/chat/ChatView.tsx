@@ -41,10 +41,7 @@ const Wrapper = styled.div`
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(145deg, 
-		rgba(15, 15, 15, 0.98) 0%,
-		rgba(10, 10, 10, 0.98) 100%
-	);
+	background: rgba(17, 25, 40, 0.75);
 	color: var(--vscode-editor-foreground);
 	font-family: var(--vscode-font-family);
 	font-size: var(--vscode-font-size);
@@ -52,7 +49,7 @@ const Wrapper = styled.div`
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	backdrop-filter: blur(12px);
+	backdrop-filter: blur(16px);
 
 	&::before {
 		content: '';
@@ -63,8 +60,8 @@ const Wrapper = styled.div`
 		bottom: 0;
 		background: radial-gradient(
 			circle at 50% 0%,
-			rgba(103, 58, 183, 0.08) 0%,
-			rgba(81, 45, 168, 0.05) 25%,
+			rgba(103, 58, 183, 0.12) 0%,
+			rgba(81, 45, 168, 0.08) 25%,
 			transparent 50%
 		);
 		pointer-events: none;
@@ -75,15 +72,16 @@ const Container = styled.div`
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	background: rgba(20, 20, 20, 0.85);
-	backdrop-filter: blur(16px);
+	background: rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(10px);
 	position: relative;
-	border-radius: 12px;
+	border-radius: 24px;
 	margin: 12px;
 	box-shadow: 
-		0 4px 6px rgba(0, 0, 0, 0.1),
-		0 1px 3px rgba(0, 0, 0, 0.08);
-	border: 1px solid rgba(255, 255, 255, 0.08);
+		0 8px 32px rgba(0, 0, 0, 0.1),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	overflow: hidden;
 
 	&::before {
 		content: '';
@@ -95,7 +93,7 @@ const Container = styled.div`
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
-			rgba(103, 58, 183, 0.1) 50%,
+			rgba(255, 255, 255, 0.1) 50%,
 			transparent 100%
 		);
 	}
@@ -949,39 +947,39 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 const StyledButton = styled.button<{ $primary?: boolean }>`
 	background: ${({ $primary }) => 
 		$primary 
-			? 'linear-gradient(145deg, rgba(103, 58, 183, 0.9) 0%, rgba(81, 45, 168, 0.85) 100%)'
-			: 'linear-gradient(145deg, rgba(30, 30, 30, 0.95) 0%, rgba(25, 25, 25, 0.95) 100%)'};
-	backdrop-filter: blur(16px);
-	border-radius: 8px;
+			? 'linear-gradient(145deg, rgba(103, 58, 183, 0.25) 0%, rgba(81, 45, 168, 0.35) 100%)'
+			: 'linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)'};
+	backdrop-filter: blur(8px);
+	border-radius: 12px;
 	border: 1px solid ${({ $primary }) => 
 		$primary 
-			? 'rgba(103, 58, 183, 0.2)' 
-			: 'rgba(255, 255, 255, 0.08)'};
+			? 'rgba(103, 58, 183, 0.3)' 
+			: 'rgba(255, 255, 255, 0.1)'};
 	color: ${({ $primary }) => 
 		$primary 
 			? '#fff' 
 			: 'rgba(255, 255, 255, 0.9)'};
-	padding: 8px 16px;
+	padding: 10px 20px;
 	font-size: 14px;
 	font-weight: 500;
 	cursor: pointer;
-	transition: all 0.2s ease;
+	transition: all 0.3s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
-	min-width: 100px;
+	gap: 8px;
+	min-width: 120px;
+	letter-spacing: 0.3px;
 
 	&:hover {
 		background: ${({ $primary }) => 
 			$primary 
-				? 'linear-gradient(145deg, rgba(103, 58, 183, 1) 0%, rgba(81, 45, 168, 0.95) 100%)'
-				: 'linear-gradient(145deg, rgba(35, 35, 35, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%)'};
-		transform: translateY(-1px);
-		box-shadow: ${({ $primary }) => 
-			$primary 
-				? '0 6px 20px rgba(103, 58, 183, 0.25)'
-				: '0 6px 12px rgba(0, 0, 0, 0.15)'};
+				? 'linear-gradient(145deg, rgba(103, 58, 183, 0.35) 0%, rgba(81, 45, 168, 0.45) 100%)'
+				: 'linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)'};
+		transform: translateY(-2px);
+		box-shadow: 
+			0 8px 20px rgba(0, 0, 0, 0.2),
+			inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 	}
 
 	&:disabled {
@@ -997,19 +995,23 @@ const StyledButton = styled.button<{ $primary?: boolean }>`
 `;
 
 const ScrollToBottomButton = styled.div`
-	background: rgba(30, 30, 30, 0.95);
+	background: rgba(255, 255, 255, 0.05);
 	backdrop-filter: blur(8px);
-	border-radius: 12px;
-	padding: 8px;
+	border-radius: 16px;
+	padding: 10px;
 	cursor: pointer;
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-	transition: all 0.2s ease;
+	box-shadow: 
+		0 8px 32px rgba(0, 0, 0, 0.1),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+	transition: all 0.3s ease;
 
 	&:hover {
-		background: rgba(40, 40, 40, 0.95);
+		background: rgba(255, 255, 255, 0.08);
 		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+		box-shadow: 
+			0 12px 32px rgba(0, 0, 0, 0.15),
+			inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 	}
 
 	.codicon {
