@@ -1,4 +1,6 @@
-@keyframes contextMenuFadeIn {
+import styled, { keyframes } from 'styled-components';
+
+const contextMenuFadeIn = keyframes`
   from {
     opacity: 0;
     transform: translateY(-8px);
@@ -7,18 +9,18 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
+`;
 
-.context-menu-wrapper {
+export const Wrapper = styled.div`
   position: absolute;
   bottom: calc(100% + 25px);
   left: 15px;
   right: 15px;
   overflow: hidden;
   perspective: 1000px;
-}
+`;
 
-.context-menu-container {
+export const Container = styled.div`
   background: linear-gradient(145deg, 
     rgba(30, 30, 30, 0.98) 0%,
     rgba(25, 25, 25, 0.98) 100%
@@ -33,23 +35,23 @@
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
-  animation: contextMenuFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  animation: ${contextMenuFadeIn} 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-.context-menu-container::-webkit-scrollbar {
-  width: 4px;
-}
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
 
-.context-menu-container::-webkit-scrollbar-track {
-  background: transparent;
-}
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-.context-menu-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+`;
 
-.context-menu-item {
+export const MenuItem = styled.div<{ isSelected?: boolean; isSelectable?: boolean }>`
   padding: 10px 16px;
   display: flex;
   align-items: center;
@@ -58,66 +60,65 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   color: var(--vscode-foreground);
   opacity: 0.8;
-}
+  cursor: ${props => props.isSelectable ? 'pointer' : 'default'};
 
-.context-menu-item:last-child {
-  border-bottom: none;
-}
+  &:last-child {
+    border-bottom: none;
+  }
 
-.context-menu-item.selectable {
-  cursor: pointer;
-}
+  ${props => props.isSelectable && `
+    &:hover, &${props.isSelected && ',' || ''} {
+      background: rgba(255, 255, 255, 0.05);
+      opacity: 1;
+    }
+  `}
+`;
 
-.context-menu-item.selectable:hover,
-.context-menu-item.selected {
-  background: rgba(255, 255, 255, 0.05);
-  opacity: 1;
-}
-
-.context-menu-item .item-content {
+export const ItemContent = styled.div`
   display: flex;
   align-items: center;
   flex: 1;
   min-width: 0;
   gap: 12px;
-}
 
-.context-menu-item i.codicon {
-  font-size: 16px;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
+  i.codicon {
+    font-size: 16px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
 
-.context-menu-item i.action-icon {
-  font-size: 14px;
-  margin-left: 12px;
-  opacity: 0.5;
-}
+  i.action-icon {
+    font-size: 14px;
+    margin-left: 12px;
+    opacity: 0.5;
+  }
+`;
 
-.menu-text {
+export const MenuText = styled.span`
   font-size: 13px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
+`;
 
-.menu-path {
+export const MenuPath = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 13px;
-}
+`;
 
-.path-separator,
-.path-dot {
+export const PathSeparator = styled.span`
   opacity: 0.5;
   flex-shrink: 0;
-}
+`;
 
-.path-text {
+export const PathDot = styled(PathSeparator)``;
+
+export const PathText = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   direction: rtl;
   text-align: left;
-} 
+`; 

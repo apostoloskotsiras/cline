@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react"
 import { ContextMenuOptionType, ContextMenuQueryItem, getContextMenuOptions } from "../../utils/context-mentions"
 import { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
-import "./ContextMenu.css"
+import * as S from "./ContextMenu.styles"
 
 interface ContextMenuProps {
 	onSelect: (type: ContextMenuOptionType, value?: string) => void
@@ -48,11 +48,11 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 	const renderOptionContent = (option: ContextMenuQueryItem) => {
 		switch (option.type) {
 			case ContextMenuOptionType.Problems:
-				return <span className="menu-text">Problems</span>
+				return <S.MenuText>Problems</S.MenuText>
 			case ContextMenuOptionType.URL:
-				return <span className="menu-text">Paste URL to fetch contents</span>
+				return <S.MenuText>Paste URL to fetch contents</S.MenuText>
 			case ContextMenuOptionType.NoResults:
-				return <span className="menu-text">No results found</span>
+				return <S.MenuText>No results found</S.MenuText>
 			case ContextMenuOptionType.File:
 			case ContextMenuOptionType.Folder:
 				if (option.value) {
@@ -60,23 +60,16 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 						<div>
 							<span>/</span>
 							{option.value?.startsWith("/.") && <span>.</span>}
-							<span
-								style={{
-									whiteSpace: "nowrap",
-									overflow: "hidden",
-									textOverflow: "ellipsis",
-									direction: "rtl",
-									textAlign: "left",
-								}}>
+							<S.PathText>
 								{removeLeadingNonAlphanumeric(option.value || "") + "\u200E"}
-							</span>
+							</S.PathText>
 						</div>
 					)
 				} else {
 					return (
-						<span className="menu-text">
+						<S.MenuText>
 							Add {option.type === ContextMenuOptionType.File ? "File" : "Folder"}
-						</span>
+						</S.MenuText>
 					)
 				}
 		}
@@ -104,29 +97,28 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 	}
 
 	return (
-		<div className="context-menu-wrapper" onMouseDown={onMouseDown}>
-			<div ref={menuRef} className="context-menu-container">
+		<S.Wrapper onMouseDown={onMouseDown}>
+			<S.Container ref={menuRef}>
 				{filteredOptions.map((option, index) => (
-					<div
+					<S.MenuItem
 						key={`${option.type}-${option.value || index}`}
-						className={`context-menu-item ${index === selectedIndex ? "selected" : ""} ${
-							isOptionSelectable(option) ? "selectable" : ""
-						}`}
+						isSelected={index === selectedIndex}
+						isSelectable={isOptionSelectable(option)}
 						onClick={() => isOptionSelectable(option) && onSelect(option.type, option.value)}
 						onMouseEnter={() => isOptionSelectable(option) && setSelectedIndex(index)}>
-						<div className="item-content">
+						<S.ItemContent>
 							<i className={`codicon codicon-${getIconForOption(option)}`} />
 							{renderOptionContent(option)}
-						</div>
+						</S.ItemContent>
 						{(option.type === ContextMenuOptionType.File || option.type === ContextMenuOptionType.Folder) &&
 							!option.value && <i className="codicon codicon-chevron-right action-icon" />}
 						{(option.type === ContextMenuOptionType.Problems ||
 							((option.type === ContextMenuOptionType.File || option.type === ContextMenuOptionType.Folder) &&
 								option.value)) && <i className="codicon codicon-add action-icon" />}
-					</div>
+					</S.MenuItem>
 				))}
-			</div>
-		</div>
+			</S.Container>
+		</S.Wrapper>
 	)
 }
 

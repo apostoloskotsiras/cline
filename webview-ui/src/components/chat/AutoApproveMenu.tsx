@@ -1,11 +1,10 @@
 import { VSCodeCheckbox, VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
 import { useCallback, useState } from "react"
 import { Tag } from "../common/Tag"
-import styled from "styled-components"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { AutoApprovalSettings } from "../../../../src/shared/AutoApprovalSettings"
 import { vscode } from "../../utils/vscode"
-import "./AutoApproveMenu.css"
+import * as S from "./AutoApproveMenu.styles"
 
 interface AutoApproveMenuProps {
 	style?: React.CSSProperties
@@ -67,8 +66,6 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 	const [isExpanded, setIsExpanded] = useState(false)
 	const [isHoveringCollapsibleSection, setIsHoveringCollapsibleSection] = useState(false)
 
-	// Careful not to use partials to mutate since spread operator only does shallow copy
-
 	const enabledActions = ACTION_METADATA.filter((action) => autoApprovalSettings.actions[action.id])
 	const enabledActionsList = enabledActions.map((action) => action.shortName).join(", ")
 	const hasEnabledActions = enabledActions.length > 0
@@ -88,13 +85,11 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 
 	const updateAction = useCallback(
 		(actionId: keyof AutoApprovalSettings["actions"], value: boolean) => {
-			// Calculate what the new actions state will be
 			const newActions = {
 				...autoApprovalSettings.actions,
 				[actionId]: value,
 			}
 
-			// Check if this will result in any enabled actions
 			const willHaveEnabledActions = Object.values(newActions).some(Boolean)
 
 			vscode.postMessage({
@@ -102,7 +97,6 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 				autoApprovalSettings: {
 					...autoApprovalSettings,
 					actions: newActions,
-					// If no actions will be enabled, ensure the main toggle is off
 					enabled: willHaveEnabledActions ? autoApprovalSettings.enabled : false,
 				},
 			})
@@ -144,8 +138,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 				overflowY: "auto",
 				...style,
 			}}>
-			<div
-				className="menu-header"
+			<S.MenuHeader
 				role="button"
 				tabIndex={0}
 				aria-expanded={isExpanded}
@@ -153,7 +146,6 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 				onMouseEnter={() => setIsHoveringCollapsibleSection(true)}
 				onMouseLeave={() => setIsHoveringCollapsibleSection(false)}
 				onClick={(e) => {
-					// Don't toggle if clicking the checkbox
 					if ((e.target as HTMLElement).closest('vscode-checkbox')) {
 						return;
 					}
@@ -165,7 +157,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 						setIsExpanded((prev) => !prev);
 					}
 				}}>
-				<div className="checkbox-container">
+				<S.CheckboxContainer>
 					<VSCodeCheckbox
 						checked={hasEnabledActions && autoApprovalSettings.enabled}
 						disabled={!hasEnabledActions}
@@ -175,9 +167,9 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 							updateEnabled(!autoApprovalSettings.enabled);
 						}}
 					/>
-					<span className="label-text">Auto-approve:</span>
-				</div>
-				<div className="tag-container">
+					<S.LabelText>Auto-approve:</S.LabelText>
+				</S.CheckboxContainer>
+				<S.TagContainer>
 					{enabledActions.length === 0 ? (
 						<span style={{ color: 'var(--vscode-descriptionForeground)', fontSize: '12px' }}>None</span>
 					) : (
@@ -200,7 +192,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 							)
 						})
 					)}
-				</div>
+				</S.TagContainer>
 				<span
 					className={`codicon ${isExpanded ? 'codicon-chevron-down' : 'codicon-chevron-right'}`}
 					style={{
@@ -211,31 +203,31 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 					}}
 					aria-hidden="true"
 				/>
-			</div>
-			<div 
+			</S.MenuHeader>
+			<S.MenuContent 
 				id="auto-approve-content"
-				className={`menu-content ${isExpanded ? 'expanded' : ''}`}
+				$expanded={isExpanded}
 				role="region"
 				aria-label="Auto-approve settings">
-				<div className="menu-content-inner">
-					<div className="description-text">
-						<div className="checkbox-description">
+				<S.MenuContentInner>
+					<S.DescriptionText>
+						<S.CheckboxDescription>
 							Auto-approve allows Cline to perform the following actions without asking for permission. Please use with
 							caution and only enable if you understand the risks.
-						</div>
-					</div>
+						</S.CheckboxDescription>
+					</S.DescriptionText>
 
 					{/* Permissions Section */}
-					<div className="auto-approve-section" role="region" aria-label="Permission Settings">
-						<div className="settings-section" role="group" aria-labelledby="file-operations-header">
-							<div className="section-header" id="file-operations-header">
+					<S.AutoApproveSection role="region" aria-label="Permission Settings">
+						<S.SettingsSection role="group" aria-labelledby="file-operations-header">
+							<S.SectionHeader id="file-operations-header">
 								<span className="codicon codicon-files" aria-hidden="true" />
 								<h3>File Operations</h3>
-								<span className="section-badge" aria-label="2 options available">2</span>
-							</div>
-							<div className="settings-options-group">
+								<S.SectionBadge aria-label="2 options available">2</S.SectionBadge>
+							</S.SectionHeader>
+							<S.SettingsOptionsGroup>
 								{ACTION_METADATA.slice(0, 2).map((action) => (
-									<div key={action.id} className="settings-option">
+									<S.SettingsOption key={action.id}>
 										<VSCodeCheckbox
 											checked={autoApprovalSettings.actions[action.id]}
 											onChange={(e) => {
@@ -245,25 +237,25 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 											aria-describedby={`${action.id}-description`}>
 											{action.label}
 										</VSCodeCheckbox>
-										<div 
+										<S.CheckboxDescription 
 											id={`${action.id}-description`} 
-											className={`checkbox-description severity-${getDescriptionSeverity(action.id)}`}>
+											$severity={getDescriptionSeverity(action.id)}>
 											{action.description}
-										</div>
-									</div>
+										</S.CheckboxDescription>
+									</S.SettingsOption>
 								))}
-							</div>
-						</div>
+							</S.SettingsOptionsGroup>
+						</S.SettingsSection>
 
-						<div className="settings-section" role="group" aria-labelledby="system-access-header">
-							<div className="section-header" id="system-access-header">
+						<S.SettingsSection role="group" aria-labelledby="system-access-header">
+							<S.SectionHeader id="system-access-header">
 								<span className="codicon codicon-terminal" aria-hidden="true" />
 								<h3>System Access</h3>
-								<span className="section-badge" aria-label="2 options available">2</span>
-							</div>
-							<div className="settings-options-group">
+								<S.SectionBadge aria-label="2 options available">2</S.SectionBadge>
+							</S.SectionHeader>
+							<S.SettingsOptionsGroup>
 								{ACTION_METADATA.slice(2, 4).map((action) => (
-									<div key={action.id} className="settings-option">
+									<S.SettingsOption key={action.id}>
 										<VSCodeCheckbox
 											checked={autoApprovalSettings.actions[action.id]}
 											onChange={(e) => {
@@ -273,25 +265,25 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 											aria-describedby={`${action.id}-description`}>
 											{action.label}
 										</VSCodeCheckbox>
-										<div 
+										<S.CheckboxDescription 
 											id={`${action.id}-description`} 
-											className={`checkbox-description severity-${getDescriptionSeverity(action.id)}`}>
+											$severity={getDescriptionSeverity(action.id)}>
 											{action.description}
-										</div>
-									</div>
+										</S.CheckboxDescription>
+									</S.SettingsOption>
 								))}
-							</div>
-						</div>
+							</S.SettingsOptionsGroup>
+						</S.SettingsSection>
 
-						<div className="settings-section" role="group" aria-labelledby="advanced-features-header">
-							<div className="section-header" id="advanced-features-header">
+						<S.SettingsSection role="group" aria-labelledby="advanced-features-header">
+							<S.SectionHeader id="advanced-features-header">
 								<span className="codicon codicon-settings-gear" aria-hidden="true" />
 								<h3>Advanced Features</h3>
-								<span className="section-badge" aria-label="1 option available">1</span>
-							</div>
-							<div className="settings-options-group">
+								<S.SectionBadge aria-label="1 option available">1</S.SectionBadge>
+							</S.SectionHeader>
+							<S.SettingsOptionsGroup>
 								{ACTION_METADATA.slice(4).map((action) => (
-									<div key={action.id} className="settings-option">
+									<S.SettingsOption key={action.id}>
 										<VSCodeCheckbox
 											checked={autoApprovalSettings.actions[action.id]}
 											onChange={(e) => {
@@ -301,28 +293,26 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 											aria-describedby={`${action.id}-description`}>
 											{action.label}
 										</VSCodeCheckbox>
-										<div 
+										<S.CheckboxDescription 
 											id={`${action.id}-description`} 
-											className={`checkbox-description severity-${getDescriptionSeverity(action.id)}`}>
+											$severity={getDescriptionSeverity(action.id)}>
 											{action.description}
-										</div>
-									</div>
+										</S.CheckboxDescription>
+									</S.SettingsOption>
 								))}
-							</div>
-						</div>
-					</div>
-
-					{/* <div className="divider" role="separator" aria-hidden="true" /> */}
+							</S.SettingsOptionsGroup>
+						</S.SettingsSection>
+					</S.AutoApproveSection>
 
 					{/* Limits Section */}
-					<div className="settings-section" role="group" aria-labelledby="limits-header">
-						<div className="section-header" id="limits-header">
+					<S.SettingsSection role="group" aria-labelledby="limits-header">
+						<S.SectionHeader id="limits-header">
 							<span className="codicon codicon-graph" aria-hidden="true" />
 							<h3>Limits</h3>
-						</div>
-						<div className="settings-options-group">
-							<div className="settings-row">
-								<label htmlFor="max-requests" className="settings-label">Max Requests:</label>
+						</S.SectionHeader>
+						<S.SettingsOptionsGroup>
+							<S.SettingsRow>
+								<S.SettingsLabel htmlFor="max-requests">Max Requests:</S.SettingsLabel>
 								<VSCodeTextField
 									id="max-requests"
 									value={autoApprovalSettings.maxRequests.toString()}
@@ -342,23 +332,23 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 									style={{ flex: 1 }}
 									aria-describedby="max-requests-description"
 								/>
-							</div>
-							<div id="max-requests-description" className="checkbox-description severity-info">
+							</S.SettingsRow>
+							<S.CheckboxDescription 
+								id="max-requests-description" 
+								$severity="info">
 								Cline will automatically make this many API requests before asking for approval to proceed with the task.
-							</div>
-						</div>
-					</div>
-
-					{/* <div className="divider" role="separator" aria-hidden="true" /> */}
+							</S.CheckboxDescription>
+						</S.SettingsOptionsGroup>
+					</S.SettingsSection>
 
 					{/* Notifications Section */}
-					<div className="settings-section" role="group" aria-labelledby="notifications-header">
-						<div className="section-header" id="notifications-header">
+					<S.SettingsSection role="group" aria-labelledby="notifications-header">
+						<S.SectionHeader id="notifications-header">
 							<span className="codicon codicon-bell" aria-hidden="true" />
 							<h3>Notifications</h3>
-						</div>
-						<div className="settings-options-group">
-							<div className="settings-option">
+						</S.SectionHeader>
+						<S.SettingsOptionsGroup>
+							<S.SettingsOption>
 								<VSCodeCheckbox
 									checked={autoApprovalSettings.enableNotifications}
 									onChange={(e) => {
@@ -368,31 +358,18 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 									aria-describedby="notifications-description">
 									Enable Notifications
 								</VSCodeCheckbox>
-								<div 
+								<S.CheckboxDescription 
 									id="notifications-description" 
-									className={`checkbox-description severity-${getDescriptionSeverity('enableNotifications')}`}>
+									$severity={getDescriptionSeverity('enableNotifications')}>
 									Receive system notifications when Cline requires approval to proceed or when a task is completed.
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+								</S.CheckboxDescription>
+							</S.SettingsOption>
+						</S.SettingsOptionsGroup>
+					</S.SettingsSection>
+				</S.MenuContentInner>
+			</S.MenuContent>
 		</div>
 	)
 }
-
-const CollapsibleSection = styled.div<{ isHovered?: boolean }>`
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	color: ${(props) => (props.isHovered ? "var(--vscode-foreground)" : "var(--vscode-descriptionForeground)")};
-	flex: 1;
-	min-width: 0;
-
-	&:hover {
-		color: var(--vscode-foreground);
-	}
-`
 
 export default AutoApproveMenu

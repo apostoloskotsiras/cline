@@ -2,7 +2,7 @@ import { VSCodeBadge, VSCodeProgressRing } from "@vscode/webview-ui-toolkit/reac
 import deepEqual from "fast-deep-equal"
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEvent, useSize } from "react-use"
-import "./ChatRow.css"
+import * as S from "./chatrow.styles"
 import {
 	ClineApiReqInfo,
 	ClineAskUseMcpServer,
@@ -15,7 +15,7 @@ import { COMMAND_OUTPUT_STRING, COMMAND_REQ_APP_STRING } from "../../../../src/s
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { findMatchingResourceOrTemplate } from "../../utils/mcp"
 import { vscode } from "../../utils/vscode"
-import { CheckpointControls, CheckpointOverlay } from "../common/CheckpointControls"
+import { CheckpointOverlay } from "../common/CheckpointControls"
 import CodeAccordian, { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
 import CodeBlock, { CODE_BLOCK_BG_COLOR } from "../common/CodeBlock"
 import MarkdownBlock from "../common/MarkdownBlock"
@@ -49,9 +49,8 @@ const ChatRow = memo(
 			!apiInfo?.cost && 
 			!apiInfo?.cancelReason &&
 			!apiInfo?.streamingFailedMessage; // Added check for streaming failure
-		const isCompletedApi = message.say === "api_req_started" && 
-			(apiInfo?.cost || apiInfo?.cancelReason || apiInfo?.streamingFailedMessage); // Consider all completion states
-
+const isCompletedApi = message.say === "api_req_started" && 
+	(apiInfo?.cost || apiInfo?.cancelReason || apiInfo?.streamingFailedMessage); // Consider all completion states
 		let shouldShowCheckpoints =
 			message.lastCheckpointHash != null &&
 			(message.say === "tool" ||
@@ -67,20 +66,26 @@ const ChatRow = memo(
 			shouldShowCheckpoints =
 				lastModifiedMessage?.ask === "resume_completed_task" || lastModifiedMessage?.ask === "resume_task"
 		}
-
-		const containerClass = `${
-			message.type === "ask" ? "question-container" : "user-message-container"
-		} chat-row-container ${
-			isLoadingApi ? "loading-api" : 
-			(isCompletedApi && !apiInfo?.cancelReason && !apiInfo?.streamingFailedMessage) ? "completed-api" : ""
-		}`;
-
+		
 		const [chatrow, { height }] = useSize(
-			<div className={containerClass}>
+			message.type === "ask" ? (
+			  <S.QuestionContainer>
 				<ChatRowContent {...props} />
 				{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
-			</div>,
-		)
+			  </S.QuestionContainer>
+			) : (
+			  <S.UserMessageContainer
+				className={`
+				  ${isLoadingApi ? 'loading-api' : ''}
+				  ${isCompletedApi && !apiInfo?.cancelReason && !apiInfo?.streamingFailedMessage ? 'completed-api' : ''}
+				`}
+			  >
+				<ChatRowContent {...props} />
+				{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
+			  </S.UserMessageContainer>
+			)
+		  )
+		
 
 		useEffect(() => {
 			// used for partials, command output, etc.
@@ -293,13 +298,10 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 				]
 			case "followup":
 				return [
-					<span
-						className="codicon codicon-question"
-						style={{
-							color: normalColor,
-							marginBottom: "-1.5px",
-						}}></span>,
-					<span style={{ color: normalColor, fontWeight: "bold" }}>Cline has a question:</span>,
+					<S.QuestionIconContainer key="icon">
+						<span className="codicon codicon-question" />
+					</S.QuestionIconContainer>,
+					<S.QuestionTitle key="title">Cline has a question:</S.QuestionTitle>,
 				]
 			default:
 				return [null, null]
@@ -636,18 +638,10 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					)}
 				</div>
 				{requestsApproval && (
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: 10,
-							padding: 8,
-							fontSize: "12px",
-							color: "var(--vscode-editorWarning-foreground)",
-						}}>
-						<i className="codicon codicon-warning"></i>
+					<S.CommandApprovalWarning>
+						<i className="codicon codicon-warning" />
 						<span>The model has determined this command requires explicit approval.</span>
-					</div>
+					</S.CommandApprovalWarning>
 				)}
 			</>
 		)
@@ -846,20 +840,20 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					)
 				case "user_feedback":
 					return (
-						<div
-						style={{
-							backgroundColor: "transparent",
-							color: "rgba(255, 214, 102, 0.95)",
-							borderRadius: "3px",
-							padding: "9px",
-							whiteSpace: "pre-line",
-							overflowWrap: "break-word",
-						}}>
-							<span style={{ display: "block" }}>{highlightMentions(message.text)}</span>
-							{message.images && message.images.length > 0 && (
-								<Thumbnails images={message.images} style={{ marginTop: "8px" }} />
-							)}
-						</div>
+						<>
+							<S.UserMessageHeader>
+								<S.UserIconContainer>
+									<span className="codicon codicon-account" />
+								</S.UserIconContainer>
+								<S.UserMessageTitle>User's Message</S.UserMessageTitle>
+							</S.UserMessageHeader>
+							<S.UserMessageContent>
+								<span style={{ display: "block" }}>{highlightMentions(message.text)}</span>
+								{message.images && message.images.length > 0 && (
+									<Thumbnails images={message.images} style={{ marginTop: "12px" }} />
+								)}
+							</S.UserMessageContent>
+						</>
 					)
 				case "user_feedback_diff":
 					const tool = JSON.parse(message.text || "{}") as ClineSayTool
@@ -953,9 +947,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 								<Markdown markdown={text} />
 							</div>
 							{message.partial !== true && hasChanges && (
-								<div style={{ paddingTop: 17 }}>
-                  <button
-                    className="see-new-changes-btn"
+                  <S.SeeNewChangesBtn
                     disabled={seeNewChangesDisabled}
                     onClick={() => {
                       setSeeNewChangesDisabled(true)
@@ -967,8 +959,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
                   >
                     <i className="codicon codicon-new-file" />
                     See new changes
-                  </button>
-								</div>
+                  </S.SeeNewChangesBtn>
 							)}
 						</>
 					)
@@ -1152,9 +1143,9 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 									{title}
 								</div>
 							)}
-							<div style={{ paddingTop: 10 }}>
+							<S.QuestionContent>
 								<Markdown markdown={message.text} />
-							</div>
+							</S.QuestionContent>
 						</>
 					)
 				default:

@@ -6,9 +6,9 @@ import { vscode } from "../../utils/vscode"
 import CodeBlock, { CODE_BLOCK_BG_COLOR } from "../common/CodeBlock"
 import { ChatRowContent, ProgressIndicator } from "./ChatRow"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
-import styled from "styled-components"
-import { CheckpointControls, CheckpointOverlay } from "../common/CheckpointControls"
+import { CheckpointOverlay } from "../common/CheckpointControls"
 import { findLast } from "../../../../src/shared/array"
+import * as S from "./BrowserSessionRow.styles"
 
 interface BrowserSessionRowProps {
 	messages: ClineMessage[]
@@ -26,7 +26,6 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 	const [consoleLogsExpanded, setConsoleLogsExpanded] = useState(false)
 
 	const isLastApiReqInterrupted = useMemo(() => {
-		// Check if last api_req_started is cancelled
 		const lastApiReqStarted = [...messages].reverse().find((m) => m.say === "api_req_started")
 		if (lastApiReqStarted?.text != null) {
 			const info = JSON.parse(lastApiReqStarted.text)
@@ -42,10 +41,9 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 	}, [messages, lastModifiedMessage, isLast])
 
 	const isBrowsing = useMemo(() => {
-		return isLast && messages.some((m) => m.say === "browser_action_result") && !isLastApiReqInterrupted // after user approves, browser_action_result with "" is sent to indicate that the session has started
+		return isLast && messages.some((m) => m.say === "browser_action_result") && !isLastApiReqInterrupted
 	}, [isLast, messages, isLastApiReqInterrupted])
 
-	// Organize messages into pages with current state and next action
 	const pages = useMemo(() => {
 		const result: {
 			currentState: {
@@ -53,10 +51,10 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				screenshot?: string
 				mousePosition?: string
 				consoleLogs?: string
-				messages: ClineMessage[] // messages up to and including the result
+				messages: ClineMessage[]
 			}
 			nextAction?: {
-				messages: ClineMessage[] // messages leading to next result
+				messages: ClineMessage[]
 			}
 		}[] = []
 
@@ -65,18 +63,14 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 
 		messages.forEach((message) => {
 			if (message.ask === "browser_action_launch" || message.say === "browser_action_launch") {
-				// Start first page
 				currentStateMessages = [message]
 			} else if (message.say === "browser_action_result") {
 				if (message.text === "") {
-					// first browser_action_result is an empty string that signals that session has started
 					return
 				}
-				// Complete current state
 				currentStateMessages.push(message)
 				const resultData = JSON.parse(message.text || "{}") as BrowserActionResult
 
-				// Add page with current state and previous next actions
 				result.push({
 					currentState: {
 						url: resultData.currentUrl,
@@ -93,19 +87,15 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 							: undefined,
 				})
 
-				// Reset for next page
 				currentStateMessages = []
 				nextActionMessages = []
 			} else if (message.say === "api_req_started" || message.say === "text" || message.say === "browser_action") {
-				// These messages lead to the next result, so they should always go in nextActionMessages
 				nextActionMessages.push(message)
 			} else {
-				// Any other message types
 				currentStateMessages.push(message)
 			}
 		})
 
-		// Add incomplete page if exists
 		if (currentStateMessages.length > 0 || nextActionMessages.length > 0) {
 			result.push({
 				currentState: {
@@ -123,13 +113,11 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 		return result
 	}, [messages])
 
-	// Auto-advance to latest page
 	const [currentPageIndex, setCurrentPageIndex] = useState(0)
 	useEffect(() => {
 		setCurrentPageIndex(pages.length - 1)
 	}, [pages.length])
 
-	// Get initial URL from launch message
 	const initialUrl = useMemo(() => {
 		const launchMessage = messages.find((m) => m.ask === "browser_action_launch" || m.say === "browser_action_launch")
 		return launchMessage?.text || ""
@@ -145,7 +133,6 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 		return lastCheckpointMessage?.ts
 	}, [messages])
 
-	// Find the latest available URL and screenshot
 	const latestState = useMemo(() => {
 		for (let i = pages.length - 1; i >= 0; i--) {
 			const page = pages[i]
@@ -169,7 +156,6 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 	const currentPage = pages[currentPageIndex]
 	const isLastPage = currentPageIndex === pages.length - 1
 
-	// Use latest state if we're on the last page and don't have a state yet
 	const displayState = isLastPage
 		? {
 				url: currentPage?.currentState.url || latestState.url || initialUrl,
@@ -204,11 +190,9 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 		}
 	}, [actionHeight, maxActionHeight])
 
-	// Track latest click coordinate
 	const latestClickPosition = useMemo(() => {
 		if (!isBrowsing) return undefined
 
-		// Look through current page's next actions for the latest browser_action
 		const actions = currentPage?.nextAction?.messages || []
 		for (let i = actions.length - 1; i >= 0; i--) {
 			const message = actions[i]
@@ -222,7 +206,6 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 		return undefined
 	}, [isBrowsing, currentPage?.nextAction?.messages])
 
-	// Use latest click position while browsing, otherwise use display state
 	const mousePosition = isBrowsing ? latestClickPosition || displayState.mousePosition : displayState.mousePosition
 
 	let shouldShowCheckpoints = true
@@ -231,85 +214,30 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 	}
 
 	const [browserSessionRow, { height }] = useSize(
-		<BrowserSessionRowContainer style={{ marginBottom: -10 }}>
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "10px",
-					marginBottom: "10px",
-				}}>
+		<S.Container style={{ marginBottom: -10 }}>
+			<S.HeaderContainer>
 				{isBrowsing ? (
 					<ProgressIndicator />
 				) : (
-					<span
-						className={`codicon codicon-inspect`}
-						style={{
-							color: "var(--vscode-foreground)",
-							marginBottom: "-1.5px",
-						}}></span>
+					<span className="codicon codicon-inspect" style={{ color: "var(--vscode-foreground)", marginBottom: "-1.5px" }} />
 				)}
 				<span style={{ fontWeight: "bold" }}>
 					<>{isAutoApproved ? "Cline is using the browser:" : "Cline wants to use the browser:"}</>
 				</span>
-			</div>
-			<div
-				style={{
-					borderRadius: 3,
-					border: "1px solid var(--vscode-editorGroup-border)",
-					overflow: "hidden",
-					backgroundColor: CODE_BLOCK_BG_COLOR,
-					marginBottom: 10,
-				}}>
-				{/* URL Bar */}
-				<div
-					style={{
-						margin: "5px auto",
-						width: "calc(100% - 10px)",
-						boxSizing: "border-box", // includes padding in width calculation
-						backgroundColor: "var(--vscode-input-background)",
-						border: "1px solid var(--vscode-input-border)",
-						borderRadius: "4px",
-						padding: "3px 5px",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						color: displayState.url ? "var(--vscode-input-foreground)" : "var(--vscode-descriptionForeground)",
-						fontSize: "12px",
-					}}>
-					<div
-						style={{
-							textOverflow: "ellipsis",
-							overflow: "hidden",
-							whiteSpace: "nowrap",
-							width: "100%",
-							textAlign: "center",
-						}}>
-						{displayState.url || "http"}
-					</div>
-				</div>
+			</S.HeaderContainer>
 
-				{/* Screenshot Area */}
-				<div
-					style={{
-						width: "100%",
-						paddingBottom: "calc(200%/3)",
-						position: "relative",
-						backgroundColor: "var(--vscode-input-background)",
-					}}>
+			<S.BrowserContainer>
+				<S.URLBar>
+					<S.URLText $empty={!displayState.url}>
+						{displayState.url || "http"}
+					</S.URLText>
+				</S.URLBar>
+
+				<S.ScreenshotArea>
 					{displayState.screenshot ? (
-						<img
+						<S.Screenshot
 							src={displayState.screenshot}
 							alt="Browser screenshot"
-							style={{
-								position: "absolute",
-								top: 0,
-								left: 0,
-								width: "100%",
-								height: "100%",
-								objectFit: "contain",
-								cursor: "pointer",
-							}}
 							onClick={() =>
 								vscode.postMessage({
 									type: "openImage",
@@ -318,75 +246,40 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 							}
 						/>
 					) : (
-						<div
-							style={{
-								position: "absolute",
-								top: "50%",
-								left: "50%",
-								transform: "translate(-50%, -50%)",
-							}}>
-							<span
-								className="codicon codicon-globe"
-								style={{
-									fontSize: "80px",
-									color: "var(--vscode-descriptionForeground)",
-								}}
-							/>
-						</div>
+						<S.EmptyScreenshot>
+							<span className="codicon codicon-globe" />
+						</S.EmptyScreenshot>
 					)}
 					{displayState.mousePosition && (
-						<BrowserCursor
-							style={{
-								position: "absolute",
-								top: `${(parseInt(mousePosition.split(",")[1]) / 600) * 100}%`,
-								left: `${(parseInt(mousePosition.split(",")[0]) / 900) * 100}%`,
-								transition: "top 0.3s ease-out, left 0.3s ease-out",
-							}}
+						<S.BrowserCursor
+							src={cursorBase64}
+							$x={(parseInt(mousePosition.split(",")[0]) / 900) * 100}
+							$y={(parseInt(mousePosition.split(",")[1]) / 600) * 100}
 						/>
 					)}
-				</div>
+				</S.ScreenshotArea>
 
 				<div style={{ width: "100%" }}>
-					<div
-						onClick={() => {
-							setConsoleLogsExpanded(!consoleLogsExpanded)
-						}}
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "4px",
-							width: "100%",
-							justifyContent: "flex-start",
-							cursor: "pointer",
-							padding: `9px 8px ${consoleLogsExpanded ? 0 : 8}px 8px`,
-						}}>
-						<span className={`codicon codicon-chevron-${consoleLogsExpanded ? "down" : "right"}`}></span>
-						<span style={{ fontSize: "0.8em" }}>Console Logs</span>
-					</div>
+					<S.ConsoleHeader
+						$expanded={consoleLogsExpanded}
+						onClick={() => setConsoleLogsExpanded(!consoleLogsExpanded)}>
+						<span className={`codicon codicon-chevron-${consoleLogsExpanded ? "down" : "right"}`} />
+						<S.ConsoleTitle>Console Logs</S.ConsoleTitle>
+					</S.ConsoleHeader>
 					{consoleLogsExpanded && (
 						<CodeBlock source={`${"```"}shell\n${displayState.consoleLogs || "(No new logs)"}\n${"```"}`} />
 					)}
 				</div>
-			</div>
+			</S.BrowserContainer>
 
-			{/* Action content with min height */}
 			<div style={{ minHeight: maxActionHeight }}>{actionContent}</div>
 
-			{/* Pagination moved to bottom */}
 			{pages.length > 1 && (
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-						padding: "8px 0px",
-						marginTop: "15px",
-						borderTop: "1px solid var(--vscode-editorGroup-border)",
-					}}>
+				<S.PaginationContainer>
 					<div>
 						Step {currentPageIndex + 1} of {pages.length}
 					</div>
-					<div style={{ display: "flex", gap: "4px" }}>
+					<S.PaginationButtons>
 						<VSCodeButton
 							disabled={currentPageIndex === 0 || isBrowsing}
 							onClick={() => setCurrentPageIndex((i) => i - 1)}>
@@ -397,15 +290,14 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 							onClick={() => setCurrentPageIndex((i) => i + 1)}>
 							Next
 						</VSCodeButton>
-					</div>
-				</div>
+					</S.PaginationButtons>
+				</S.PaginationContainer>
 			)}
 
 			{shouldShowCheckpoints && <CheckpointOverlay messageTs={lastCheckpointMessageTs} />}
-		</BrowserSessionRowContainer>,
+		</S.Container>,
 	)
 
-	// Height change effect
 	useEffect(() => {
 		const isInitialRender = prevHeightRef.current === 0
 		if (isLast && height !== 0 && height !== Infinity && height !== prevHeightRef.current) {
@@ -550,31 +442,7 @@ const BrowserActionBox = ({ action, coordinate, text }: { action: BrowserAction;
 	)
 }
 
-const BrowserCursor: React.FC<{ style?: React.CSSProperties }> = ({ style }) => {
-	// (can't use svgs in vsc extensions)
-	const cursorBase64 =
-		"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAFaADAAQAAAABAAAAGAAAAADwi9a/AAADGElEQVQ4EZ2VbUiTURTH772be/PxZdsz3cZwC4RVaB8SAjMpxQwSWZbQG/TFkN7oW1Df+h6IRV9C+hCpKUSIZUXOfGM5tAKViijFFEyfZ7Ol29S1Pbdzl8Uw9+aBu91zzv3/nt17zt2DEZjBYOAkKrtFMXIghAWM8U2vMN/FctsxGRMpM7NbEEYNMM2CYUSInlJx3OpawO9i+XSNQYkmk2uFb9njzkcfVSr1p/GJiQKMULVaw2WuBv296UKRxWJR6wxGCmM1EAhSNppv33GBH9qI32cPTAtss9lUm6EM3N7R+RbigT+5/CeosFCZKpjEW+iorS1pb30wDUXzQfHqtD/9L3ieZ2ee1OJCmbL8QHnRs+4uj0wmW4QzrpCwvJ8zGg3JqAmhTLynuLiwv8/5KyND8Q3cEkUEDWu15oJE4KRQJt5hs1rcriGNRqP+DK4dyyWXXm/aFQ+cEpSJ8/LyDGPuEZNOmzsOroUSOqzXG/dtBU4ZysTZYKNut91sNo2Cq6cE9enz86s2g9OCMrFSqVC5hgb32u072W3jKMU90Hb1seC0oUwsB+t92bO/rKx0EFGkgFCnjjc1/gVvC8rE0L+4o63t4InjxwbAJQjTe3qD8QrLkXA4DC24fWtuajp06cLFYSBIFKGmXKPRRmAnME9sPt+yLwIWb9WN69fKoTneQz4Dh2mpPNkvfeV0jjecb9wNAkwIEVQq5VJOds4Kb+DXoAsiVquVwI1Dougpij6UyGYx+5cKroeDEFibm5lWRRMbH1+npmYrq6qhwlQHIbajZEf1fElcqGGFpGg9HMuKzpfBjhytCTMgkJ56RX09zy/ysENTBElmjIgJnmNChJqohDVQqpEfwkILE8v/o0GAnV9F1eEvofVQCbiTBEXOIPQh5PGgefDZeAcjrpGZjULBr/m3tZOnz7oEQWRAQZLjWlEU/XEJWySiILgRc5Cz1DkcAyuBFcnpfF0JiXWKpcolQXizhS5hKAqFpr0MVbgbuxJ6+5xX+P4wNpbqPPrugZfbmIbLmgQR3Aw8QSi66hUXulOFbF73GxqjE5BNXWNeAAAAAElFTkSuQmCC"
-
-	return (
-		<img
-			src={cursorBase64}
-			style={{
-				width: "17px",
-				height: "22px",
-				...style,
-			}}
-			alt="cursor"
-		/>
-	)
-}
-
-const BrowserSessionRowContainer = styled.div`
-	padding: 10px 6px 10px 15px;
-	position: relative;
-
-	&:hover ${CheckpointControls} {
-		opacity: 1;
-	}
-`
+const cursorBase64 =
+	"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAFaADAAQAAAABAAAAGAAAAADwi9a/AAADGElEQVQ4EZ2VbUiTURTH772be/PxZdsz3cZwC4RVaB8SAjMpxQwSWZbQG/TFkN7oW1Df+h6IRV9C+hCpKUSIZUXOfGM5tAKViijFFEyfZ7Ol29S1Pbdzl8Uw9+aBu91zzv3/nt17zt2DEZjBYOAkKrtFMXIghAWM8U2vMN/FctsxGRMpM7NbEEYNMM2CYUSInlJx3OpawO9i+XSNQYkmk2uFb9njzkcfVSr1p/GJiQKMULVaw2WuBv296UKRxWJR6wxGCmM1EAhSNppv33GBH9qI32cPTAtss9lUm6EM3N7R+RbigT+5/CeosFCZKpjEW+iorS1pb30wDUXzQfHqtD/9L3ieZ2ee1OJCmbL8QHnRs+4uj0wmW4QzrpCwvJ8zGg3JqAmhTLynuLiwv8/5KyND8Q3cEkUEDWu15oJE4KRQJt5hs1rcriGNRqP+DK4dyyWXXm/aFQ+cEpSJ8/LyDGPuEZNOmzsOroUSOqzXG/dtBU4ZysTZYKNut91sNo2Cq6cE9enz86s2g9OCMrFSqVC5hgb32u072W3jKMU90Hb1seC0oUwsB+t92bO/rKx0EFGkgFCnjjc1/gVvC8rE0L+4o63t4InjxwbAJQjTe3qD8QrLkXA4DC24fWtuajp06cLFYSBIFKGmXKPRRmAnME9sPt+yLwIWb9WN69fKoTneQz4Dh2mpPNkvfeV0jjecb9wNAkwIEVQq5VJOds4Kb+DXoAsiVquVwI1Dougpij6UyGYx+5cKroeDEFibm5lWRRMbH1+npmYrq6qhwlQHIbajZEf1fElcqGGFpGg9HMuKzpfBjhytCTMgkJ56RX09zy/ysENTBElmjIgJnmNChJqohDVQqpEfwkILE8v/o0GAnV9F1eEvofVQCbiTBEXOIPQh5PGgefDZeAcjrpGZjULBr/m3tZOnz7oEQWRAQZLjWlEU/XEJWySiILgRc5Cz1DkcAyuBFcnpfF0JiXWKpcolQXizhS5hKAqFpr0MVbgbuxJ6+5xX+P4wNpbqPPrugZfbmIbLmgQR3Aw8QSi66hUXulOFbF73GxqjE5BNXWNeAAAAAElFTkSuQmCC"
 
 export default BrowserSessionRow

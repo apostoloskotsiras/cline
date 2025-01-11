@@ -1,6 +1,10 @@
-.task-header-container {
+import styled from 'styled-components';
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
+
+export const Container = styled.div`
   padding: 12px 16px;
-  background: linear-gradient(145deg, 
+  background: linear-gradient(
+    145deg, 
     rgba(30, 30, 30, 0.95) 0%,
     rgba(25, 25, 25, 0.95) 100%
   );
@@ -11,33 +15,34 @@
     0 4px 6px rgba(0, 0, 0, 0.1),
     0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
-.task-header-container:hover {
-  background: linear-gradient(145deg, 
-    rgba(35, 35, 35, 0.98) 0%,
-    rgba(30, 30, 30, 0.98) 100%
-  );
-  transform: translateY(-1px);
-  box-shadow: 
-    0 6px 12px rgba(0, 0, 0, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  &:hover {
+    background: linear-gradient(
+      145deg, 
+      rgba(35, 35, 35, 0.98) 0%,
+      rgba(30, 30, 30, 0.98) 100%
+    );
+    transform: translateY(-1px);
+    box-shadow: 
+      0 6px 12px rgba(0, 0, 0, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+`;
 
-.task-header-content {
+export const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
+`;
 
-.task-header-top {
+export const TopSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-}
+`;
 
-.task-header-title {
+export const Title = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
@@ -48,22 +53,22 @@
   padding: 4px;
   border-radius: 4px;
   transition: background-color 0.2s ease;
-}
 
-.task-header-title:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+`;
 
-.task-header-title-text {
+export const TitleText = styled.div`
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--vscode-foreground);
-}
+`;
 
-.task-header-cost-badge {
+export const CostBadge = styled.div`
   background-color: rgba(103, 58, 183, 0.15);
   color: var(--vscode-foreground);
   padding: 2px 8px;
@@ -72,29 +77,26 @@
   font-weight: 500;
   margin-left: 8px;
   flex-shrink: 0;
-}
+`;
 
-.task-text-container {
+export const TextContainer = styled.div<{ isExpanded: boolean }>`
   margin-top: 4px;
   font-size: 13px;
   line-height: 1.5;
   color: var(--vscode-foreground);
   position: relative;
   transition: all 0.2s ease;
-}
+  overflow-y: ${props => props.isExpanded ? 'auto' : 'hidden'};
+`;
 
-.task-text-content {
+export const TextContent = styled.div`
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: anywhere;
   line-height: 1.5;
-}
+`;
 
-.task-text-expanded {
-  -webkit-line-clamp: unset;
-}
-
-.see-more-container {
+export const SeeMoreContainer = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
@@ -108,45 +110,36 @@
   padding-left: 24px;
   backdrop-filter: blur(4px);
   border-radius: 0 0 8px 0;
-}
+`;
 
-.see-more-text {
+const sharedButtonStyles = `
   cursor: pointer;
   color: var(--vscode-textLink-foreground);
   font-size: 12px;
   font-weight: 500;
   padding: 4px 12px;
-  background-color: rgba(30, 30, 30, 0.95);
   border-radius: 4px;
   transition: all 0.2s ease;
+  background-color: rgba(30, 30, 30, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
 
-.see-more-text:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+`;
 
-.see-less-text {
-  cursor: pointer;
-  color: var(--vscode-textLink-foreground);
-  font-size: 12px;
-  font-weight: 500;
+export const SeeMoreText = styled.div`
+  ${sharedButtonStyles}
+`;
+
+export const SeeLessText = styled.div`
+  ${sharedButtonStyles}
   text-align: right;
-  padding: 4px 12px;
   margin-left: auto;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  background-color: rgba(30, 30, 30, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
+`;
 
-.see-less-text:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.task-metrics-container {
+export const MetricsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -154,32 +147,32 @@
   background-color: rgba(255, 255, 255, 0.03);
   border-radius: 8px;
   margin-top: 8px;
-}
+`;
 
-.task-metrics-row {
+export const MetricsRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-}
+`;
 
-.task-metrics-label {
+export const MetricsLabel = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
   color: var(--vscode-foreground);
-}
+`;
 
-.task-metrics-value {
+export const MetricsValue = styled.span`
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 12px;
   color: var(--vscode-foreground);
-}
+`;
 
-.task-error-message {
+export const ErrorMessage = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -189,14 +182,14 @@
   background-color: rgba(255, 0, 0, 0.05);
   border-radius: 4px;
   margin-top: 8px;
-}
+`;
 
-.delete-button-container {
+export const StyledDeleteButton = styled(VSCodeButton)`
   padding: 0;
   margin-left: 8px;
-}
+`;
 
-.delete-button-content {
+export const DeleteButtonContent = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
@@ -205,8 +198,8 @@
   color: var(--vscode-foreground);
   opacity: 0.7;
   transition: opacity 0.2s ease;
-}
 
-.delete-button-content:hover {
-  opacity: 1;
-} 
+  &:hover {
+    opacity: 1;
+  }
+`; 

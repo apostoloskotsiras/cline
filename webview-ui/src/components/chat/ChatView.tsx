@@ -3,7 +3,6 @@ import debounce from "debounce"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useDeepCompareEffect, useEvent, useMount } from "react-use"
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
-import styled from "styled-components"
 import {
 	ClineAsk,
 	ClineMessage,
@@ -25,6 +24,7 @@ import ChatRow from "./ChatRow"
 import ChatTextArea from "./ChatTextArea"
 import TaskHeader from "./TaskHeader"
 import AutoApproveMenu from "./AutoApproveMenu"
+import * as S from "./ChatView.styles"
 
 interface ChatViewProps {
 	isHidden: boolean
@@ -35,79 +35,11 @@ interface ChatViewProps {
 
 export const MAX_IMAGES_PER_MESSAGE = 20 // Anthropic limits to 20 images
 
-const Wrapper = styled.div`
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: linear-gradient(145deg, 
-		rgba(15, 15, 15, 0.98) 0%,
-		rgba(10, 10, 10, 0.98) 100%
-	);
-	color: var(--vscode-editor-foreground);
-	font-family: var(--vscode-font-family);
-	font-size: var(--vscode-font-size);
-	line-height: 1.5;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	backdrop-filter: blur(12px);
-
-	&::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: radial-gradient(
-			circle at 50% 0%,
-			rgba(103, 58, 183, 0.08) 0%,
-			rgba(81, 45, 168, 0.05) 25%,
-			transparent 50%
-		);
-		pointer-events: none;
-	}
-`
-
-const Container = styled.div`
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	background: rgba(20, 20, 20, 0.85);
-	backdrop-filter: blur(16px);
-	position: relative;
-	border-radius: 12px;
-	margin: 12px;
-	box-shadow: 
-		0 4px 6px rgba(0, 0, 0, 0.1),
-		0 1px 3px rgba(0, 0, 0, 0.08);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-
-	&::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 1px;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			rgba(103, 58, 183, 0.1) 50%,
-			transparent 100%
-		);
-	}
-`
-
 const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryView }: ChatViewProps) => {
 	const { version, clineMessages: messages, taskHistory, apiConfiguration } = useExtensionState()
 
-	//const task = messages.length > 0 ? (messages[0].say === "task" ? messages[0] : undefined) : undefined) : undefined
-	const task = useMemo(() => messages.at(0), [messages]) // leaving this less safe version here since if the first message is not a task, then the extension is in a bad state and needs to be debugged (see Cline.abort)
+	const task = useMemo(() => messages.at(0), [messages])
 	const modifiedMessages = useMemo(() => combineApiRequests(combineCommandSequences(messages.slice(1))), [messages])
-	// has to be after api_req_finished are all reduced into api_req_started messages
 	const apiMetrics = useMemo(() => getApiMetrics(modifiedMessages), [modifiedMessages])
 
 	const [inputValue, setInputValue] = useState("")
@@ -115,7 +47,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	const [textAreaDisabled, setTextAreaDisabled] = useState(false)
 	const [selectedImages, setSelectedImages] = useState<string[]>([])
 
-	// we need to hold on to the ask because useEffect > lastMessage will always let us know when an ask comes in and handle it, but by the time handleMessage is called, the last message might not be the ask anymore (it could be a say that followed)
 	const [clineAsk, setClineAsk] = useState<ClineAsk | undefined>(undefined)
 	const [enableButtons, setEnableButtons] = useState<boolean>(false)
 	const [primaryButtonText, setPrimaryButtonText] = useState<string | undefined>("Approve")
@@ -128,14 +59,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	const [showScrollToBottom, setShowScrollToBottom] = useState(false)
 	const [isAtBottom, setIsAtBottom] = useState(false)
 
-	// UI layout depends on the last 2 messages
-	// (since it relies on the content of these messages, we are deep comparing. i.e. the button state after hitting button sets enableButtons to false, and this effect otherwise would have to true again even if messages didn't change
 	const lastMessage = useMemo(() => messages.at(-1), [messages])
 	const secondLastMessage = useMemo(() => messages.at(-2), [messages])
+
 	useDeepCompareEffect(() => {
-		// if last message is an ask, show user ask UI
-		// if user finished a task, then start a new task with a new conversation history since in this moment that the extension is waiting for user response, the user could close the extension and the conversation history would be lost.
-		// basically as long as a task is active, the conversation history will be persisted
 		if (lastMessage) {
 			switch (lastMessage.type) {
 				case "ask":
@@ -166,8 +93,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							setTextAreaDisabled(isPartial)
 							setClineAsk("followup")
 							setEnableButtons(isPartial)
-							// setPrimaryButtonText(undefined)
-							// setSecondaryButtonText(undefined)
 							break
 						case "tool":
 							setTextAreaDisabled(isPartial)
@@ -215,7 +140,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							setSecondaryButtonText("Reject")
 							break
 						case "completion_result":
-							// extension waiting for feedback. but we can just present a new task button
 							setTextAreaDisabled(isPartial)
 							setClineAsk("completion_result")
 							setEnableButtons(!isPartial)
@@ -228,7 +152,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							setEnableButtons(true)
 							setPrimaryButtonText("Resume Task")
 							setSecondaryButtonText(undefined)
-							setDidClickCancel(false) // special case where we reset the cancel button state
+							setDidClickCancel(false)
 							break
 						case "resume_completed_task":
 							setTextAreaDisabled(false)
@@ -241,11 +165,9 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					}
 					break
 				case "say":
-					// don't want to reset since there could be a "say" after an "ask" while ask is waiting for response
 					switch (lastMessage.say) {
 						case "api_req_started":
 							if (secondLastMessage?.ask === "command_output") {
-								// if the last ask is a command_output, and we receive an api_req_started, then that means the command has finished and we don't need input from the user anymore (in every other case, the user has to interact with input field or buttons to continue, which does the following automatically)
 								setInputValue("")
 								setTextAreaDisabled(true)
 								setSelectedImages([])
@@ -271,13 +193,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					}
 					break
 			}
-		} else {
-			// this would get called after sending the first message, so we have to watch messages.length instead
-			// No messages, so user has to submit a task
-			// setTextAreaDisabled(false)
-			// setClineAsk(undefined)
-			// setPrimaryButtonText(undefined)
-			// setSecondaryButtonText(undefined)
 		}
 	}, [lastMessage, secondLastMessage])
 
@@ -296,7 +211,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	}, [task?.ts])
 
 	const isStreaming = useMemo(() => {
-		const isLastAsk = !!modifiedMessages.at(-1)?.ask // checking clineAsk isn't enough since messages effect may be called again for a tool for example, set clineAsk to its value, and if the next message is not an ask then it doesn't reset. This is likely due to how much more often we're updating messages as compared to before, and should be resolved with optimizations as it's likely a rendering bug. but as a final guard for now, the cancel button will show if the last message is not an ask
+		const isLastAsk = !!modifiedMessages.at(-1)?.ask
 		const isToolCurrentlyAsking = isLastAsk && clineAsk !== undefined && enableButtons && primaryButtonText !== undefined
 		if (isToolCurrentlyAsking) {
 			return false
@@ -310,7 +225,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 			if (lastApiReqStarted && lastApiReqStarted.text != null && lastApiReqStarted.say === "api_req_started") {
 				const cost = JSON.parse(lastApiReqStarted.text).cost
 				if (cost === undefined) {
-					// api request has not finished yet
 					return true
 				}
 			}
@@ -330,10 +244,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						case "followup":
 						case "tool":
 						case "browser_action_launch":
-						case "command": // user can provide feedback to a tool or command use
-						case "command_output": // user can send input to command stdin
+						case "command":
+						case "command_output":
 						case "use_mcp_server":
-						case "completion_result": // if this happens then the user has feedback for the completion result
+						case "completion_result":
 						case "resume_task":
 						case "resume_completed_task":
 						case "mistake_limit_reached":
@@ -344,7 +258,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 								images,
 							})
 							break
-						// there is no other case that a textfield should be enabled
 					}
 				}
 				setInputValue("")
@@ -352,8 +265,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				setSelectedImages([])
 				setClineAsk(undefined)
 				setEnableButtons(false)
-				// setPrimaryButtonText(undefined)
-				// setSecondaryButtonText(undefined)
 				disableAutoScrollRef.current = false
 			}
 		},
@@ -364,9 +275,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		vscode.postMessage({ type: "clearTask" })
 	}, [])
 
-	/*
-	This logic depends on the useEffect[messages] above to set clineAsk, after which buttons are shown and we then send an askResponse to the extension.
-	*/
 	const handlePrimaryButtonClick = useCallback(() => {
 		switch (clineAsk) {
 			case "api_req_failed":
@@ -385,16 +293,13 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				break
 			case "completion_result":
 			case "resume_completed_task":
-				// extension waiting for feedback. but we can just present a new task button
 				startNewTask()
 				break
 		}
 		setTextAreaDisabled(true)
 		setClineAsk(undefined)
 		setEnableButtons(false)
-		// setPrimaryButtonText(undefined)
-		// setSecondaryButtonText(undefined)
-		disableAutoScrollRef.current = false
+			disableAutoScrollRef.current = false
 	}, [clineAsk, startNewTask])
 
 	const handleSecondaryButtonClick = useCallback(() => {
@@ -414,7 +319,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 			case "tool":
 			case "browser_action_launch":
 			case "use_mcp_server":
-				// responds to the API with a "This operation failed" and lets it try again
 				vscode.postMessage({
 					type: "askResponse",
 					askResponse: "noButtonClicked",
@@ -424,8 +328,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		setTextAreaDisabled(true)
 		setClineAsk(undefined)
 		setEnableButtons(false)
-		// setPrimaryButtonText(undefined)
-		// setSecondaryButtonText(undefined)
 		disableAutoScrollRef.current = false
 	}, [clineAsk, startNewTask, isStreaming])
 
@@ -476,7 +378,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							break
 					}
 			}
-			// textAreaRef.current is not explicitly required here since react gaurantees that ref will be stable across re-renders, and we're not using its value but its reference.
 		},
 		[isHidden, textAreaDisabled, enableButtons, handleSendMessage, handlePrimaryButtonClick, handleSecondaryButtonClick],
 	)
@@ -484,7 +385,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	useEvent("message", handleMessage)
 
 	useMount(() => {
-		// NOTE: the vscode window needs to be focused for this to work
 		textAreaRef.current?.focus()
 	})
 
@@ -503,23 +403,21 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		return modifiedMessages.filter((message) => {
 			switch (message.ask) {
 				case "completion_result":
-					// don't show a chat row for a completion_result ask without text. This specific type of message only occurs if cline wants to execute a command as part of its completion result, in which case we interject the completion_result tool with the execute_command tool.
 					if (message.text === "") {
 						return false
 					}
 					break
-				case "api_req_failed": // this message is used to update the latest api_req_started that the request failed
+				case "api_req_failed":
 				case "resume_task":
 				case "resume_completed_task":
 					return false
 			}
 			switch (message.say) {
-				case "api_req_finished": // combineApiRequests removes this from modifiedMessages anyways
-				case "api_req_retried": // this message is used to update the latest api_req_started that the request was retried
-				case "deleted_api_reqs": // aggregated api_req metrics from deleted messages
+				case "api_req_finished":
+				case "api_req_retried":
+				case "deleted_api_reqs":
 					return false
 				case "text":
-					// Sometimes cline returns an empty text message, we don't want to render these. (We also use a say text for user messages, so in case they just sent images we still render that)
 					if ((message.text ?? "") === "" && (message.images?.length ?? 0) === 0) {
 						return false
 					}
@@ -532,7 +430,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	}, [modifiedMessages])
 
 	const isBrowserSessionMessage = (message: ClineMessage): boolean => {
-		// which of visible messages are browser session messages, see above
 		if (message.type === "ask") {
 			return ["browser_action_launch"].includes(message.ask!)
 		}
@@ -559,16 +456,11 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 
 		visibleMessages.forEach((message) => {
 			if (message.ask === "browser_action_launch" || message.say === "browser_action_launch") {
-				// complete existing browser session if any
 				endBrowserSession()
-				// start new
 				isInBrowserSession = true
 				currentGroup.push(message)
 			} else if (isInBrowserSession) {
-				// end session if api_req_started is cancelled
-
 				if (message.say === "api_req_started") {
-					// get last api_req_started in currentGroup to check if it's cancelled. If it is then this api req is not part of the current browser session
 					const lastApiReqStarted = [...currentGroup].reverse().find((m) => m.say === "api_req_started")
 					if (lastApiReqStarted?.text != null) {
 						const info = JSON.parse(lastApiReqStarted.text)
@@ -584,7 +476,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				if (isBrowserSessionMessage(message)) {
 					currentGroup.push(message)
 
-					// Check if this is a close action
 					if (message.say === "browser_action") {
 						const browserAction = JSON.parse(message.text || "{}") as ClineSayBrowserAction
 						if (browserAction.action === "close") {
@@ -592,7 +483,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						}
 					}
 				} else {
-					// complete existing browser session if any
 					endBrowserSession()
 					result.push(message)
 				}
@@ -601,15 +491,12 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 			}
 		})
 
-		// Handle case where browser session is the last group
 		if (currentGroup.length > 0) {
 			result.push([...currentGroup])
 		}
 
 		return result
 	}, [visibleMessages])
-
-	// scrolling
 
 	const scrollToBottomSmooth = useMemo(
 		() =>
@@ -629,11 +516,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	const scrollToBottomAuto = useCallback(() => {
 		virtuosoRef.current?.scrollTo({
 			top: Number.MAX_SAFE_INTEGER,
-			behavior: "auto", // instant causes crash
+			behavior: "auto",
 		})
 	}, [])
 
-	// scroll when user toggles certain rows
 	const toggleRowExpansion = useCallback(
 		(ts: number) => {
 			const isCollapsing = expandedRows[ts] ?? false
@@ -646,7 +532,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 
 			const isLastCollapsedApiReq =
 				isLast &&
-				!Array.isArray(lastGroup) && // Make sure it's not a browser session group
+				!Array.isArray(lastGroup) &&
 				lastGroup?.say === "api_req_started" &&
 				!expandedRows[lastGroup.ts]
 
@@ -655,7 +541,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				[ts]: !prev[ts],
 			}))
 
-			// disable auto scroll when user expands row
 			if (!isCollapsing) {
 				disableAutoScrollRef.current = true
 			}
@@ -708,7 +593,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 			setTimeout(() => {
 				scrollToBottomSmooth()
 			}, 50)
-			// return () => clearTimeout(timer) // dont cleanup since if visibleMessages.length changes it cancels.
 		}
 	}, [groupedMessages.length, scrollToBottomSmooth])
 
@@ -716,12 +600,11 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		const wheelEvent = event as WheelEvent
 		if (wheelEvent.deltaY && wheelEvent.deltaY < 0) {
 			if (scrollContainerRef.current?.contains(wheelEvent.target as Node)) {
-				// user scrolled up
 				disableAutoScrollRef.current = true
 			}
 		}
 	}, [])
-	useEvent("wheel", handleWheel, window, { passive: true }) // passive improves scrolling performance
+	useEvent("wheel", handleWheel, window, { passive: true })
 
 	const placeholderText = useMemo(() => {
 		const text = task ? "Type a message (@ to add context)..." : "Type your task here (@ to add context)..."
@@ -730,7 +613,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 
 	const itemContent = useCallback(
 		(index: number, messageOrGroup: ClineMessage | ClineMessage[]) => {
-			// browser session group
 			if (Array.isArray(messageOrGroup)) {
 				return (
 					<BrowserSessionRow
@@ -738,7 +620,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						isLast={index === groupedMessages.length - 1}
 						lastModifiedMessage={modifiedMessages.at(-1)}
 						onHeightChange={handleRowHeightChange}
-						// Pass handlers for each message in the group
 						isExpanded={(messageTs: number) => expandedRows[messageTs] ?? false}
 						onToggleExpand={(messageTs: number) => {
 							setExpandedRows((prev) => ({
@@ -750,7 +631,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				)
 			}
 
-			// regular message
 			return (
 				<ChatRow
 					key={messageOrGroup.ts}
@@ -767,8 +647,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	)
 
 	return (
-		<Wrapper style={{ display: isHidden ? "none" : "flex" }}>
-			<Container>
+		<S.Wrapper style={{ display: isHidden ? "none" : "flex" }}>
+			<S.Container>
 				{task ? (
 					<TaskHeader
 						task={task}
@@ -781,54 +661,25 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						onClose={handleTaskCloseButtonClick}
 					/>
 				) : (
-					<div
-						style={{
-							flex: "1 1 0", // flex-grow: 1, flex-shrink: 1, flex-basis: 0
-							minHeight: 0,
-							overflowY: "auto",
-							display: "flex",
-							flexDirection: "column",
-							paddingBottom: "10px",
-						}}>
+					<S.ScrollableContent>
 						{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
-						<div style={{ padding: "0 20px", flexShrink: 0 }}>
-							<h2 style={{ 
-								position: 'relative',
-								color: '#E0E0E0',
-								fontWeight: 500,
-								letterSpacing: '-0.015em',
-								textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-							}}>
+						<S.WelcomeContent>
+							<S.WelcomeHeading>
 								Hey I'm CLINE, how can I assist you today?
-							</h2>
+							</S.WelcomeHeading>
 							<p>
 								While I can utilize multiple AI models, I work best with Claude 3.5 Sonnet. I can assist with complex coding tasks, create and edit files, explore projects, use the browser, and run terminal commands with your approval. I can also create new tools to expand my abilities.
 							</p>
-						</div>
+						</S.WelcomeContent>
 						{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
-					</div>
+					</S.ScrollableContent>
 				)}
 
-				{/* 
-				// Flex layout explanation:
-				// 1. Content div above uses flex: "1 1 0" to:
-				//    - Grow to fill available space (flex-grow: 1) 
-				//    - Shrink when AutoApproveMenu needs space (flex-shrink: 1)
-				//    - Start from zero size (flex-basis: 0) to ensure proper distribution
-				//    minHeight: 0 allows it to shrink below its content height
-				//
-				// 2. AutoApproveMenu uses flex: "0 1 auto" to:
-				//    - Not grow beyond its content (flex-grow: 0)
-				//    - Shrink when viewport is small (flex-shrink: 1) 
-				//    - Use its content size as basis (flex-basis: auto)
-				//    This ensures it takes its natural height when there's space
-				//    but becomes scrollable when the viewport is too small
-				*/}
 				{!task && (
 					<AutoApproveMenu
 						style={{
 							marginBottom: -2,
-							flex: "0 1 auto", // flex-grow: 0, flex-shrink: 1, flex-basis: auto
+							flex: "0 1 auto",
 							minHeight: 0,
 						}}
 					/>
@@ -839,21 +690,20 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						<div style={{ flexGrow: 1, display: "flex" }} ref={scrollContainerRef}>
 							<Virtuoso
 								ref={virtuosoRef}
-								key={task.ts} // trick to make sure virtuoso re-renders when task changes, and we use initialTopMostItemIndex to start at the bottom
+								key={task.ts}
 								className="scrollable"
 								style={{
 									flexGrow: 1,
-									overflowY: "scroll", // always show scrollbar
+									overflowY: "scroll",
 								}}
 								components={{
-									Footer: () => <div style={{ height: 5 }} />, // Add empty padding at the bottom
+									Footer: () => <div style={{ height: 5 }} />,
 								}}
-								// increasing top by 3_000 to prevent jumping around when user collapses a row
 								increaseViewportBy={{
 									top: 3_000,
 									bottom: Number.MAX_SAFE_INTEGER,
-								}} // hack to make sure the last message is always rendered to get truly perfect scroll to bottom animation when new messages are added (Number.MAX_SAFE_INTEGER is safe for arithmetic operations, which is all virtuoso uses this value for in src/sizeRangeSystem.ts)
-								data={groupedMessages} // messages is the raw format returned by extension, modifiedMessages is the manipulated structure that combines certain messages of related type, and visibleMessages is the filtered structure that removes messages that should not be rendered
+								}}
+								data={groupedMessages}
 								itemContent={itemContent}
 								atBottomStateChange={(isAtBottom) => {
 									setIsAtBottom(isAtBottom)
@@ -862,39 +712,25 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 									}
 									setShowScrollToBottom(disableAutoScrollRef.current && !isAtBottom)
 								}}
-								atBottomThreshold={10} // anything lower causes issues with followOutput
+								atBottomThreshold={10}
 								initialTopMostItemIndex={groupedMessages.length - 1}
 							/>
 						</div>
 						<AutoApproveMenu />
 						{showScrollToBottom ? (
-							<div
-								style={{
-									display: "flex",
-									padding: "10px 15px 0px 15px",
-								}}>
-								<ScrollToBottomButton
+							<div style={{ display: "flex", padding: "10px 15px 0px 15px" }}>
+								<S.ScrollToBottomButton
 									onClick={() => {
 										scrollToBottomSmooth()
 										disableAutoScrollRef.current = false
 									}}>
 									<span className="codicon codicon-chevron-down" style={{ fontSize: "18px" }}></span>
-								</ScrollToBottomButton>
+								</S.ScrollToBottomButton>
 							</div>
 						) : (
-							<div
-								style={{
-									opacity:
-										primaryButtonText || secondaryButtonText || isStreaming
-											? enableButtons || (isStreaming && !didClickCancel)
-												? 1
-												: 0.5
-											: 0,
-											display: "flex",
-											padding: `${primaryButtonText || secondaryButtonText || isStreaming ? "10" : "0"}px 15px 10px 15px`,
-								}}>
+							<S.ButtonContainer $visible={!!(primaryButtonText || secondaryButtonText || isStreaming)}>
 								{primaryButtonText && !isStreaming && (
-									<StyledButton
+									<S.StyledButton
 										$primary
 										disabled={!enableButtons}
 										style={{
@@ -903,10 +739,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 										}}
 										onClick={handlePrimaryButtonClick}>
 										{primaryButtonText}
-									</StyledButton>
+									</S.StyledButton>
 								)}
 								{(secondaryButtonText || isStreaming) && (
-									<StyledButton
+									<S.StyledButton
 										disabled={!enableButtons && !(isStreaming && !didClickCancel)}
 										style={{
 											flex: isStreaming ? 2 : 1,
@@ -914,15 +750,13 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 										}}
 										onClick={handleSecondaryButtonClick}>
 										{isStreaming ? "Cancel" : secondaryButtonText}
-									</StyledButton>
+									</S.StyledButton>
 								)}
-							</div>
+							</S.ButtonContainer>
 						)}
 					</>
 				)}
-				<div style={{
-					padding: "16px",
-				}}>
+				<S.ChatTextAreaContainer>
 					<ChatTextArea
 						ref={textAreaRef}
 						inputValue={inputValue}
@@ -940,84 +774,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							}
 						}}
 					/>
-				</div>
-			</Container>
-		</Wrapper>
+				</S.ChatTextAreaContainer>
+			</S.Container>
+		</S.Wrapper>
 	)
 }
-
-const StyledButton = styled.button<{ $primary?: boolean }>`
-	background: ${({ $primary }) => 
-		$primary 
-			? 'linear-gradient(145deg, rgba(103, 58, 183, 0.9) 0%, rgba(81, 45, 168, 0.85) 100%)'
-			: 'linear-gradient(145deg, rgba(30, 30, 30, 0.95) 0%, rgba(25, 25, 25, 0.95) 100%)'};
-	backdrop-filter: blur(16px);
-	border-radius: 8px;
-	border: 1px solid ${({ $primary }) => 
-		$primary 
-			? 'rgba(103, 58, 183, 0.2)' 
-			: 'rgba(255, 255, 255, 0.08)'};
-	color: ${({ $primary }) => 
-		$primary 
-			? '#fff' 
-			: 'rgba(255, 255, 255, 0.9)'};
-	padding: 8px 16px;
-	font-size: 14px;
-	font-weight: 500;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 6px;
-	min-width: 100px;
-
-	&:hover {
-		background: ${({ $primary }) => 
-			$primary 
-				? 'linear-gradient(145deg, rgba(103, 58, 183, 1) 0%, rgba(81, 45, 168, 0.95) 100%)'
-				: 'linear-gradient(145deg, rgba(35, 35, 35, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%)'};
-		transform: translateY(-1px);
-		box-shadow: ${({ $primary }) => 
-			$primary 
-				? '0 6px 20px rgba(103, 58, 183, 0.25)'
-				: '0 6px 12px rgba(0, 0, 0, 0.15)'};
-	}
-
-	&:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-		transform: none;
-		box-shadow: none;
-	}
-
-	&:active {
-		transform: translateY(0);
-	}
-`;
-
-const ScrollToBottomButton = styled.div`
-	background: rgba(30, 30, 30, 0.95);
-	backdrop-filter: blur(8px);
-	border-radius: 12px;
-	padding: 8px;
-	cursor: pointer;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-	transition: all 0.2s ease;
-
-	&:hover {
-		background: rgba(40, 40, 40, 0.95);
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-	}
-
-	.codicon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: rgba(255, 255, 255, 0.9);
-	}
-`
 
 export default ChatView
