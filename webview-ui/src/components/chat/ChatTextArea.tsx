@@ -12,7 +12,20 @@ import {
 import { MAX_IMAGES_PER_MESSAGE } from "./ChatView"
 import ContextMenu from "./ContextMenu"
 import Thumbnails from "../common/Thumbnails"
-import { ActionButton, ChatTextAreaContainer, SendSvg, StyledSvg, TextContainer } from "./ChatTextArea.styles"
+import { 
+	ActionButton, 
+	ChatTextAreaContainer, 
+	SendSvg, 
+	StyledSvg, 
+	TextContainer, 
+	TagsBox, 
+	Tag, 
+	AddContextButton,
+	BottomControls,
+	PhotoButton,
+	TagsSection,
+	ThumbnailsSection
+} from "./ChatTextArea.styles"
 
 interface ChatTextAreaProps {
 	inputValue: string
@@ -25,6 +38,11 @@ interface ChatTextAreaProps {
 	onSelectImages: () => void
 	shouldDisableImages: boolean
 	onHeightChange?: (height: number) => void
+}
+
+interface TaggedItem {
+	type: 'file' | 'folder' | 'problems';
+	value: string;
 }
 
 const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
@@ -58,6 +76,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		const [justDeletedSpaceAfterMention, setJustDeletedSpaceAfterMention] = useState(false)
 		const [intendedCursorPosition, setIntendedCursorPosition] = useState<number | null>(null)
 		const contextMenuContainerRef = useRef<HTMLDivElement>(null)
+		const [taggedItems, setTaggedItems] = useState<TaggedItem[]>([])
 
 		const queryItems = useMemo(() => {
 			return [
@@ -469,151 +488,188 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			[updateCursorPosition],
 		)
 
+		const extractTaggedItems = useCallback((text: string) => {
+			const matches = text.match(mentionRegexGlobal);
+			if (!matches) return [];
+			
+			return matches.map(match => {
+				const value = match.slice(1); // Remove @ symbol
+				let type: 'file' | 'folder' | 'problems' = 'file';
+				
+				if (value === 'problems') {
+					type = 'problems';
+				} else if (value.endsWith('/')) {
+					type = 'folder';
+				}
+				
+				return { type, value };
+			});
+		}, []);
+
+		useEffect(() => {
+			const items = extractTaggedItems(inputValue);
+			setTaggedItems(items);
+		}, [inputValue, extractTaggedItems]);
+
+		const handleRemoveTag = useCallback((tagValue: string) => {
+			const newValue = inputValue.replace(`@${tagValue}`, '').replace(/\s+/g, ' ').trim();
+			setInputValue(newValue);
+		}, [inputValue, setInputValue]);
+
+		const getTagIcon = useCallback((type: 'file' | 'folder' | 'problems') => {
+			switch (type) {
+				case 'folder':
+					return 'folder';
+				case 'problems':
+					return 'warning';
+				default:
+					return 'file';
+			}
+		}, []);
+
+		const handleAddContext = useCallback(() => {
+			// Trigger the context menu with @ symbol
+			const newValue = inputValue + (inputValue && !inputValue.endsWith(" ") ? " " : "") + "@";
+			setInputValue(newValue);
+			setShowContextMenu(true);
+			if (textAreaRef.current) {
+				textAreaRef.current.focus();
+				const newPosition = newValue.length;
+				textAreaRef.current.setSelectionRange(newPosition, newPosition);
+				setCursorPosition(newPosition);
+			}
+		}, [inputValue, setInputValue]);
+
 		return (
-			<ChatTextAreaContainer disabled={textAreaDisabled}>
-				{showContextMenu && (
-					<div ref={contextMenuContainerRef}>
-						<ContextMenu
-							onSelect={handleMentionSelect}
-							searchQuery={searchQuery}
-							onMouseDown={handleMenuMouseDown}
-							selectedIndex={selectedMenuIndex}
-							setSelectedIndex={setSelectedMenuIndex}
-							selectedType={selectedType}
-							queryItems={queryItems}
+			<>
+				{(taggedItems.length > 0 || selectedImages.length > 0) && (
+					<TagsBox>
+						<TagsSection>
+							{taggedItems.map((item, index) => (
+								<Tag key={index}>
+									<i className={`codicon codicon-${getTagIcon(item.type)}`} />
+									<span>{item.value}</span>
+									<div 
+										className="remove-tag" 
+										onClick={() => handleRemoveTag(item.value)}
+									>
+										<i className="codicon codicon-close" />
+									</div>
+								</Tag>
+							))}
+						</TagsSection>
+						{selectedImages.length > 0 && (
+							<ThumbnailsSection>
+								<Thumbnails
+									images={selectedImages}
+									setImages={setSelectedImages}
+									onHeightChange={handleThumbnailsHeightChange}
+								/>
+							</ThumbnailsSection>
+						)}
+					</TagsBox>
+				)}
+				<ChatTextAreaContainer disabled={textAreaDisabled} hasTagsAbove={taggedItems.length > 0 || selectedImages.length > 0}>
+					<AddContextButton onClick={handleAddContext}>
+						<i className="codicon codicon-plus" />
+						Add context
+					</AddContextButton>
+					{showContextMenu && (
+						<div ref={contextMenuContainerRef}>
+							<ContextMenu
+								onSelect={handleMentionSelect}
+								searchQuery={searchQuery}
+								onMouseDown={handleMenuMouseDown}
+								selectedIndex={selectedMenuIndex}
+								setSelectedIndex={setSelectedMenuIndex}
+								selectedType={selectedType}
+								queryItems={queryItems}
+							/>
+						</div>
+					)}
+					<TextContainer className="text-container">
+						<div
+							ref={highlightLayerRef}
+							style={{
+								position: "absolute",
+								top: 0,
+								left: 0,
+								right: 0,
+								bottom: 0,
+								pointerEvents: "none",
+								whiteSpace: "pre-wrap",
+								wordWrap: "break-word",
+								color: "transparent",
+								overflow: "hidden",
+								backgroundColor: "transparent",
+								fontFamily: "var(--vscode-font-family)",
+								fontSize: "var(--vscode-editor-font-size)",
+								lineHeight: "var(--vscode-editor-line-height)",
+								borderRadius: "6px",
+								border: "none",
+								padding: "10px 52px 10px 12px",
+								transition: "all 0.2s ease",
+								width: "100%",
+								boxSizing: "border-box",
+							}}
 						/>
-					</div>
-				)}
-				{!isTextAreaFocused && (
-					<div
-						style={{
-							position: "absolute",
-							inset: "12px 16px",
-							border: "none",
-							borderRadius: "12px",
-							pointerEvents: "none",
-							zIndex: 5,
-							transition: "all 0.2s ease",
-							opacity: 0.5
-						}}
-					/>
-				)}
-				<TextContainer className="text-container">
-					<div
-						ref={highlightLayerRef}
-						style={{
-							position: "absolute",
-							top: 0,
-							left: 0,
-							right: 0,
-							bottom: 0,
-							pointerEvents: "none",
-							whiteSpace: "pre-wrap",
-							wordWrap: "break-word",
-							color: "transparent",
-							overflow: "hidden",
-							backgroundColor: "transparent",
-							fontFamily: "var(--vscode-font-family)",
-							fontSize: "var(--vscode-editor-font-size)",
-							lineHeight: "var(--vscode-editor-line-height)",
-							borderRadius: "6px",
-							border: "none",
-							borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
-							padding: "6px 52px 6px 8px",
-							transition: "all 0.2s ease",
-							width: "100%",
-							boxSizing: "border-box",
-						}}
-					/>
-					<DynamicTextArea
-						ref={(el) => {
-							if (typeof ref === "function") {
-								ref(el)
-							} else if (ref) {
-								ref.current = el
-							}
-							textAreaRef.current = el
-						}}
-						value={inputValue}
-						disabled={textAreaDisabled}
-						onChange={(e) => {
-							handleInputChange(e)
-							updateHighlights()
-						}}
-						onKeyDown={handleKeyDown}
-						onKeyUp={handleKeyUp}
-						onFocus={() => setIsTextAreaFocused(true)}
-						onBlur={handleBlur}
-						onPaste={handlePaste}
-						onSelect={updateCursorPosition}
-						onMouseUp={updateCursorPosition}
-						onHeightChange={(height) => {
-							if (textAreaBaseHeight === undefined || height < textAreaBaseHeight) {
-								setTextAreaBaseHeight(height)
-							}
-							onHeightChange?.(height)
-						}}
-						placeholder={placeholderText}
-						maxRows={10}
-						autoFocus={true}
-						style={{
-							width: "100%",
-							boxSizing: "border-box",
-							background: "transparent",
-							color: "var(--vscode-input-foreground)",
-							fontFamily: "var(--vscode-font-family)",
-							fontSize: "var(--vscode-editor-font-size)",
-							lineHeight: "var(--vscode-editor-line-height)",
-							resize: "none",
-							overflowX: "hidden",
-							overflowY: "scroll",
-							scrollbarWidth: "none",
-							borderRadius: "6px",
-							border: "none",
-							borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
-							padding: "6px 52px 6px 8px",
-							cursor: textAreaDisabled ? "not-allowed" : "text",
-							flex: 1,
-							outline: "none",
-							zIndex: 1,
-							transition: "all 0.2s ease",
-						}}
-						onScroll={() => updateHighlights()}
-					/>
-				</TextContainer>
-				{selectedImages.length > 0 && (
-					<Thumbnails
-						images={selectedImages}
-						setImages={setSelectedImages}
-						onHeightChange={handleThumbnailsHeightChange}
-						style={{
-							position: "absolute",
-							paddingTop: 4,
-							bottom: 12,
-							left: 18,
-							right: 60,
-							zIndex: 2,
-						}}
-					/>
-				)}
-				<div
-					style={{
-						position: "absolute",
-						right: 18,
-						display: "flex",
-						alignItems: "flex-center",
-						height: textAreaBaseHeight || 31,
-						bottom: 8,
-						zIndex: 2,
-					}}>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							alignItems: "center",
-							gap: "10px"
-						}}>
-						<ActionButton
+						<DynamicTextArea
+							ref={(el) => {
+								if (typeof ref === "function") {
+									ref(el)
+								} else if (ref) {
+									ref.current = el
+								}
+								textAreaRef.current = el
+							}}
+							value={inputValue}
+							disabled={textAreaDisabled}
+							onChange={(e) => {
+								handleInputChange(e)
+								updateHighlights()
+							}}
+							onKeyDown={handleKeyDown}
+							onKeyUp={handleKeyUp}
+							onFocus={() => setIsTextAreaFocused(true)}
+							onBlur={handleBlur}
+							onPaste={handlePaste}
+							onSelect={updateCursorPosition}
+							onMouseUp={updateCursorPosition}
+							onHeightChange={(height) => {
+								if (textAreaBaseHeight === undefined || height < textAreaBaseHeight) {
+									setTextAreaBaseHeight(height)
+								}
+								onHeightChange?.(height)
+							}}
+							placeholder={placeholderText}
+							maxRows={10}
+							autoFocus={true}
+							style={{
+								width: "100%",
+								boxSizing: "border-box",
+								background: "transparent",
+								color: "var(--vscode-input-foreground)",
+								fontFamily: "var(--vscode-font-family)",
+								fontSize: "var(--vscode-editor-font-size)",
+								lineHeight: "var(--vscode-editor-line-height)",
+								resize: "none",
+								overflowX: "hidden",
+								overflowY: "scroll",
+								scrollbarWidth: "none",
+								borderRadius: "6px",
+								border: "none",
+								padding: "10px 52px 10px 12px",
+								cursor: textAreaDisabled ? "not-allowed" : "text",
+								flex: 1,
+								outline: "none",
+								zIndex: 1,
+								transition: "all 0.2s ease",
+							}}
+							onScroll={() => updateHighlights()}
+						/>
+					</TextContainer>
+					<BottomControls>
+						<PhotoButton 
 							disabled={shouldDisableImages}
 							onClick={() => {
 								if (!shouldDisableImages) {
@@ -621,12 +677,13 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								}
 							}}
 						>
-							<StyledSvg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+							<StyledSvg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 								<circle cx="8.5" cy="8.5" r="1.5" stroke="none" fill="currentColor"/>
 								<path d="M21 15l-5-5L5 21" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 							</StyledSvg>
-						</ActionButton>
+							<span>photo</span>
+						</PhotoButton>
 						<ActionButton
 							disabled={textAreaDisabled}
 							onClick={() => {
@@ -651,9 +708,9 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								/>
 							</SendSvg>
 						</ActionButton>
-					</div>
-				</div>
-			</ChatTextAreaContainer>
+					</BottomControls>
+				</ChatTextAreaContainer>
+			</>
 		)
 	},
 )
