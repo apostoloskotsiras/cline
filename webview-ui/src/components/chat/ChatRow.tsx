@@ -43,24 +43,35 @@ const ChatRow = memo(
 		const { isLast, onHeightChange, message, lastModifiedMessage } = props
 		const prevHeightRef = useRef(0)
 
-		// Check if this is an API request and determine its state
-		const apiInfo = message.say === "api_req_started" ? JSON.parse(message.text || "{}") : null;
-		const isLoadingApi = message.say === "api_req_started" && 
-			!apiInfo?.cost && 
-			!apiInfo?.cancelReason &&
-			!apiInfo?.streamingFailedMessage; // Added check for streaming failure
-const isCompletedApi = message.say === "api_req_started" && 
-	(apiInfo?.cost || apiInfo?.cancelReason || apiInfo?.streamingFailedMessage); // Consider all completion states
+		const apiState = useMemo(() => {
+			if (message.text != null && message.say === "api_req_started") {
+				const info: ClineApiReqInfo = JSON.parse(message.text || "{}")
+				const { cost, cancelReason, streamingFailedMessage } = info
+				
+				// Use the exact same logic as the icon system
+				if (cancelReason != null) {
+					return { state: 'cancelled' }
+				} else if (cost != null) {
+					return { state: 'completed' }
+				} else if (streamingFailedMessage) {
+					return { state: 'failed' }
+				} else {
+					return { state: 'loading' }
+				}
+			}
+			return { state: 'none' }
+		}, [message.text, message.say])
+
 		let shouldShowCheckpoints =
 			message.lastCheckpointHash != null &&
 			(message.say === "tool" ||
 					message.ask === "tool" ||
-					message.say === "command" ||
-					message.ask === "command" ||
-					message.say === "completion_result" ||
-					message.ask === "completion_result" ||
-					message.say === "use_mcp_server" ||
-					message.ask === "use_mcp_server")
+						message.say === "command" ||
+						message.ask === "command" ||
+						message.say === "completion_result" ||
+						message.ask === "completion_result" ||
+						message.say === "use_mcp_server" ||
+						message.ask === "use_mcp_server")
 
 		if (shouldShowCheckpoints && isLast) {
 			shouldShowCheckpoints =
@@ -76,8 +87,10 @@ const isCompletedApi = message.say === "api_req_started" &&
 			) : (
 			  <S.UserMessageContainer
 				className={`
-				  ${isLoadingApi ? 'loading-api' : ''}
-				  ${isCompletedApi && !apiInfo?.cancelReason && !apiInfo?.streamingFailedMessage ? 'completed-api' : ''}
+				  ${apiState.state === 'loading' ? 'loading-api' : ''}
+				  ${apiState.state === 'completed' ? 'completed-api' : ''}
+				  ${apiState.state === 'cancelled' ? 'cancelled-api' : ''}
+				  ${apiState.state === 'failed' ? 'failed-api' : ''}
 				`}
 			  >
 				<ChatRowContent {...props} />
@@ -186,19 +199,16 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 				]
 			case "command":
 				return [
-					isCommandExecuting ? (
-						<ProgressIndicator />
-					) : (
-						<span
-							className="codicon codicon-terminal"
-							style={{
-								color: normalColor,
-								marginBottom: "-1.5px",
-							}}></span>
-					),
-					<span style={{ color: normalColor, fontWeight: "bold" }}>
+					<S.CommandIconContainer key="icon">
+						{isCommandExecuting ? (
+							<ProgressIndicator />
+						) : (
+							<span className="codicon codicon-terminal" />
+						)}
+					</S.CommandIconContainer>,
+					<S.CommandTitle key="title">
 						{message.type === "ask" ? "Cline wants to execute this command:" : "Cline executed this command:"}
-					</span>,
+					</S.CommandTitle>,
 				]
 			case "use_mcp_server":
 				const mcpServerUse = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
@@ -229,13 +239,10 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 				]
 			case "completion_result":
 				return [
-					<span
-						className="codicon codicon-check"
-						style={{
-							color: successColor,
-							marginBottom: "-1.5px",
-						}}></span>,
-					<span style={{ color: successColor, fontWeight: "bold" }}>Task Completed</span>,
+					<S.TaskCompletedIconContainer key="icon">
+						<span className="codicon codicon-check" />
+					</S.TaskCompletedIconContainer>,
+					<S.TaskCompletedTitle key="title">Task Completed</S.TaskCompletedTitle>,
 				]
 			case "api_req_started":
 				const getIconSpan = (iconName: string, color: string) => (
@@ -605,17 +612,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					{icon}
 					{title}
 				</div>
-				{/* <Terminal
-					rawOutput={command + (output ? "\n" + output : "")}
-					shouldAllowInput={!!isCommandExecuting && output.length > 0}
-				/> */}
-				<div
-					style={{
-						borderRadius: 3,
-						border: "1px solid var(--vscode-editorGroup-border)",
-						overflow: "hidden",
-						backgroundColor: CODE_BLOCK_BG_COLOR,
-					}}>
+				<S.CommandContent>
 					<CodeBlock source={`${"```"}shell\n${command}\n${"```"}`} forceWrap={true} />
 					{output.length > 0 && (
 						<div style={{ width: "100%" }}>
@@ -636,7 +633,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 							{isExpanded && <CodeBlock source={`${"```"}shell\n${output}\n${"```"}`} />}
 						</div>
 					)}
-				</div>
+				</S.CommandContent>
 				{requestsApproval && (
 					<S.CommandApprovalWarning>
 						<i className="codicon codicon-warning" />
@@ -931,35 +928,28 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					const text = hasChanges ? message.text?.slice(0, -COMPLETION_RESULT_CHANGES_FLAG.length) : message.text
 					return (
 						<>
-							<div
-								style={{
-									...headerStyle,
-									marginBottom: "10px",
-								}}>
-								{icon}
-								{title}
-							</div>
-							<div
-								style={{
-									color: "var(--vscode-charts-green)",
-									paddingTop: 10,
-								}}>
+							<S.TaskCompletedHeader>
+								<S.TaskCompletedIconContainer>
+									<span className="codicon codicon-check" />
+								</S.TaskCompletedIconContainer>
+								<S.TaskCompletedTitle>Task Completed</S.TaskCompletedTitle>
+							</S.TaskCompletedHeader>
+							<S.TaskCompletedContent>
 								<Markdown markdown={text} />
-							</div>
+							</S.TaskCompletedContent>
 							{message.partial !== true && hasChanges && (
-                  <S.SeeNewChangesBtn
-                    disabled={seeNewChangesDisabled}
-                    onClick={() => {
-                      setSeeNewChangesDisabled(true)
-                      vscode.postMessage({
-                        type: "taskCompletionViewChanges", 
-                        number: message.ts,
-                      })
-                    }}
-                  >
-                    <i className="codicon codicon-new-file" />
-                    See new changes
-                  </S.SeeNewChangesBtn>
+								<S.SeeNewChangesBtn
+									disabled={seeNewChangesDisabled}
+									onClick={() => {
+										setSeeNewChangesDisabled(true)
+										vscode.postMessage({
+											type: "taskCompletionViewChanges",
+											number: message.ts,
+										})
+									}}>
+									<i className="codicon codicon-new-file" />
+									See new changes
+								</S.SeeNewChangesBtn>
 							)}
 						</>
 					)

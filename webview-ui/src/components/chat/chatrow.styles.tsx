@@ -139,82 +139,29 @@ export const QuestionContainer = styled(ChatRowContainer)`
 export const SeeNewChangesBtn = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(145deg,
-    rgba(16, 185, 129, 0.15) 0%,
-    rgba(5, 150, 105, 0.1) 100%
-  );
-  color: var(--vscode-foreground);
-  font-weight: 500;
+  margin-top: 16px;
+  padding: 8px 12px;
+  background: rgba(35, 134, 54, 0.08);
+  border: 1px solid rgba(35, 134, 54, 0.15);
+  border-radius: 6px;
+  color: var(--vscode-charts-green);
+  font-size: 0.9em;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      rgba(16, 185, 129, 0.2) 0%,
-      rgba(5, 150, 105, 0.15) 50%,
-      rgba(16, 185, 129, 0.2) 100%
-    );
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover {
-    background: linear-gradient(145deg,
-      rgba(16, 185, 129, 0.2) 0%,
-      rgba(5, 150, 105, 0.15) 100%
-    );
-    transform: translateY(-1px);
-    box-shadow: 
-      0 4px 12px rgba(16, 185, 129, 0.15),
-      0 2px 4px rgba(5, 150, 105, 0.1);
-  }
-
-  &:hover::before {
-    opacity: 1;
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 
-      0 2px 6px rgba(16, 185, 129, 0.1),
-      0 1px 2px rgba(5, 150, 105, 0.05);
+  &:hover:not(:disabled) {
+    background: rgba(35, 134, 54, 0.12);
+    border-color: rgba(35, 134, 54, 0.25);
   }
 
   &:disabled {
-    background: rgba(16, 185, 129, 0.05);
-    color: rgba(255, 255, 255, 0.3);
+    opacity: 0.5;
     cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
   }
 
-  &:disabled::before {
-    opacity: 0;
-  }
-
-  & .codicon {
-    font-size: 16px;
-    margin-right: 6px;
-    transition: transform 0.2s ease;
-  }
-
-  &:hover .codicon {
-    transform: translateX(2px);
+  i.codicon {
+    font-size: 14px;
   }
 `;
 
@@ -344,5 +291,125 @@ export const CommandApprovalWarning = styled.div`
   span {
     opacity: 0.95;
     line-height: 1.4;
+  }
+`;
+
+export const TaskCompletedHeader = styled.div`
+  padding: 4px 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const TaskCompletedIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(35, 134, 54, 0.1);
+
+  .codicon {
+    color: var(--vscode-charts-green);
+    font-size: 14px;
+  }
+`;
+
+export const TaskCompletedTitle = styled.span`
+  color: var(--vscode-charts-green);
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0.3px;
+`;
+
+export const TaskCompletedContent = styled.div`
+  background-color: rgba(35, 134, 54, 0.05);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 12px 16px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  border: 1px solid rgba(35, 134, 54, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 4px;
+  font-size: 0.95em;
+  line-height: 1.5;
+
+  code {
+    background: rgba(35, 134, 54, 0.1);
+    color: var(--vscode-charts-green);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+`;
+
+export const CommandHeader = styled.div`
+  padding: 4px 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const CommandIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(235, 87, 87, 0.08);
+
+  .codicon {
+    color: rgba(235, 87, 87, 0.95);
+    font-size: 14px;
+  }
+`;
+
+export const CommandTitle = styled.span`
+  color: rgba(235, 87, 87, 0.95);
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0.3px;
+`;
+
+export const CommandContent = styled.div`
+  background-color: rgba(28, 28, 28, 0.95);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 12px 16px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  border: 1px solid rgba(235, 87, 87, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
+  font-size: 0.95em;
+  line-height: 1.5;
+
+  code {
+    background: rgba(235, 87, 87, 0.08);
+    color: rgba(235, 87, 87, 0.95);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background: rgba(28, 28, 28, 0.6);
+    border: 1px solid rgba(235, 87, 87, 0.1);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+    overflow-x: auto;
+  }
+
+  div[role="button"] {
+    color: rgba(235, 87, 87, 0.9);
+    opacity: 0.8;
+
+    span {
+      color: rgba(235, 87, 87, 0.9);
+    }
   }
 `;
