@@ -58,7 +58,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				{`
 					.settings-wrapper {
 						position: fixed;
-						top: 0;
+						top: 33px;
 						left: 0;
 						right: 0;
 						bottom: 0;

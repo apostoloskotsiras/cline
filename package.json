@@ -51,7 +51,7 @@
 				{
 					"id": "claude-dev-ActivityBar",
 					"title": "Cline",
-					"icon": "$(robot)"
+					"icon": "./assets/icons/robot_panel_dark.png"
 				}
 			]
 		},
@@ -60,71 +60,37 @@
 				{
 					"type": "webview",
 					"id": "claude-dev.SidebarProvider",
-					"name": ""
+					"name": "Cline AI Assistant"
 				}
 			]
 		},
 		"commands": [
 			{
 				"command": "cline.plusButtonClicked",
-				"title": "New Task",
-				"icon": "$(add)"
+				"title": "New Task"
 			},
 			{
 				"command": "cline.mcpButtonClicked",
-				"title": "MCP Servers",
-				"icon": "$(server)"
+				"title": "MCP Servers"
 			},
 			{
 				"command": "cline.historyButtonClicked",
-				"title": "History",
-				"icon": "$(history)"
-			},
-			{
-				"command": "cline.popoutButtonClicked",
-				"title": "Open in Editor",
-				"icon": "$(link-external)"
+				"title": "History"
 			},
 			{
 				"command": "cline.settingsButtonClicked",
-				"title": "Settings",
-				"icon": "$(settings-gear)"
+				"title": "Settings"
+			},
+			{
+				"command": "cline.popoutButtonClicked",
+				"title": "Open in Editor"
 			},
 			{
 				"command": "cline.openInNewTab",
 				"title": "Open In New Tab",
 				"category": "Cline"
 			}
-		],
-		"menus": {
-			"view/title": [
-				{
-					"command": "cline.plusButtonClicked",
-					"group": "navigation@1",
-					"when": "view == claude-dev.SidebarProvider"
-				},
-				{
-					"command": "cline.mcpButtonClicked",
-					"group": "navigation@2",
-					"when": "view == claude-dev.SidebarProvider"
-				},
-				{
-					"command": "cline.historyButtonClicked",
-					"group": "navigation@3",
-					"when": "view == claude-dev.SidebarProvider"
-				},
-				{
-					"command": "cline.popoutButtonClicked",
-					"group": "navigation@4",
-					"when": "view == claude-dev.SidebarProvider"
-				},
-				{
-					"command": "cline.settingsButtonClicked",
-					"group": "navigation@5",
-					"when": "view == claude-dev.SidebarProvider"
-				}
-			]
-		}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",

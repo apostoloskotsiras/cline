@@ -23,6 +23,7 @@ import { openMention } from "../mentions"
 import { getNonce } from "./getNonce"
 import { getUri } from "./getUri"
 import { AutoApprovalSettings, DEFAULT_AUTO_APPROVAL_SETTINGS } from "../../shared/AutoApprovalSettings"
+import delay from "delay"
 
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -253,6 +254,10 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 		// The JS file from the React build output
 		const scriptUri = getUri(webview, this.context.extensionUri, ["webview-ui", "build", "static", "js", "main.js"])
 
+		// Get the URIs for the icon images
+		const robotPanelDarkUri = getUri(webview, this.context.extensionUri, ["assets", "icons", "robot_panel_dark.png"])
+		const robotPanelLightUri = getUri(webview, this.context.extensionUri, ["assets", "icons", "robot_panel_light.png"])
+
 		// The codicon font from the React build output
 		// https://github.com/microsoft/vscode-extension-samples/blob/main/webview-codicons-sample/src/extension.ts
 		// we installed this package in the extension so that we can access it how its intended from the extension (the font file is likely bundled in vscode), and we just import the css fileinto our react app we don't have access to it
@@ -298,6 +303,10 @@ export class ClineProvider implements vscode.WebviewViewProvider {
             <link rel="stylesheet" type="text/css" href="${stylesUri}">
 			<link href="${codiconsUri}" rel="stylesheet" />
             <title>Cline</title>
+            <script nonce="${nonce}">
+                window.robotPanelDarkUri = "${robotPanelDarkUri}";
+                window.robotPanelLightUri = "${robotPanelLightUri}";
+            </script>
           </head>
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -542,6 +551,33 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 						} catch (error) {
 							console.error(`Failed to retry connection for ${message.text}:`, error)
 						}
+						break
+					}
+					case "popoutButtonClicked": {
+						const lastCol = Math.max(...vscode.window.visibleTextEditors.map((editor) => editor.viewColumn || 0))
+						const hasVisibleEditors = vscode.window.visibleTextEditors.length > 0
+						if (!hasVisibleEditors) {
+							await vscode.commands.executeCommand("workbench.action.newGroupRight")
+						}
+						const targetCol = hasVisibleEditors ? Math.max(lastCol + 1, 1) : vscode.ViewColumn.Two
+
+						const panel = vscode.window.createWebviewPanel(ClineProvider.tabPanelId, "Cline", targetCol, {
+							enableScripts: true,
+							retainContextWhenHidden: true,
+							localResourceRoots: [this.context.extensionUri],
+						})
+
+						panel.iconPath = {
+							light: vscode.Uri.joinPath(this.context.extensionUri, "assets", "icons", "robot_panel_light.png"),
+							dark: vscode.Uri.joinPath(this.context.extensionUri, "assets", "icons", "robot_panel_dark.png"),
+						}
+
+						const tabProvider = new ClineProvider(this.context, this.outputChannel)
+						tabProvider.resolveWebviewView(panel)
+
+						// Lock the editor group so clicking on files doesn't open them over the panel
+						await delay(100)
+						await vscode.commands.executeCommand("workbench.action.lockEditorGroup")
 						break
 					}
 					// Add more switch case statements here as more webview message commands
