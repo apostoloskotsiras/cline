@@ -57,6 +57,14 @@ export const ChatRowContainer = styled.div<ChatRowContainerProps>`
   &.loading-api {
     position: relative;
     transition: border-color 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      border-color: rgba(235, 87, 87, 0.3);
+      &::before {
+        opacity: 0.4;
+      }
+    }
 
     &::before {
       content: '';
@@ -107,12 +115,137 @@ export const ChatRowContainer = styled.div<ChatRowContainerProps>`
       z-index: -1;
       pointer-events: none;
     }
+
+    &.failed-api {
+      animation: none;
+      &::before, &::after {
+        animation: none;
+        background: linear-gradient(
+          90deg,
+          rgba(235, 87, 87, 0.4),
+          rgba(235, 87, 87, 0.3)
+        );
+      }
+    }
   }
 
   &.completed-api {
     position: relative;
-    border-color: var(--vscode-charts-green);
+    border-color: rgba(35, 134, 54, 0.2);
     transition: border-color 0.3s ease;
+
+    &:hover {
+      border-color: rgba(35, 134, 54, 0.3);
+    }
+  }
+
+  &.cancelled-api {
+    position: relative;
+    border-color: rgba(235, 87, 87, 0.2);
+    transition: border-color 0.3s ease;
+    opacity: 0.9;
+
+    &:hover {
+      border-color: rgba(235, 87, 87, 0.3);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      padding: 1px;
+      border-radius: 12px;
+      background: rgba(235, 87, 87, 0.15);
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 0;
+      pointer-events: none;
+    }
+  }
+
+  &.failed-api {
+    position: relative;
+    border-color: rgba(235, 87, 87, 0.3);
+    transition: border-color 0.3s ease;
+
+    &:hover {
+      border-color: rgba(235, 87, 87, 0.4);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      padding: 1px;
+      border-radius: 12px;
+      background: linear-gradient(
+        90deg,
+        rgba(235, 87, 87, 0.4),
+        rgba(235, 87, 87, 0.3)
+      );
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      padding: 2px;
+      border-radius: 13px;
+      background: rgba(235, 87, 87, 0.2);
+      filter: blur(8px);
+      opacity: 0.25;
+      z-index: -1;
+      pointer-events: none;
+    }
+  }
+
+  &.streaming-failed-api {
+    position: relative;
+    border-color: rgba(235, 87, 87, 0.3);
+    transition: border-color 0.3s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      padding: 1px;
+      border-radius: 12px;
+      background: linear-gradient(
+        90deg,
+        rgba(235, 87, 87, 0.4),
+        rgba(235, 87, 87, 0.3)
+      );
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      padding: 2px;
+      border-radius: 13px;
+      background: rgba(235, 87, 87, 0.2);
+      filter: blur(8px);
+      opacity: 0.25;
+      z-index: -1;
+      pointer-events: none;
+    }
   }
 `;
 
@@ -142,17 +275,17 @@ export const SeeNewChangesBtn = styled.button`
   gap: 8px;
   margin-top: 16px;
   padding: 8px 12px;
-  background: rgba(35, 134, 54, 0.08);
-  border: 1px solid rgba(35, 134, 54, 0.15);
+  background: rgba(40, 167, 69, 0.06);
+  border: 1px solid rgba(40, 167, 69, 0.12);
   border-radius: 6px;
-  color: var(--vscode-charts-green);
+  color: rgba(40, 167, 69, 0.9);
   font-size: 0.9em;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
-    background: rgba(35, 134, 54, 0.12);
-    border-color: rgba(35, 134, 54, 0.25);
+    background: rgba(40, 167, 69, 0.08);
+    border-color: rgba(40, 167, 69, 0.2);
   }
 
   &:disabled {
@@ -410,6 +543,243 @@ export const CommandContent = styled.div`
 
     span {
       color: rgba(235, 87, 87, 0.9);
+    }
+  }
+`;
+
+export const ApiRequestHeader = styled.div`
+  padding: 4px 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const ApiRequestIconContainer = styled.div<{ $state?: 'loading' | 'completed' | 'failed' | 'cancelled' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: ${({ $state }) => $state === 'loading' ? 'pointer' : 'default'};
+  background: ${({ $state }) => {
+    switch ($state) {
+      case 'completed':
+        return 'rgba(35, 134, 54, 0.06)';
+      case 'failed':
+        return 'rgba(235, 87, 87, 0.08)';
+      case 'cancelled':
+        return 'rgba(235, 87, 87, 0.06)';
+      default:
+        return 'rgba(147, 130, 255, 0.1)';
+    }
+  }};
+
+  &:hover {
+    ${({ $state }) => {
+      if ($state === 'loading') {
+        return `
+          background: rgba(235, 87, 87, 0.15);
+          .codicon {
+            color: rgba(235, 87, 87, 0.95);
+          }
+        `;
+      }
+      if ($state === 'completed') {
+        return `
+          background: rgba(35, 134, 54, 0.1);
+          .codicon {
+            color: rgba(35, 134, 54, 0.95);
+          }
+        `;
+      }
+      return '';
+    }}
+  }
+
+  .codicon {
+    font-size: 14px;
+    color: ${({ $state }) => {
+      switch ($state) {
+        case 'completed':
+          return 'rgba(35, 134, 54, 0.85)';
+        case 'failed':
+          return 'rgba(235, 87, 87, 0.95)';
+        case 'cancelled':
+          return 'rgba(235, 87, 87, 0.8)';
+        default:
+          return 'rgba(147, 130, 255, 0.95)';
+      }
+    }};
+  }
+`;
+
+export const ApiRequestTitle = styled.span<{ $state?: 'loading' | 'completed' | 'failed' | 'cancelled' }>`
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0.3px;
+  color: ${({ $state }) => {
+    switch ($state) {
+      case 'completed':
+        return 'rgba(35, 134, 54, 0.85)';
+      case 'failed':
+        return 'rgba(235, 87, 87, 0.95)';
+      case 'cancelled':
+        return 'rgba(235, 87, 87, 0.8)';
+      default:
+        return 'rgba(147, 130, 255, 0.95)';
+    }
+  }};
+`;
+
+export const ApiRequestContent = styled.div<{ $state?: 'loading' | 'completed' | 'failed' | 'cancelled' }>`
+  position: relative;
+  background-color: ${({ $state }) => {
+    switch ($state) {
+      case 'completed':
+        return 'rgba(35, 134, 54, 0.03)';
+      case 'failed':
+        return 'rgba(235, 87, 87, 0.05)';
+      case 'cancelled':
+        return 'rgba(235, 87, 87, 0.03)';
+      default:
+        return 'rgba(147, 130, 255, 0.05)';
+    }
+  }};
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 12px 16px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  border: 1px solid ${({ $state }) => {
+    switch ($state) {
+      case 'completed':
+        return 'rgba(35, 134, 54, 0.06)';
+      case 'failed':
+        return 'rgba(235, 87, 87, 0.15)';
+      case 'cancelled':
+        return 'rgba(235, 87, 87, 0.08)';
+      default:
+        return 'rgba(147, 130, 255, 0.1)';
+    }
+  }};
+  box-shadow: ${({ $state }) => 
+    $state === 'failed' 
+      ? '0 2px 8px rgba(235, 87, 87, 0.1), 0 0 1px rgba(235, 87, 87, 0.2)'
+      : '0 2px 8px rgba(0, 0, 0, 0.05)'
+  };
+  margin-top: 4px;
+  font-size: 0.95em;
+  line-height: 1.5;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    top: -20px;
+    right: -20px;
+    background: ${({ $state }) => {
+      switch ($state) {
+        case 'completed':
+          return 'radial-gradient(circle, rgba(35, 134, 54, 0.04) 0%, rgba(35, 134, 54, 0) 70%)';
+        case 'failed':
+          return 'radial-gradient(circle, rgba(235, 87, 87, 0.12) 0%, rgba(235, 87, 87, 0) 70%)';
+        case 'cancelled':
+          return 'radial-gradient(circle, rgba(235, 87, 87, 0.06) 0%, rgba(235, 87, 87, 0) 70%)';
+        default:
+          return 'radial-gradient(circle, rgba(147, 130, 255, 0.08) 0%, rgba(147, 130, 255, 0) 70%)';
+      }
+    }};
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    bottom: -10px;
+    left: -10px;
+    background: ${({ $state }) => {
+      switch ($state) {
+        case 'completed':
+          return 'radial-gradient(circle, rgba(35, 134, 54, 0.03) 0%, rgba(35, 134, 54, 0) 70%)';
+        case 'failed':
+          return 'radial-gradient(circle, rgba(235, 87, 87, 0.1) 0%, rgba(235, 87, 87, 0) 70%)';
+        case 'cancelled':
+          return 'radial-gradient(circle, rgba(235, 87, 87, 0.04) 0%, rgba(235, 87, 87, 0) 70%)';
+        default:
+          return 'radial-gradient(circle, rgba(147, 130, 255, 0.05) 0%, rgba(147, 130, 255, 0) 70%)';
+      }
+    }};
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  code {
+    background: ${({ $state }) => {
+      switch ($state) {
+        case 'completed':
+          return 'rgba(35, 134, 54, 0.06)';
+        case 'failed':
+          return 'rgba(235, 87, 87, 0.12)';
+        case 'cancelled':
+          return 'rgba(235, 87, 87, 0.06)';
+        default:
+          return 'rgba(147, 130, 255, 0.1)';
+      }
+    }};
+    color: ${({ $state }) => {
+      switch ($state) {
+        case 'completed':
+          return 'rgba(35, 134, 54, 0.85)';
+        case 'failed':
+          return 'rgba(235, 87, 87, 0.95)';
+        case 'cancelled':
+          return 'rgba(235, 87, 87, 0.8)';
+        default:
+          return 'rgba(147, 130, 255, 0.95)';
+      }
+    }};
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+`;
+
+export const SpinnerRing = styled.div`
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(147, 130, 255, 0.1);
+  border-top: 2px solid rgba(147, 130, 255, 0.95);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transition: border-color 0.2s ease;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+export const ProgressContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  position: relative;
+  cursor: pointer;
+
+  &:hover {
+    ${SpinnerRing} {
+      border-color: rgba(235, 87, 87, 0.2);
+      border-top-color: rgba(235, 87, 87, 0.95);
     }
   }
 `;

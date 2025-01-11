@@ -48,19 +48,28 @@ const ChatRow = memo(
 				const info: ClineApiReqInfo = JSON.parse(message.text || "{}")
 				const { cost, cancelReason, streamingFailedMessage } = info
 				
+				// Get the request failed message if it exists
+				const requestFailedMessage = isLast && lastModifiedMessage?.ask === "api_req_failed" 
+					? lastModifiedMessage?.text
+					: undefined
+
 				// Use the exact same logic as the icon system
 				if (cancelReason != null) {
 					return { state: 'cancelled' }
 				} else if (cost != null) {
 					return { state: 'completed' }
-				} else if (streamingFailedMessage) {
-					return { state: 'failed' }
+				} else if (streamingFailedMessage || requestFailedMessage) {
+					return { 
+						state: 'failed',
+						streamingFailedMessage,
+						requestFailedMessage
+					}
 				} else {
 					return { state: 'loading' }
 				}
 			}
 			return { state: 'none' }
-		}, [message.text, message.say])
+		}, [message.text, message.say, isLast, lastModifiedMessage]);
 
 		let shouldShowCheckpoints =
 			message.lastCheckpointHash != null &&
@@ -87,10 +96,10 @@ const ChatRow = memo(
 			) : (
 			  <S.UserMessageContainer
 				className={`
-				  ${apiState.state === 'loading' ? 'loading-api' : ''}
+				  ${apiState.state === 'loading' && !apiState.requestFailedMessage && !apiState.streamingFailedMessage ? 'loading-api' : ''}
 				  ${apiState.state === 'completed' ? 'completed-api' : ''}
 				  ${apiState.state === 'cancelled' ? 'cancelled-api' : ''}
-				  ${apiState.state === 'failed' ? 'failed-api' : ''}
+				  ${apiState.state === 'failed' || apiState.requestFailedMessage || apiState.streamingFailedMessage ? 'failed-api' : ''}
 				`}
 			  >
 				<ChatRowContent {...props} />
