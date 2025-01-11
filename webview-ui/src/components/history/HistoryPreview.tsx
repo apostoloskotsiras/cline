@@ -5,34 +5,34 @@ import { memo } from "react"
 import { formatLargeNumber } from "../../utils/format"
 
 type HistoryPreviewProps = {
-  showHistoryView: () => void
+	showHistoryView: () => void
 }
 
 const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
-  const { taskHistory } = useExtensionState()
-  const handleHistorySelect = (id: string) => {
-    vscode.postMessage({ type: "showTaskWithId", text: id })
-  }
+	const { taskHistory } = useExtensionState()
+	const handleHistorySelect = (id: string) => {
+		vscode.postMessage({ type: "showTaskWithId", text: id })
+	}
 
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp)
-    return date
-      ?.toLocaleString("en-US", {
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .replace(", ", " ")
-      .replace(" at", ",")
-      .toUpperCase()
-  }
+	const formatDate = (timestamp: number) => {
+		const date = new Date(timestamp)
+		return date
+			?.toLocaleString("en-US", {
+				month: "long",
+				day: "numeric",
+				hour: "numeric",
+				minute: "2-digit",
+				hour12: true,
+			})
+			.replace(", ", " ")
+			.replace(" at", ",")
+			.toUpperCase()
+	}
 
-  return (
-    <div style={{ flexShrink: 0, padding: "8px 0" }}>
-      <style>
-        {`
+	return (
+		<div style={{ flexShrink: 0, padding: "8px 0" }}>
+			<style>
+				{`
           .history-preview-item {
             background: var(--vscode-editor-background);
             margin: 12px 16px;
@@ -144,106 +144,106 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
             transform: translateY(1px);
           }
         `}
-      </style>
+			</style>
 
-      <div className="history-title">
-        <i className="codicon codicon-history"></i>
-        <span>RECENT TASKS</span>
-      </div>
+			<div className="history-title">
+				<i className="codicon codicon-history"></i>
+				<span>RECENT TASKS</span>
+			</div>
 
-      <div>
-        {taskHistory
-          .filter((item) => item.ts && item.task)
-          .slice(0, 3)
-          .map((item) => (
-            <div key={item.id} className="history-preview-item" onClick={() => handleHistorySelect(item.id)}>
-              <div style={{ padding: "16px 20px" }}>
-                <div>
-                  <span
-                    style={{
-                      color: "var(--vscode-textLink-foreground)",
-                      fontSize: "0.85em",
-                      fontWeight: 600,
-                      opacity: 0.9,
-                      letterSpacing: "0.3px"
-                    }}>
-                    {formatDate(item.ts)}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    fontSize: "13px",
-                    color: "var(--vscode-foreground)",
-                    lineHeight: "1.6",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    whiteSpace: "pre-wrap",
-                    opacity: 0.95,
-                    margin: "8px 0",
-                  }}>
-                  {item.task}
-                </div>
-                <div className="history-metadata">
-                  <div className="metadata-item">
-                    <span className="metadata-label">Tokens:</span>
-                    <div className="metadata-value">
-                      <i className="codicon codicon-arrow-up" style={{ fontSize: "12px" }} />
-                      {formatLargeNumber(item.tokensIn || 0)}
-                    </div>
-                    <div className="metadata-value">
-                      <i className="codicon codicon-arrow-down" style={{ fontSize: "12px" }} />
-                      {formatLargeNumber(item.tokensOut || 0)}
-                    </div>
-                  </div>
-                  {!!item.cacheWrites && (
-                    <div className="metadata-item">
-                      <span className="metadata-label">Cache:</span>
-                      <div className="metadata-value">
-                        <i className="codicon codicon-database" style={{ fontSize: "12px" }} />
-                        +{formatLargeNumber(item.cacheWrites || 0)}
-                      </div>
-                      <div className="metadata-value">
-                        <i className="codicon codicon-arrow-right" style={{ fontSize: "12px" }} />
-                        {formatLargeNumber(item.cacheReads || 0)}
-                      </div>
-                    </div>
-                  )}
-                  {!!item.totalCost && (
-                    <div className="metadata-item">
-                      <span className="metadata-label">Cost:</span>
-                      <span>${item.totalCost?.toFixed(4)}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-      </div>
+			<div>
+				{taskHistory
+					.filter((item) => item.ts && item.task)
+					.slice(0, 3)
+					.map((item) => (
+						<div key={item.id} className="history-preview-item" onClick={() => handleHistorySelect(item.id)}>
+							<div style={{ padding: "16px 20px" }}>
+								<div>
+									<span
+										style={{
+											color: "var(--vscode-textLink-foreground)",
+											fontSize: "0.85em",
+											fontWeight: 600,
+											opacity: 0.9,
+											letterSpacing: "0.3px",
+										}}>
+										{formatDate(item.ts)}
+									</span>
+								</div>
+								<div
+									style={{
+										fontSize: "13px",
+										color: "var(--vscode-foreground)",
+										lineHeight: "1.6",
+										display: "-webkit-box",
+										WebkitLineClamp: 3,
+										WebkitBoxOrient: "vertical",
+										overflow: "hidden",
+										whiteSpace: "pre-wrap",
+										opacity: 0.95,
+										margin: "8px 0",
+									}}>
+									{item.task}
+								</div>
+								<div className="history-metadata">
+									<div className="metadata-item">
+										<span className="metadata-label">Tokens:</span>
+										<div className="metadata-value">
+											<i className="codicon codicon-arrow-up" style={{ fontSize: "12px" }} />
+											{formatLargeNumber(item.tokensIn || 0)}
+										</div>
+										<div className="metadata-value">
+											<i className="codicon codicon-arrow-down" style={{ fontSize: "12px" }} />
+											{formatLargeNumber(item.tokensOut || 0)}
+										</div>
+									</div>
+									{!!item.cacheWrites && (
+										<div className="metadata-item">
+											<span className="metadata-label">Cache:</span>
+											<div className="metadata-value">
+												<i className="codicon codicon-database" style={{ fontSize: "12px" }} />+
+												{formatLargeNumber(item.cacheWrites || 0)}
+											</div>
+											<div className="metadata-value">
+												<i className="codicon codicon-arrow-right" style={{ fontSize: "12px" }} />
+												{formatLargeNumber(item.cacheReads || 0)}
+											</div>
+										</div>
+									)}
+									{!!item.totalCost && (
+										<div className="metadata-item">
+											<span className="metadata-label">Cost:</span>
+											<span>${item.totalCost?.toFixed(4)}</span>
+										</div>
+									)}
+								</div>
+							</div>
+						</div>
+					))}
+			</div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
-        <button
-          onClick={() => showHistoryView()}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-            padding: '3px 8px',
-            fontSize: '11px',
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--vscode-textLink-foreground)',
-            cursor: 'pointer',
-            opacity: 0.8,
-            transition: 'opacity 0.2s ease',
-          }}>
-          <i className="codicon codicon-history" style={{ fontSize: "11px" }} />
-          <span>View all history</span>
-        </button>
-      </div>
-    </div>
-  )
+			<div style={{ display: "flex", justifyContent: "center", padding: "4px 0" }}>
+				<button
+					onClick={() => showHistoryView()}
+					style={{
+						display: "inline-flex",
+						alignItems: "center",
+						gap: "4px",
+						padding: "3px 8px",
+						fontSize: "11px",
+						background: "transparent",
+						border: "none",
+						color: "var(--vscode-textLink-foreground)",
+						cursor: "pointer",
+						opacity: 0.8,
+						transition: "opacity 0.2s ease",
+					}}>
+					<i className="codicon codicon-history" style={{ fontSize: "11px" }} />
+					<span>View all history</span>
+				</button>
+			</div>
+		</div>
+	)
 }
 
 export default memo(HistoryPreview)

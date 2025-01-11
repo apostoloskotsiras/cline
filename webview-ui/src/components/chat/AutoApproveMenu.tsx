@@ -50,16 +50,16 @@ const ACTION_METADATA: {
 ]
 
 // Add severity mapping for descriptions
-const getDescriptionSeverity = (actionId: string): 'critical' | 'warning' | 'info' => {
-	const severityMap: Record<string, 'critical' | 'warning' | 'info'> = {
-		'editFiles': 'critical',
-		'executeCommands': 'critical',
-		'readFiles': 'warning',
-		'useBrowser': 'warning',
-		'useMcp': 'warning'
-	};
-	return severityMap[actionId] || 'info';
-};
+const getDescriptionSeverity = (actionId: string): "critical" | "warning" | "info" => {
+	const severityMap: Record<string, "critical" | "warning" | "info"> = {
+		editFiles: "critical",
+		executeCommands: "critical",
+		readFiles: "warning",
+		useBrowser: "warning",
+		useMcp: "warning",
+	}
+	return severityMap[actionId] || "info"
+}
 
 const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 	const { autoApprovalSettings } = useExtensionState()
@@ -146,15 +146,15 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 				onMouseEnter={() => setIsHoveringCollapsibleSection(true)}
 				onMouseLeave={() => setIsHoveringCollapsibleSection(false)}
 				onClick={(e) => {
-					if ((e.target as HTMLElement).closest('vscode-checkbox')) {
-						return;
+					if ((e.target as HTMLElement).closest("vscode-checkbox")) {
+						return
 					}
-					setIsExpanded((prev) => !prev);
+					setIsExpanded((prev) => !prev)
 				}}
 				onKeyDown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') {
-						e.preventDefault();
-						setIsExpanded((prev) => !prev);
+					if (e.key === "Enter" || e.key === " ") {
+						e.preventDefault()
+						setIsExpanded((prev) => !prev)
 					}
 				}}>
 				<S.CheckboxContainer>
@@ -162,58 +162,47 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 						checked={hasEnabledActions && autoApprovalSettings.enabled}
 						disabled={!hasEnabledActions}
 						onClick={(e) => {
-							e.stopPropagation();
-							if (!hasEnabledActions) return;
-							updateEnabled(!autoApprovalSettings.enabled);
+							e.stopPropagation()
+							if (!hasEnabledActions) return
+							updateEnabled(!autoApprovalSettings.enabled)
 						}}
 					/>
 					<S.LabelText>Auto-approve:</S.LabelText>
 				</S.CheckboxContainer>
 				<S.TagContainer>
 					{enabledActions.length === 0 ? (
-						<span style={{ color: 'var(--vscode-descriptionForeground)', fontSize: '12px' }}>None</span>
+						<span style={{ color: "var(--vscode-descriptionForeground)", fontSize: "12px" }}>None</span>
 					) : (
 						enabledActions.map((action) => {
-							const severityMap: Record<string, 'success' | 'info' | 'warning' | 'danger' | 'secondary'> = {
-								'Read': 'success',
-								'Edit': 'danger',
-								'Commands': 'warning',
-								'Browser': 'info',
-								'MCP': 'info'
-							};
-							const severity = severityMap[action.shortName] || 'secondary';
-							return (
-								<Tag 
-									key={action.id}
-									value={action.shortName} 
-									severity={severity}
-									rounded
-								/>
-							)
+							const severityMap: Record<string, "success" | "info" | "warning" | "danger" | "secondary"> = {
+								Read: "success",
+								Edit: "danger",
+								Commands: "warning",
+								Browser: "info",
+								MCP: "info",
+							}
+							const severity = severityMap[action.shortName] || "secondary"
+							return <Tag key={action.id} value={action.shortName} severity={severity} rounded />
 						})
 					)}
 				</S.TagContainer>
 				<span
-					className={`codicon ${isExpanded ? 'codicon-chevron-down' : 'codicon-chevron-right'}`}
+					className={`codicon ${isExpanded ? "codicon-chevron-down" : "codicon-chevron-right"}`}
 					style={{
 						marginLeft: "auto",
 						fontSize: "12px",
 						opacity: 0.8,
-						transition: "transform 0.2s ease"
+						transition: "transform 0.2s ease",
 					}}
 					aria-hidden="true"
 				/>
 			</S.MenuHeader>
-			<S.MenuContent 
-				id="auto-approve-content"
-				$expanded={isExpanded}
-				role="region"
-				aria-label="Auto-approve settings">
+			<S.MenuContent id="auto-approve-content" $expanded={isExpanded} role="region" aria-label="Auto-approve settings">
 				<S.MenuContentInner>
 					<S.DescriptionText>
 						<S.CheckboxDescription>
-							Auto-approve allows Cline to perform the following actions without asking for permission. Please use with
-							caution and only enable if you understand the risks.
+							Auto-approve allows Cline to perform the following actions without asking for permission. Please use
+							with caution and only enable if you understand the risks.
 						</S.CheckboxDescription>
 					</S.DescriptionText>
 
@@ -237,8 +226,8 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 											aria-describedby={`${action.id}-description`}>
 											{action.label}
 										</VSCodeCheckbox>
-										<S.CheckboxDescription 
-											id={`${action.id}-description`} 
+										<S.CheckboxDescription
+											id={`${action.id}-description`}
 											$severity={getDescriptionSeverity(action.id)}>
 											{action.description}
 										</S.CheckboxDescription>
@@ -265,8 +254,8 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 											aria-describedby={`${action.id}-description`}>
 											{action.label}
 										</VSCodeCheckbox>
-										<S.CheckboxDescription 
-											id={`${action.id}-description`} 
+										<S.CheckboxDescription
+											id={`${action.id}-description`}
 											$severity={getDescriptionSeverity(action.id)}>
 											{action.description}
 										</S.CheckboxDescription>
@@ -293,8 +282,8 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 											aria-describedby={`${action.id}-description`}>
 											{action.label}
 										</VSCodeCheckbox>
-										<S.CheckboxDescription 
-											id={`${action.id}-description`} 
+										<S.CheckboxDescription
+											id={`${action.id}-description`}
 											$severity={getDescriptionSeverity(action.id)}>
 											{action.description}
 										</S.CheckboxDescription>
@@ -325,7 +314,10 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 										}
 									}}
 									onKeyDown={(e) => {
-										if (!/^\d$/.test(e.key) && !["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+										if (
+											!/^\d$/.test(e.key) &&
+											!["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)
+										) {
 											e.preventDefault()
 										}
 									}}
@@ -333,10 +325,9 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 									aria-describedby="max-requests-description"
 								/>
 							</S.SettingsRow>
-							<S.CheckboxDescription 
-								id="max-requests-description" 
-								$severity="info">
-								Cline will automatically make this many API requests before asking for approval to proceed with the task.
+							<S.CheckboxDescription id="max-requests-description" $severity="info">
+								Cline will automatically make this many API requests before asking for approval to proceed with
+								the task.
 							</S.CheckboxDescription>
 						</S.SettingsOptionsGroup>
 					</S.SettingsSection>
@@ -358,10 +349,11 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 									aria-describedby="notifications-description">
 									Enable Notifications
 								</VSCodeCheckbox>
-								<S.CheckboxDescription 
-									id="notifications-description" 
-									$severity={getDescriptionSeverity('enableNotifications')}>
-									Receive system notifications when Cline requires approval to proceed or when a task is completed.
+								<S.CheckboxDescription
+									id="notifications-description"
+									$severity={getDescriptionSeverity("enableNotifications")}>
+									Receive system notifications when Cline requires approval to proceed or when a task is
+									completed.
 								</S.CheckboxDescription>
 							</S.SettingsOption>
 						</S.SettingsOptionsGroup>

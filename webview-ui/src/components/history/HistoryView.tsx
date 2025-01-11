@@ -324,23 +324,21 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 							<i className="codicon codicon-history"></i>
 							<span>HISTORY</span>
 						</div>
-						<div 
-							className="done-button"
-							onClick={onDone}
-						>
+						<div className="done-button" onClick={onDone}>
 							<i className="codicon codicon-check"></i>
 							<span>Done</span>
 						</div>
 					</header>
 
 					<div className="search-container">
-						<div style={{
-							display: 'flex',
-							flexDirection: 'column',
-							gap: '8px',
-						}}>
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								gap: "8px",
+							}}>
 							<VSCodeTextField
-								style={{ width: '100%' }}
+								style={{ width: "100%" }}
 								placeholder="Search history..."
 								value={searchQuery}
 								onInput={(e) => {
@@ -351,64 +349,62 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 										setSortOption("mostRelevant")
 									}
 								}}>
-								<div slot="start" className="codicon codicon-search" style={{
-									fontSize: 13,
-									marginTop: 2.5,
-									opacity: 0.8,
-								}}></div>
+								<div
+									slot="start"
+									className="codicon codicon-search"
+									style={{
+										fontSize: 13,
+										marginTop: 2.5,
+										opacity: 0.8,
+									}}></div>
 								{searchQuery && (
 									<div
 										className="codicon codicon-close"
 										onClick={() => setSearchQuery("")}
 										slot="end"
 										style={{
-											cursor: 'pointer',
-											display: 'flex',
-											justifyContent: 'center',
-											alignItems: 'center',
-											height: '100%',
+											cursor: "pointer",
+											display: "flex",
+											justifyContent: "center",
+											alignItems: "center",
+											height: "100%",
 										}}
 									/>
 								)}
 							</VSCodeTextField>
 
 							<div className="sort-options-container">
-								<div 
+								<div
 									className={`sort-option ${sortOption === "newest" ? "selected" : ""}`}
-									onClick={() => setSortOption("newest")}
-								>
+									onClick={() => setSortOption("newest")}>
 									<i className="codicon codicon-arrow-up"></i>
 									Newest
 								</div>
-								<div 
+								<div
 									className={`sort-option ${sortOption === "oldest" ? "selected" : ""}`}
-									onClick={() => setSortOption("oldest")}
-								>
+									onClick={() => setSortOption("oldest")}>
 									<i className="codicon codicon-arrow-down"></i>
 									Oldest
 								</div>
-								<div 
+								<div
 									className={`sort-option ${sortOption === "mostExpensive" ? "selected" : ""}`}
-									onClick={() => setSortOption("mostExpensive")}
-								>
+									onClick={() => setSortOption("mostExpensive")}>
 									<i className="codicon codicon-credit-card"></i>
 									Most Expensive
 								</div>
-								<div 
+								<div
 									className={`sort-option ${sortOption === "mostTokens" ? "selected" : ""}`}
-									onClick={() => setSortOption("mostTokens")}
-								>
+									onClick={() => setSortOption("mostTokens")}>
 									<i className="codicon codicon-symbol-parameter"></i>
 									Most Tokens
 								</div>
-								<div 
+								<div
 									className={`sort-option ${sortOption === "mostRelevant" ? "selected" : ""} ${!searchQuery ? "disabled" : ""}`}
 									onClick={() => {
 										if (searchQuery) {
 											setSortOption("mostRelevant")
 										}
-									}}
-								>
+									}}>
 									<i className="codicon codicon-target"></i>
 									Most Relevant
 								</div>
@@ -416,9 +412,9 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 						</div>
 					</div>
 
-					<div style={{ flexGrow: 1, overflowY: 'auto' }}>
+					<div style={{ flexGrow: 1, overflowY: "auto" }}>
 						<Virtuoso
-							style={{ height: '100%' }}
+							style={{ height: "100%" }}
 							data={taskHistorySearchResults}
 							itemContent={(index, item) => (
 								<div
@@ -426,47 +422,52 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 									className="history-item"
 									onClick={() => handleHistorySelect(item.id)}
 									style={{
-										cursor: 'pointer',
-										borderBottom: index < taskHistory.length - 1 ? '1px solid rgba(255, 255, 255, 0.06)' : 'none',
+										cursor: "pointer",
+										borderBottom:
+											index < taskHistory.length - 1 ? "1px solid rgba(255, 255, 255, 0.06)" : "none",
 									}}>
-									<div style={{
-										padding: '12px 16px',
-										display: 'flex',
-										flexDirection: 'column',
-										gap: '10px',
-									}}>
-										<div style={{
-											display: 'flex',
-											justifyContent: 'space-between',
-											alignItems: 'center',
+									<div
+										style={{
+											padding: "12px 16px",
+											display: "flex",
+											flexDirection: "column",
+											gap: "10px",
 										}}>
-											<span style={{
-												color: 'var(--vscode-descriptionForeground)',
-												fontSize: '0.85em',
-												fontWeight: 500,
-												opacity: 0.8,
+										<div
+											style={{
+												display: "flex",
+												justifyContent: "space-between",
+												alignItems: "center",
 											}}>
+											<span
+												style={{
+													color: "var(--vscode-descriptionForeground)",
+													fontSize: "0.85em",
+													fontWeight: 500,
+													opacity: 0.8,
+												}}>
 												{formatDate(item.ts)}
 											</span>
-											
+
 											<VSCodeButton
 												appearance="icon"
 												className="delete-button"
 												onClick={(e) => {
-													e.preventDefault();
-													e.stopPropagation();
+													e.preventDefault()
+													e.stopPropagation()
 													handleDeleteHistoryItem(item.id)
 												}}
 												style={{
-													padding: '4px 8px',
+													padding: "4px 8px",
 												}}>
-												<div style={{
-													display: 'flex',
-													alignItems: 'center',
-													gap: '6px',
-													fontSize: '11px',
-													opacity: 0.8,
-												}}>
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: "6px",
+														fontSize: "11px",
+														opacity: 0.8,
+													}}>
 													<span className="codicon codicon-trash"></span>
 													{formatSize(item.size)}
 												</div>
@@ -474,78 +475,82 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 										</div>
 
 										{/* Task content */}
-										<div style={{
-											fontSize: '13px',
-											color: 'var(--vscode-foreground)',
-											lineHeight: '1.5',
-											display: '-webkit-box',
-											WebkitLineClamp: 3,
-											WebkitBoxOrient: 'vertical',
-											overflow: 'hidden',
-											whiteSpace: 'pre-wrap',
-											opacity: 0.9,
-										}} dangerouslySetInnerHTML={{
-											__html: item.task,
-										}} />
+										<div
+											style={{
+												fontSize: "13px",
+												color: "var(--vscode-foreground)",
+												lineHeight: "1.5",
+												display: "-webkit-box",
+												WebkitLineClamp: 3,
+												WebkitBoxOrient: "vertical",
+												overflow: "hidden",
+												whiteSpace: "pre-wrap",
+												opacity: 0.9,
+											}}
+											dangerouslySetInnerHTML={{
+												__html: item.task,
+											}}
+										/>
 
 										{/* Tokens and costs section */}
-										<div style={{
-											display: 'flex',
-											flexDirection: 'column',
-											gap: '6px',
-											fontSize: '0.85em',
-											opacity: 0.8,
-										}}>
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												gap: "6px",
+												fontSize: "0.85em",
+												opacity: 0.8,
+											}}>
 											<div
 												style={{
-													display: 'flex',
-													justifyContent: 'space-between',
-													alignItems: 'center',
+													display: "flex",
+													justifyContent: "space-between",
+													alignItems: "center",
 												}}>
 												<div
 													style={{
-														display: 'flex',
-														alignItems: 'center',
-														gap: '4px',
-														flexWrap: 'wrap',
+														display: "flex",
+														alignItems: "center",
+														gap: "4px",
+														flexWrap: "wrap",
 													}}>
 													<span
 														style={{
 															fontWeight: 500,
-															color: 'var(--vscode-descriptionForeground)',
+															color: "var(--vscode-descriptionForeground)",
 														}}>
 														Tokens:
 													</span>
 													<span
 														style={{
-															display: 'flex',
-															alignItems: 'center',
-															gap: '3px',
-															color: 'var(--vscode-descriptionForeground)',
+															display: "flex",
+															alignItems: "center",
+															gap: "3px",
+															color: "var(--vscode-descriptionForeground)",
 														}}>
 														<i
 															className="codicon codicon-arrow-up"
 															style={{
-																fontSize: '12px',
-																fontWeight: 'bold',
-																marginBottom: '-2px',
+																fontSize: "12px",
+																fontWeight: "bold",
+																marginBottom: "-2px",
 															}}
 														/>
 														{formatLargeNumber(item.tokensIn || 0)}
 													</span>
 													<span
 														style={{
-															display: 'flex',
-															alignItems: 'center',
-															gap: '3px',
-															color: 'var(--vscode-descriptionForeground)',
+															display: "flex",
+															alignItems: "center",
+															gap: "3px",
+															color: "var(--vscode-descriptionForeground)",
 														}}>
 														<i
 															className="codicon codicon-arrow-down"
 															style={{
-																fontSize: '12px',
-																fontWeight: 'bold',
-																marginBottom: '-2px',
+																fontSize: "12px",
+																fontWeight: "bold",
+																marginBottom: "-2px",
 															}}
 														/>
 														{formatLargeNumber(item.tokensOut || 0)}
@@ -557,47 +562,47 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											{!!item.cacheWrites && (
 												<div
 													style={{
-														display: 'flex',
-														alignItems: 'center',
-														gap: '4px',
-														flexWrap: 'wrap',
+														display: "flex",
+														alignItems: "center",
+														gap: "4px",
+														flexWrap: "wrap",
 													}}>
 													<span
 														style={{
 															fontWeight: 500,
-															color: 'var(--vscode-descriptionForeground)',
+															color: "var(--vscode-descriptionForeground)",
 														}}>
-															Cache:
-														</span>
+														Cache:
+													</span>
 													<span
 														style={{
-															display: 'flex',
-															alignItems: 'center',
-															gap: '3px',
-															color: 'var(--vscode-descriptionForeground)',
+															display: "flex",
+															alignItems: "center",
+															gap: "3px",
+															color: "var(--vscode-descriptionForeground)",
 														}}>
 														<i
 															className="codicon codicon-database"
 															style={{
-																fontSize: '12px',
-																fontWeight: 'bold',
-																marginBottom: '-1px',
+																fontSize: "12px",
+																fontWeight: "bold",
+																marginBottom: "-1px",
 															}}
 														/>
 														+{formatLargeNumber(item.cacheWrites || 0)}
 													</span>
 													<span
 														style={{
-															display: 'flex',
-															alignItems: 'center',
-															gap: '3px',
-															color: 'var(--vscode-descriptionForeground)',
+															display: "flex",
+															alignItems: "center",
+															gap: "3px",
+															color: "var(--vscode-descriptionForeground)",
 														}}>
 														<i
 															className="codicon codicon-arrow-right"
 															style={{
-																fontSize: '12px',
-																fontWeight: 'bold',
+																fontSize: "12px",
+																fontWeight: "bold",
 																marginBottom: 0,
 															}}
 														/>
@@ -608,30 +613,30 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											{!!item.totalCost && (
 												<div
 													style={{
-														display: 'flex',
-														justifyContent: 'space-between',
-														alignItems: 'center',
+														display: "flex",
+														justifyContent: "space-between",
+														alignItems: "center",
 														marginTop: -2,
 													}}>
 													<div
 														style={{
-															display: 'flex',
-															alignItems: 'center',
-															gap: '4px',
+															display: "flex",
+															alignItems: "center",
+															gap: "4px",
 														}}>
 														<span
 															style={{
 																fontWeight: 500,
-																color: 'var(--vscode-descriptionForeground)',
+																color: "var(--vscode-descriptionForeground)",
 															}}>
-																API Cost:
-															</span>
+															API Cost:
+														</span>
 														<span
 															style={{
-																color: 'var(--vscode-descriptionForeground)',
+																color: "var(--vscode-descriptionForeground)",
 															}}>
-																${item.totalCost?.toFixed(4)}
-															</span>
+															${item.totalCost?.toFixed(4)}
+														</span>
 													</div>
 													<ExportButton itemId={item.id} />
 												</div>
@@ -653,8 +658,8 @@ const ExportButton = ({ itemId }: { itemId: string }) => (
 		className="export-button"
 		appearance="icon"
 		onClick={(e) => {
-			e.preventDefault();
-			e.stopPropagation();
+			e.preventDefault()
+			e.stopPropagation()
 			vscode.postMessage({ type: "exportTaskWithId", text: itemId })
 		}}>
 		<div style={{ fontSize: "11px", fontWeight: 500, opacity: 1 }}>EXPORT</div>
@@ -747,4 +752,3 @@ export const highlight = (fuseSearchResult: FuseResult<any>[], highlightClassNam
 }
 
 export default memo(HistoryView)
-

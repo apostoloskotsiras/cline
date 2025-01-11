@@ -41,30 +41,30 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 	const { height: windowHeight, width: windowWidth } = useWindowSize()
 
 	useEffect(() => {
-		if (!textContainerRef.current) return;
-		
+		if (!textContainerRef.current) return
+
 		if (isTextExpanded) {
-			const contentHeight = textRef.current?.scrollHeight || 0;
-			const maxHeight = Math.min(contentHeight, windowHeight * 0.5);
-			textContainerRef.current.style.maxHeight = `${maxHeight}px`;
+			const contentHeight = textRef.current?.scrollHeight || 0
+			const maxHeight = Math.min(contentHeight, windowHeight * 0.5)
+			textContainerRef.current.style.maxHeight = `${maxHeight}px`
 		} else {
-			textContainerRef.current.style.maxHeight = '4.5em';
+			textContainerRef.current.style.maxHeight = "4.5em"
 		}
-	}, [isTextExpanded, windowHeight, task.text]);
+	}, [isTextExpanded, windowHeight, task.text])
 
 	useEffect(() => {
-		if (!textRef.current || !textContainerRef.current) return;
-		
-		const lineHeight = parseFloat(getComputedStyle(textRef.current).lineHeight);
-		const collapsedHeight = lineHeight * 3;
-		const isOverflowing = textRef.current.scrollHeight > collapsedHeight;
-		
-		setShowSeeMore(isOverflowing);
-		
+		if (!textRef.current || !textContainerRef.current) return
+
+		const lineHeight = parseFloat(getComputedStyle(textRef.current).lineHeight)
+		const collapsedHeight = lineHeight * 3
+		const isOverflowing = textRef.current.scrollHeight > collapsedHeight
+
+		setShowSeeMore(isOverflowing)
+
 		if (!isOverflowing) {
-			setIsTextExpanded(false);
+			setIsTextExpanded(false)
 		}
-	}, [task.text, windowWidth]);
+	}, [task.text, windowWidth])
 
 	const isCostAvailable = useMemo(() => {
 		return (
@@ -90,35 +90,23 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 							{!isTaskExpanded && <span style={{ marginLeft: 4 }}>{highlightMentions(task.text, false)}</span>}
 						</S.TitleText>
 					</S.Title>
-					{!isTaskExpanded && isCostAvailable && (
-						<S.CostBadge>
-							${totalCost?.toFixed(4)}
-						</S.CostBadge>
-					)}
+					{!isTaskExpanded && isCostAvailable && <S.CostBadge>${totalCost?.toFixed(4)}</S.CostBadge>}
 					<VSCodeButton appearance="icon" onClick={onClose} style={{ marginLeft: 6, flexShrink: 0 }}>
 						<span className="codicon codicon-close"></span>
 					</VSCodeButton>
 				</S.TopSection>
 				{isTaskExpanded && (
 					<>
-						<S.TextContainer
-							ref={textContainerRef}
-							isExpanded={isTextExpanded}>
-							<S.TextContent ref={textRef}>
-								{highlightMentions(task.text, false)}
-							</S.TextContent>
+						<S.TextContainer ref={textContainerRef} isExpanded={isTextExpanded}>
+							<S.TextContent ref={textRef}>{highlightMentions(task.text, false)}</S.TextContent>
 							{!isTextExpanded && showSeeMore && (
 								<S.SeeMoreContainer>
-									<S.SeeMoreText onClick={() => setIsTextExpanded(!isTextExpanded)}>
-										See more
-									</S.SeeMoreText>
+									<S.SeeMoreText onClick={() => setIsTextExpanded(!isTextExpanded)}>See more</S.SeeMoreText>
 								</S.SeeMoreContainer>
 							)}
 						</S.TextContainer>
 						{isTextExpanded && showSeeMore && (
-							<S.SeeLessText onClick={() => setIsTextExpanded(!isTextExpanded)}>
-								See less
-							</S.SeeLessText>
+							<S.SeeLessText onClick={() => setIsTextExpanded(!isTextExpanded)}>See less</S.SeeLessText>
 						)}
 						{task.images && task.images.length > 0 && <Thumbnails images={task.images} />}
 						<S.MetricsContainer>
@@ -242,9 +230,7 @@ const DeleteButton: React.FC<{
 	taskSize: string
 	taskId?: string
 }> = ({ taskSize, taskId }) => (
-	<S.StyledDeleteButton
-		appearance="icon"
-		onClick={() => vscode.postMessage({ type: "deleteTaskWithId", text: taskId })}>
+	<S.StyledDeleteButton appearance="icon" onClick={() => vscode.postMessage({ type: "deleteTaskWithId", text: taskId })}>
 		<S.DeleteButtonContent>
 			<i className={`codicon codicon-trash`} />
 			{taskSize}

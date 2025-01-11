@@ -299,7 +299,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		setTextAreaDisabled(true)
 		setClineAsk(undefined)
 		setEnableButtons(false)
-			disableAutoScrollRef.current = false
+		disableAutoScrollRef.current = false
 	}, [clineAsk, startNewTask])
 
 	const handleSecondaryButtonClick = useCallback(() => {
@@ -531,10 +531,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				: secondToLastGroup?.ts === ts
 
 			const isLastCollapsedApiReq =
-				isLast &&
-				!Array.isArray(lastGroup) &&
-				lastGroup?.say === "api_req_started" &&
-				!expandedRows[lastGroup.ts]
+				isLast && !Array.isArray(lastGroup) && lastGroup?.say === "api_req_started" && !expandedRows[lastGroup.ts]
 
 			setExpandedRows((prev) => ({
 				...prev,
@@ -664,11 +661,11 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					<S.ScrollableContent>
 						{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
 						<S.WelcomeContent>
-							<S.WelcomeHeading>
-								Hey I'm CLINE, how can I assist you today?
-							</S.WelcomeHeading>
+							<S.WelcomeHeading>Hey I'm CLINE, how can I assist you today?</S.WelcomeHeading>
 							<p>
-								While I can utilize multiple AI models, I work best with Claude 3.5 Sonnet. I can assist with complex coding tasks, create and edit files, explore projects, use the browser, and run terminal commands with your approval. I can also create new tools to expand my abilities.
+								While I can utilize multiple AI models, I work best with Claude 3.5 Sonnet. I can assist with
+								complex coding tasks, create and edit files, explore projects, use the browser, and run terminal
+								commands with your approval. I can also create new tools to expand my abilities.
 							</p>
 						</S.WelcomeContent>
 						{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}

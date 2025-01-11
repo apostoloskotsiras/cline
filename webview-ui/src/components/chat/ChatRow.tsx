@@ -25,8 +25,6 @@ import McpResourceRow from "../mcp/McpResourceRow"
 import McpToolRow from "../mcp/McpToolRow"
 import { highlightMentions } from "./TaskHeader"
 
-
-
 interface ChatRowProps {
 	message: ClineMessage
 	isExpanded: boolean
@@ -47,67 +45,64 @@ const ChatRow = memo(
 			if (message.text != null && message.say === "api_req_started") {
 				const info: ClineApiReqInfo = JSON.parse(message.text || "{}")
 				const { cost, cancelReason, streamingFailedMessage } = info
-				
+
 				// Get the request failed message if it exists
-				const requestFailedMessage = isLast && lastModifiedMessage?.ask === "api_req_failed" 
-					? lastModifiedMessage?.text
-					: undefined
+				const requestFailedMessage =
+					isLast && lastModifiedMessage?.ask === "api_req_failed" ? lastModifiedMessage?.text : undefined
 
 				// Use the exact same logic as the icon system
 				if (cancelReason != null) {
-					return { state: 'cancelled' }
+					return { state: "cancelled" }
 				} else if (cost != null) {
-					return { state: 'completed' }
+					return { state: "completed" }
 				} else if (streamingFailedMessage || requestFailedMessage) {
-					return { 
-						state: 'failed',
+					return {
+						state: "failed",
 						streamingFailedMessage,
-						requestFailedMessage
+						requestFailedMessage,
 					}
 				} else {
-					return { state: 'loading' }
+					return { state: "loading" }
 				}
 			}
-			return { state: 'none' }
-		}, [message.text, message.say, isLast, lastModifiedMessage]);
+			return { state: "none" }
+		}, [message.text, message.say, isLast, lastModifiedMessage])
 
 		let shouldShowCheckpoints =
 			message.lastCheckpointHash != null &&
 			(message.say === "tool" ||
-					message.ask === "tool" ||
-						message.say === "command" ||
-						message.ask === "command" ||
-						message.say === "completion_result" ||
-						message.ask === "completion_result" ||
-						message.say === "use_mcp_server" ||
-						message.ask === "use_mcp_server")
+				message.ask === "tool" ||
+				message.say === "command" ||
+				message.ask === "command" ||
+				message.say === "completion_result" ||
+				message.ask === "completion_result" ||
+				message.say === "use_mcp_server" ||
+				message.ask === "use_mcp_server")
 
 		if (shouldShowCheckpoints && isLast) {
 			shouldShowCheckpoints =
 				lastModifiedMessage?.ask === "resume_completed_task" || lastModifiedMessage?.ask === "resume_task"
 		}
-		
+
 		const [chatrow, { height }] = useSize(
 			message.type === "ask" ? (
-			  <S.QuestionContainer>
-				<ChatRowContent {...props} />
-				{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
-			  </S.QuestionContainer>
+				<S.QuestionContainer>
+					<ChatRowContent {...props} />
+					{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
+				</S.QuestionContainer>
 			) : (
-			  <S.UserMessageContainer
-				className={`
-				  ${apiState.state === 'loading' && !apiState.requestFailedMessage && !apiState.streamingFailedMessage ? 'loading-api' : ''}
-				  ${apiState.state === 'completed' ? 'completed-api' : ''}
-				  ${apiState.state === 'cancelled' ? 'cancelled-api' : ''}
-				  ${apiState.state === 'failed' || apiState.requestFailedMessage || apiState.streamingFailedMessage ? 'failed-api' : ''}
-				`}
-			  >
-				<ChatRowContent {...props} />
-				{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
-			  </S.UserMessageContainer>
-			)
-		  )
-		
+				<S.UserMessageContainer
+					className={`
+				  ${apiState.state === "loading" && !apiState.requestFailedMessage && !apiState.streamingFailedMessage ? "loading-api" : ""}
+				  ${apiState.state === "completed" ? "completed-api" : ""}
+				  ${apiState.state === "cancelled" ? "cancelled-api" : ""}
+				  ${apiState.state === "failed" || apiState.requestFailedMessage || apiState.streamingFailedMessage ? "failed-api" : ""}
+				`}>
+					<ChatRowContent {...props} />
+					{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
+				</S.UserMessageContainer>
+			),
+		)
 
 		useEffect(() => {
 			// used for partials, command output, etc.
@@ -209,11 +204,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 			case "command":
 				return [
 					<S.CommandIconContainer key="icon">
-						{isCommandExecuting ? (
-							<ProgressIndicator />
-						) : (
-							<span className="codicon codicon-terminal" />
-						)}
+						{isCommandExecuting ? <ProgressIndicator /> : <span className="codicon codicon-terminal" />}
 					</S.CommandIconContainer>,
 					<S.CommandTitle key="title">
 						{message.type === "ask" ? "Cline wants to execute this command:" : "Cline executed this command:"}
@@ -897,29 +888,29 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					)
 				case "diff_error":
 					const diffErrorContainerStyle: React.CSSProperties = {
-						display: 'flex',
-						flexDirection: 'column',
-						background: 'linear-gradient(145deg, rgba(255, 145, 0, 0.15) 0%, rgba(255, 100, 0, 0.1) 100%)',
-						padding: '12px',
-						borderRadius: '6px',
-						fontSize: '13px',
-						border: '1px solid rgba(255, 145, 0, 0.2)',
-						boxShadow: '0 4px 6px rgba(255, 145, 0, 0.05), 0 1px 3px rgba(255, 145, 0, 0.03)'
-					};
+						display: "flex",
+						flexDirection: "column",
+						background: "linear-gradient(145deg, rgba(255, 145, 0, 0.15) 0%, rgba(255, 100, 0, 0.1) 100%)",
+						padding: "12px",
+						borderRadius: "6px",
+						fontSize: "13px",
+						border: "1px solid rgba(255, 145, 0, 0.2)",
+						boxShadow: "0 4px 6px rgba(255, 145, 0, 0.05), 0 1px 3px rgba(255, 145, 0, 0.03)",
+					}
 
 					const diffErrorHeaderStyle: React.CSSProperties = {
-						display: 'flex',
-						alignItems: 'center',
-						gap: '8px',
-						marginBottom: '6px',
+						display: "flex",
+						alignItems: "center",
+						gap: "8px",
+						marginBottom: "6px",
 						fontWeight: 500,
-						color: 'rgba(255, 200, 100, 0.95)'
-					};
+						color: "rgba(255, 200, 100, 0.95)",
+					}
 
 					const diffErrorMessageStyle: React.CSSProperties = {
 						lineHeight: 1.4,
-						color: 'rgba(255, 200, 100, 0.85)'
-					};
+						color: "rgba(255, 200, 100, 0.85)",
+					}
 
 					return (
 						<div style={diffErrorContainerStyle}>
@@ -928,7 +919,8 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 								<span>Diff Edit Failed</span>
 							</div>
 							<div style={diffErrorMessageStyle}>
-								This usually happens when the search patterns don't match the file content. The system will automatically retry with adjusted parameters.
+								This usually happens when the search patterns don't match the file content. The system will
+								automatically retry with adjusted parameters.
 							</div>
 						</div>
 					)

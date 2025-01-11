@@ -381,11 +381,8 @@ const McpView = memo(({ onDone }: McpViewProps) => {
 					<div className="mcp-title">
 						<i className="codicon codicon-server"></i>
 						<span>MCP SERVERS</span>
-				</div>
-					<div 
-						className="done-button"
-						onClick={onDone}
-					>
+					</div>
+					<div className="done-button" onClick={onDone}>
 						<i className="codicon codicon-check"></i>
 						<span>Done</span>
 					</div>
@@ -400,7 +397,6 @@ const McpView = memo(({ onDone }: McpViewProps) => {
 // Server Row Component
 const ServerRow = memo(({ server }: { server: McpServer }) => {
 	const [isExpanded, setIsExpanded] = useState(false)
-
 
 	const handleRowClick = () => {
 		if (!server.error) {
@@ -419,8 +415,8 @@ const ServerRow = memo(({ server }: { server: McpServer }) => {
 		<div className="server-card">
 			<div className="server-header" onClick={handleRowClick}>
 				{!server.error && (
-					<i 
-						className={`codicon codicon-chevron-${isExpanded ? "down" : "right"}`} 
+					<i
+						className={`codicon codicon-chevron-${isExpanded ? "down" : "right"}`}
 						style={{ marginRight: "8px", fontSize: "14px", opacity: 0.8 }}
 					/>
 				)}
@@ -430,17 +426,14 @@ const ServerRow = memo(({ server }: { server: McpServer }) => {
 
 			{server.error ? (
 				<div className="server-content">
-					<div style={{
+					<div
+						style={{
 							color: "var(--vscode-testing-iconFailed)",
 							marginBottom: "8px",
 						}}>
 						{server.error}
 					</div>
-					<button
-						className="mcp-button"
-						onClick={handleRestart}
-						disabled={server.status === "connecting"}
-					>
+					<button className="mcp-button" onClick={handleRestart} disabled={server.status === "connecting"}>
 						<i className="codicon codicon-debug-restart"></i>
 						<span>{server.status === "connecting" ? "Retrying..." : "Retry Connection"}</span>
 					</button>
@@ -507,11 +500,7 @@ const ServerRow = memo(({ server }: { server: McpServer }) => {
 							</VSCodePanelView>
 						</VSCodePanels>
 
-						<button
-							className="mcp-button"
-							onClick={handleRestart}
-							disabled={server.status === "connecting"}
-						>
+						<button className="mcp-button" onClick={handleRestart} disabled={server.status === "connecting"}>
 							<i className="codicon codicon-debug-restart"></i>
 							<span>{server.status === "connecting" ? "Restarting..." : "Restart Server"}</span>
 						</button>
@@ -531,12 +520,13 @@ const McpContent = memo(({ servers }: { servers: McpServer[] }) => {
 	return (
 		<div className="mcp-content">
 			<div className="mcp-content-inner">
-				<div style={{
-					color: "var(--vscode-foreground)",
-					fontSize: "13px",
-					marginBottom: "20px",
-					marginTop: "5px",
-				}}>
+				<div
+					style={{
+						color: "var(--vscode-foreground)",
+						fontSize: "13px",
+						marginBottom: "20px",
+						marginTop: "5px",
+					}}>
 					The{" "}
 					<VSCodeLink href="https://github.com/modelcontextprotocol" style={{ display: "inline" }}>
 						Model Context Protocol
@@ -553,11 +543,12 @@ const McpContent = memo(({ servers }: { servers: McpServer[] }) => {
 				</div>
 
 				{servers.length > 0 && (
-					<div style={{
-						display: "flex",
-						flexDirection: "column",
-						gap: "10px",
-					}}>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							gap: "10px",
+						}}>
 						{servers.map((server) => (
 							<ServerRow key={server.name} server={server} />
 						))}
@@ -566,10 +557,7 @@ const McpContent = memo(({ servers }: { servers: McpServer[] }) => {
 			</div>
 
 			<div className="mcp-settings-button-container">
-				<div 
-					className="mcp-settings-button"
-					onClick={handleOpenSettings}
-				>
+				<div className="mcp-settings-button" onClick={handleOpenSettings}>
 					<i className="codicon codicon-edit"></i>
 					<span>Edit MCP Settings</span>
 				</div>

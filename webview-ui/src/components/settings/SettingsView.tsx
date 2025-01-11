@@ -355,10 +355,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 						<i className="codicon codicon-settings-gear"></i>
 						<span>SETTINGS</span>
 					</div>
-					<div 
-						className="done-button"
-						onClick={handleSubmit}
-					>
+					<div className="done-button" onClick={handleSubmit}>
 						<i className="codicon codicon-check"></i>
 						<span>Done</span>
 					</div>
@@ -378,7 +375,9 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 							value={customInstructions ?? ""}
 							style={{ width: "100%" }}
 							rows={4}
-							placeholder={'e.g. "Run unit tests at the end", "Use TypeScript with async/await", "Speak in Spanish"'}
+							placeholder={
+								'e.g. "Run unit tests at the end", "Use TypeScript with async/await", "Speak in Spanish"'
+							}
 							onInput={(e: any) => setCustomInstructions(e.target?.value ?? "")}>
 							<span className="settings-label">Custom Instructions</span>
 						</VSCodeTextArea>
@@ -390,11 +389,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 					{IS_DEV && (
 						<div className="settings-section">
 							<span className="settings-label">Debug</span>
-							<button
-								className="done-button"
-								onClick={handleResetState}
-								style={{ marginTop: 8 }}
-							>
+							<button className="done-button" onClick={handleResetState} style={{ marginTop: 8 }}>
 								<i className="codicon codicon-debug-restart"></i>
 								<span>Reset State</span>
 							</button>
@@ -412,10 +407,11 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 							https://github.com/cline/cline
 						</VSCodeLink>
 					</p>
-					<p style={{
-						fontStyle: "italic",
-						margin: "10px 0 0 0",
-					}}>
+					<p
+						style={{
+							fontStyle: "italic",
+							margin: "10px 0 0 0",
+						}}>
 						v{version}
 					</p>
 				</div>

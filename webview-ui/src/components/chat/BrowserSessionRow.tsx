@@ -219,7 +219,10 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				{isBrowsing ? (
 					<ProgressIndicator />
 				) : (
-					<span className="codicon codicon-inspect" style={{ color: "var(--vscode-foreground)", marginBottom: "-1.5px" }} />
+					<span
+						className="codicon codicon-inspect"
+						style={{ color: "var(--vscode-foreground)", marginBottom: "-1.5px" }}
+					/>
 				)}
 				<span style={{ fontWeight: "bold" }}>
 					<>{isAutoApproved ? "Cline is using the browser:" : "Cline wants to use the browser:"}</>
@@ -228,9 +231,7 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 
 			<S.BrowserContainer>
 				<S.URLBar>
-					<S.URLText $empty={!displayState.url}>
-						{displayState.url || "http"}
-					</S.URLText>
+					<S.URLText $empty={!displayState.url}>{displayState.url || "http"}</S.URLText>
 				</S.URLBar>
 
 				<S.ScreenshotArea>
@@ -260,9 +261,7 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				</S.ScreenshotArea>
 
 				<div style={{ width: "100%" }}>
-					<S.ConsoleHeader
-						$expanded={consoleLogsExpanded}
-						onClick={() => setConsoleLogsExpanded(!consoleLogsExpanded)}>
+					<S.ConsoleHeader $expanded={consoleLogsExpanded} onClick={() => setConsoleLogsExpanded(!consoleLogsExpanded)}>
 						<span className={`codicon codicon-chevron-${consoleLogsExpanded ? "down" : "right"}`} />
 						<S.ConsoleTitle>Console Logs</S.ConsoleTitle>
 					</S.ConsoleHeader>

@@ -60,17 +60,11 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 						<div>
 							<span>/</span>
 							{option.value?.startsWith("/.") && <span>.</span>}
-							<S.PathText>
-								{removeLeadingNonAlphanumeric(option.value || "") + "\u200E"}
-							</S.PathText>
+							<S.PathText>{removeLeadingNonAlphanumeric(option.value || "") + "\u200E"}</S.PathText>
 						</div>
 					)
 				} else {
-					return (
-						<S.MenuText>
-							Add {option.type === ContextMenuOptionType.File ? "File" : "Folder"}
-						</S.MenuText>
-					)
+					return <S.MenuText>Add {option.type === ContextMenuOptionType.File ? "File" : "Folder"}</S.MenuText>
 				}
 		}
 	}

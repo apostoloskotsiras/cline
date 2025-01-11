@@ -1,429 +1,429 @@
 /* Modern AutoApprove Menu Styles */
 
 .menu-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    margin: 10px 16px 10px 16px;
-    background: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-panel-border);
-    border-radius: 6px;
-    position: relative;
-    cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 12px;
+	margin: 10px 16px 10px 16px;
+	background: var(--vscode-editor-background);
+	border: 1px solid var(--vscode-panel-border);
+	border-radius: 6px;
+	position: relative;
+	cursor: pointer;
 }
 
 .menu-header:focus-visible {
-    outline: 1px solid var(--vscode-focusBorder);
-    outline-offset: -1px;
+	outline: 1px solid var(--vscode-focusBorder);
+	outline-offset: -1px;
 }
 
 .menu-header .checkbox-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .menu-header .label-text {
-    color: var(--vscode-foreground);
-    font-size: 13px;
-    font-weight: 500;
-    white-space: nowrap;
+	color: var(--vscode-foreground);
+	font-size: 13px;
+	font-weight: 500;
+	white-space: nowrap;
 }
 
 .menu-header .tag-container {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: nowrap;
-    overflow-x: hidden;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-wrap: nowrap;
+	overflow-x: hidden;
 }
 
 .menu-content {
-    overflow: hidden;
-    opacity: 0;
-    max-height: 0;
-    transform: translateY(-5px);
-    transition: all 0.15s ease;
-    background: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-panel-border);
-    border-radius: 6px;
-    margin: 10px 16px 5px 16px;
+	overflow: hidden;
+	opacity: 0;
+	max-height: 0;
+	transform: translateY(-5px);
+	transition: all 0.15s ease;
+	background: var(--vscode-editor-background);
+	border: 1px solid var(--vscode-panel-border);
+	border-radius: 6px;
+	margin: 10px 16px 5px 16px;
 }
 
 .menu-content.expanded {
-    opacity: 1;
-    max-height: 500px;
-    transform: translateY(0);
+	opacity: 1;
+	max-height: 500px;
+	transform: translateY(0);
 }
 
 .menu-content-inner {
-    padding: 16px;
-    max-height: 450px;
-    overflow-y: auto;
-    background: var(--vscode-editor-background);
-    border-radius: 6px;
-    margin: 0;
-    transition: all 0.2s ease;
+	padding: 16px;
+	max-height: 450px;
+	overflow-y: auto;
+	background: var(--vscode-editor-background);
+	border-radius: 6px;
+	margin: 0;
+	transition: all 0.2s ease;
 }
 
 /* Description text at the top */
 .menu-content-inner > .description-text:first-child {
-    margin-top: 0;
-    background: color-mix(in srgb, var(--vscode-errorForeground) 8%, var(--vscode-editor-background));
-    border: 1px solid var(--vscode-errorForeground);
-    padding: 12px 16px;
-    border-radius: 6px;
-    color: var(--vscode-foreground);
-    opacity: 1;
+	margin-top: 0;
+	background: color-mix(in srgb, var(--vscode-errorForeground) 8%, var(--vscode-editor-background));
+	border: 1px solid var(--vscode-errorForeground);
+	padding: 12px 16px;
+	border-radius: 6px;
+	color: var(--vscode-foreground);
+	opacity: 1;
 }
 
 /* Section Styling */
 .section-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    padding: 12px 16px;
-    background: var(--vscode-editor-background);
-    border-radius: 6px;
-    border: 1px solid var(--vscode-panel-border);
-    position: relative;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 16px;
+	padding: 12px 16px;
+	background: var(--vscode-editor-background);
+	border-radius: 6px;
+	border: 1px solid var(--vscode-panel-border);
+	position: relative;
 }
 
 .section-header h3 {
-    margin: 0;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--vscode-foreground);
-    letter-spacing: 0.3px;
-    flex: 1;
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--vscode-foreground);
+	letter-spacing: 0.3px;
+	flex: 1;
 }
 
 .section-header .codicon {
-    color: var(--vscode-textLink-foreground);
-    font-size: 16px;
-    opacity: 0.9;
+	color: var(--vscode-textLink-foreground);
+	font-size: 16px;
+	opacity: 0.9;
 }
 
 .section-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--vscode-badge-background);
-    color: var(--vscode-badge-foreground);
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--vscode-badge-background);
+	color: var(--vscode-badge-foreground);
+	min-width: 20px;
+	height: 20px;
+	padding: 0 6px;
+	border-radius: 10px;
+	font-size: 11px;
+	font-weight: 500;
 }
 
 .settings-options-group {
-    padding: 0 8px;
+	padding: 0 8px;
 }
 
 .settings-option {
-    position: relative;
-    padding: 12px 16px;
-    border-radius: 6px;
-    background: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-panel-border);
-    margin-bottom: 8px;
+	position: relative;
+	padding: 12px 16px;
+	border-radius: 6px;
+	background: var(--vscode-editor-background);
+	border: 1px solid var(--vscode-panel-border);
+	margin-bottom: 8px;
 }
 
 .settings-option:last-child {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 .checkbox-description {
-    margin: 6px 0 0 24px;
-    padding: 8px 12px 8px 36px;
-    color: var(--vscode-descriptionForeground);
-    font-size: 12px;
-    line-height: 1.5;
-    background: var(--vscode-textBlockQuote-background);
-    border-radius: 4px;
-    position: relative;
-    min-height: 32px;
-    display: flex;
-    align-items: flex-start;
+	margin: 6px 0 0 24px;
+	padding: 8px 12px 8px 36px;
+	color: var(--vscode-descriptionForeground);
+	font-size: 12px;
+	line-height: 1.5;
+	background: var(--vscode-textBlockQuote-background);
+	border-radius: 4px;
+	position: relative;
+	min-height: 32px;
+	display: flex;
+	align-items: flex-start;
 }
 
 /* Description severity styles */
 .checkbox-description.severity-critical {
-    background: color-mix(in srgb, #000000 40%, #0000);
-    border-left: 2px solid var(--vscode-errorForeground);
+	background: color-mix(in srgb, #000000 40%, #0000);
+	border-left: 2px solid var(--vscode-errorForeground);
 }
 
 .checkbox-description.severity-warning {
-    background: color-mix(in srgb, #000000 40%, #0000);
-    border-left: 2px solid #ddb100;
-    color: var(--vscode-foreground);
+	background: color-mix(in srgb, #000000 40%, #0000);
+	border-left: 2px solid #ddb100;
+	color: var(--vscode-foreground);
 }
 
 .checkbox-description.severity-info {
-    background: color-mix(in srgb, #000000 40%, #0000);
-    border-left: 2px solid var(--vscode-textLink-foreground);
+	background: color-mix(in srgb, #000000 40%, #0000);
+	border-left: 2px solid var(--vscode-textLink-foreground);
 }
 
 /* Description icons */
 .checkbox-description::before {
-    content: "";
-    position: absolute;
-    left: 10px;
-    top: 8px;
-    min-width: 16px;
-    width: 16px;
-    height: 16px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.9;
-    pointer-events: none;
-    flex-shrink: 0;
+	content: "";
+	position: absolute;
+	left: 10px;
+	top: 8px;
+	min-width: 16px;
+	width: 16px;
+	height: 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	opacity: 0.9;
+	pointer-events: none;
+	flex-shrink: 0;
 }
 
 .checkbox-description.severity-critical::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23f48771'%3E%3Cpath d='M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.167a5.833 5.833 0 110 11.666A5.833 5.833 0 018 2.167zM7.417 4.5v3.5h1.166V4.5H7.417zm0 4.667V10.5h1.166V9.167H7.417z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23f48771'%3E%3Cpath d='M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.167a5.833 5.833 0 110 11.666A5.833 5.833 0 018 2.167zM7.417 4.5v3.5h1.166V4.5H7.417zm0 4.667V10.5h1.166V9.167H7.417z'/%3E%3C/svg%3E");
 }
 
 .checkbox-description.severity-warning::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ddb100'%3E%3Cpath d='M14.4 12.3 8.35 1.51a.7.7 0 0 0-1.2 0L1.1 12.3a.7.7 0 0 0 .6 1.1h12.6a.7.7 0 0 0 .6-1.1zM7.3 5.3h1v4h-1v-4zm.5 7a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6z'/%3E%3C/svg%3E");
-    opacity: 1;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ddb100'%3E%3Cpath d='M14.4 12.3 8.35 1.51a.7.7 0 0 0-1.2 0L1.1 12.3a.7.7 0 0 0 .6 1.1h12.6a.7.7 0 0 0 .6-1.1zM7.3 5.3h1v4h-1v-4zm.5 7a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6z'/%3E%3C/svg%3E");
+	opacity: 1;
 }
 
 .checkbox-description.severity-info::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23007acc'%3E%3Cpath d='M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.167a5.833 5.833 0 110 11.666A5.833 5.833 0 018 2.167zM7.417 4.5V5.667h1.166V4.5H7.417zm0 2.333v4.834h1.166V6.833H7.417z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23007acc'%3E%3Cpath d='M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.167a5.833 5.833 0 110 11.666A5.833 5.833 0 018 2.167zM7.417 4.5V5.667h1.166V4.5H7.417zm0 2.333v4.834h1.166V6.833H7.417z'/%3E%3C/svg%3E");
 }
 
 /* Main description text at the top */
 .description-text {
-    color: var(--vscode-foreground);
-    font-size: 12px;
-    line-height: 1.6;
-    margin: 0 0 20px 0;
-    padding: 12px 16px;
-    background: color-mix(in srgb, var(--vscode-errorForeground) 8%, var(--vscode-editor-background));
-    border-radius: 6px;
-    position: relative;
-    border: 1px solid var(--vscode-errorForeground);
-    max-width: 100%;
-    box-sizing: border-box;
+	color: var(--vscode-foreground);
+	font-size: 12px;
+	line-height: 1.6;
+	margin: 0 0 20px 0;
+	padding: 12px 16px;
+	background: color-mix(in srgb, var(--vscode-errorForeground) 8%, var(--vscode-editor-background));
+	border-radius: 6px;
+	position: relative;
+	border: 1px solid var(--vscode-errorForeground);
+	max-width: 100%;
+	box-sizing: border-box;
 }
 
 .description-text .checkbox-description {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-    color: var(--vscode-foreground);
-    opacity: 1;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	border: none;
+	color: var(--vscode-foreground);
+	opacity: 1;
 }
 
 /* Remove the warning icon from description text */
 .description-text .checkbox-description::before {
-    display: none;
+	display: none;
 }
 
 .auto-approve-section {
-    background: var(--vscode-editor-background);
-    border-radius: 8px;
-    padding: 20px;
-    margin: 16px 0;
-    border: 1px solid var(--vscode-panel-border);
+	background: var(--vscode-editor-background);
+	border-radius: 8px;
+	padding: 20px;
+	margin: 16px 0;
+	border: 1px solid var(--vscode-panel-border);
 }
 
 /* Custom Checkbox Styling */
 vscode-checkbox {
-    --checkbox-size: 14px;
-    --checkbox-bg: var(--vscode-editor-background);
-    --checkbox-border: var(--vscode-panel-border);
-    --checkbox-checked-bg: var(--vscode-editor-background);
-    --checkbox-checked-border: var(--vscode-panel-border);
-    border-radius: 3px;
+	--checkbox-size: 14px;
+	--checkbox-bg: var(--vscode-editor-background);
+	--checkbox-border: var(--vscode-panel-border);
+	--checkbox-checked-bg: var(--vscode-editor-background);
+	--checkbox-checked-border: var(--vscode-panel-border);
+	border-radius: 3px;
 }
 
 vscode-checkbox[checked]::part(control) {
-    background: var(--vscode-editor-background);
-    border-color: var(--vscode-panel-border);
+	background: var(--vscode-editor-background);
+	border-color: var(--vscode-panel-border);
 }
 
 vscode-checkbox::part(label) {
-    margin-left: 8px;
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--vscode-foreground);
-    opacity: 0.9;
+	margin-left: 8px;
+	font-size: 13px;
+	line-height: 1.4;
+	color: var(--vscode-foreground);
+	opacity: 0.9;
 }
 
 .divider {
-    height: 1px;
-    background: var(--vscode-panel-border);
-    margin: 24px 0;
-    opacity: 0.3;
+	height: 1px;
+	background: var(--vscode-panel-border);
+	margin: 24px 0;
+	opacity: 0.3;
 }
 
 /* Accessibility Focus Styles */
 .settings-option:focus-within,
 .section-header:focus-visible,
 vscode-checkbox:focus-visible {
-    outline: 1px solid var(--vscode-panel-border);
-    outline-offset: -1px;
+	outline: 1px solid var(--vscode-panel-border);
+	outline-offset: -1px;
 }
 
 /* Animation for section transitions */
 .settings-section {
-    margin-bottom: 24px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--vscode-panel-border);
+	margin-bottom: 24px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid var(--vscode-panel-border);
 }
 
 .settings-section:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: none;
 }
 
 /* Responsive improvements */
 @media (max-width: 480px) {
-    .menu-content-inner {
-        padding: 16px;
-    }
-    
-    .settings-options-group {
-        padding: 4px 8px 8px;
-    }
-    
-    .section-header {
-        padding: 10px 12px;
-    }
-    
-    .checkbox-description {
-        margin-left: 12px;
-        padding: 8px 12px 8px 36px;
-        min-height: 32px;
-    }
-    
-    .checkbox-description::before {
-        left: 10px;
-        top: 8px;
-    }
-    
-    #max-requests-description {
-        margin-left: 0;
-        padding: 8px 12px 8px 36px;
-        min-height: 32px;
-    }
-    
-    #max-requests-description::before {
-        left: 10px;
-        top: 8px;
-    }
+	.menu-content-inner {
+		padding: 16px;
+	}
+
+	.settings-options-group {
+		padding: 4px 8px 8px;
+	}
+
+	.section-header {
+		padding: 10px 12px;
+	}
+
+	.checkbox-description {
+		margin-left: 12px;
+		padding: 8px 12px 8px 36px;
+		min-height: 32px;
+	}
+
+	.checkbox-description::before {
+		left: 10px;
+		top: 8px;
+	}
+
+	#max-requests-description {
+		margin-left: 0;
+		padding: 8px 12px 8px 36px;
+		min-height: 32px;
+	}
+
+	#max-requests-description::before {
+		left: 10px;
+		top: 8px;
+	}
 }
 
 /* Text field improvements */
 vscode-text-field::part(control) {
-    min-height: 28px;
-    padding: 4px 8px;
+	min-height: 28px;
+	padding: 4px 8px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
-    .settings-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    
-    .settings-label {
-        min-width: auto;
-    }
-    
-    vscode-text-field {
-        width: 100%;
-    }
+	.settings-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	.settings-label {
+		min-width: auto;
+	}
+
+	vscode-text-field {
+		width: 100%;
+	}
 }
 
 /* Text Field Styling */
 vscode-text-field {
-    background: var(--vscode-editor-background) !important;
-    /* border: 1px solid var(--vscode-panel-border) !important;
+	background: var(--vscode-editor-background) !important;
+	/* border: 1px solid var(--vscode-panel-border) !important;
     border-radius: 4px !important; */
-    height: 28px !important;
-    /* display: flex !important; */
-    align-items: center !important;
+	height: 28px !important;
+	/* display: flex !important; */
+	align-items: center !important;
 }
 
 vscode-text-field:focus-within {
-    outline: 1px solid var(--vscode-panel-border);
-    outline-offset: -1px;
+	outline: 1px solid var(--vscode-panel-border);
+	outline-offset: -1px;
 }
 
 vscode-text-field::part(control) {
-    background: transparent !important;
-    border: none !important;
-    color: var(--vscode-foreground) !important;
-    font-family: var(--vscode-font-family) !important;
-    font-size: 13px !important;
-    height: 26px !important;
-    line-height: 26px !important;
-    padding: 0 8px !important;
-    margin: 0 !important;
-    min-width: 80px !important;
-    display: flex !important;
-    align-items: center !important;
+	background: transparent !important;
+	border: none !important;
+	color: var(--vscode-foreground) !important;
+	font-family: var(--vscode-font-family) !important;
+	font-size: 13px !important;
+	height: 26px !important;
+	line-height: 26px !important;
+	padding: 0 8px !important;
+	margin: 0 !important;
+	min-width: 80px !important;
+	display: flex !important;
+	align-items: center !important;
 }
 
 /* Limits section specific styling */
 .settings-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    background: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-panel-border);
-    border-radius: 6px;
-    margin-bottom: 8px;
-    height: 40px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 12px;
+	background: var(--vscode-editor-background);
+	border: 1px solid var(--vscode-panel-border);
+	border-radius: 6px;
+	margin-bottom: 8px;
+	height: 40px;
 }
 
 .settings-label {
-    color: var(--vscode-foreground);
-    font-size: 13px;
-    font-weight: 500;
-    min-width: 120px;
-    display: flex;
-    align-items: center;
-    height: 100%;
+	color: var(--vscode-foreground);
+	font-size: 13px;
+	font-weight: 500;
+	min-width: 120px;
+	display: flex;
+	align-items: center;
+	height: 100%;
 }
 
 #max-requests-description {
-    margin: 8px 0 0 0;
-    padding: 8px 12px 8px 36px;
-    background: color-mix(in srgb, var(--vscode-textLink-foreground) 8%, transparent);
-    border-left: 2px solid var(--vscode-textLink-foreground);
-    border-radius: 4px;
-    position: relative;
-    color: var(--vscode-descriptionForeground);
-    font-size: 12px;
-    line-height: 1.5;
+	margin: 8px 0 0 0;
+	padding: 8px 12px 8px 36px;
+	background: color-mix(in srgb, var(--vscode-textLink-foreground) 8%, transparent);
+	border-left: 2px solid var(--vscode-textLink-foreground);
+	border-radius: 4px;
+	position: relative;
+	color: var(--vscode-descriptionForeground);
+	font-size: 12px;
+	line-height: 1.5;
 }
 
 #max-requests-description::before {
-    content: "";
-    position: absolute;
-    left: 10px;
-    top: 8px;
-    width: 16px;
-    height: 16px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23007acc'%3E%3Cpath d='M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.167a5.833 5.833 0 110 11.666A5.833 5.833 0 018 2.167zM7.417 4.5V5.667h1.166V4.5H7.417zm0 2.333v4.834h1.166V6.833H7.417z'/%3E%3C/svg%3E");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.9;
-    pointer-events: none;
+	content: "";
+	position: absolute;
+	left: 10px;
+	top: 8px;
+	width: 16px;
+	height: 16px;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23007acc'%3E%3Cpath d='M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.167a5.833 5.833 0 110 11.666A5.833 5.833 0 018 2.167zM7.417 4.5V5.667h1.166V4.5H7.417zm0 2.333v4.834h1.166V6.833H7.417z'/%3E%3C/svg%3E");
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	opacity: 0.9;
+	pointer-events: none;
 }
 
 /* Remove all hover states and transitions */
@@ -433,14 +433,14 @@ vscode-text-field::part(control) {
 .settings-row,
 vscode-checkbox,
 vscode-text-field {
-    transition: none;
+	transition: none;
 }
 
 .menu-header:hover,
 .section-header:hover,
 .settings-option:hover,
 .settings-row:hover {
-    background: var(--vscode-editor-background);
+	background: var(--vscode-editor-background);
 }
 
 /* Update focus styles to be more subtle */
@@ -448,37 +448,37 @@ vscode-text-field {
 .section-header:focus-visible,
 vscode-checkbox:focus-visible,
 vscode-text-field:focus-within {
-    outline: 1px solid var(--vscode-panel-border);
-    outline-offset: -1px;
+	outline: 1px solid var(--vscode-panel-border);
+	outline-offset: -1px;
 }
 
 #max-requests-description.checkbox-description {
-    margin: 8px 0 0 0;
+	margin: 8px 0 0 0;
 }
 
 /* Description severity styles - increase specificity */
 .checkbox-description.severity-critical,
 #max-requests-description.checkbox-description.severity-critical {
-    background: color-mix(in srgb, #000000 40%, #0000);
-    border-left: 2px solid var(--vscode-errorForeground);
+	background: color-mix(in srgb, #000000 40%, #0000);
+	border-left: 2px solid var(--vscode-errorForeground);
 }
 
 .checkbox-description.severity-warning,
 #max-requests-description.checkbox-description.severity-warning {
-    background: color-mix(in srgb, #000000 40%, #0000);
-    border-left: 2px solid #ddb100;
+	background: color-mix(in srgb, #000000 40%, #0000);
+	border-left: 2px solid #ddb100;
 }
 
 .checkbox-description.severity-info,
 #max-requests-description.checkbox-description.severity-info {
-    background: color-mix(in srgb, #000000 40%, #0000);
-    border-left: 2px solid var(--vscode-textLink-foreground);
+	background: color-mix(in srgb, #000000 40%, #0000);
+	border-left: 2px solid var(--vscode-textLink-foreground);
 }
 
 /* Remove the specific background and border overrides */
 #max-requests-description {
-    color: var(--vscode-descriptionForeground);
-    font-size: 12px;
-    line-height: 1.5;
-    position: relative;
+	color: var(--vscode-descriptionForeground);
+	font-size: 12px;
+	line-height: 1.5;
+	position: relative;
 }

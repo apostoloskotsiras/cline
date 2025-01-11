@@ -52,13 +52,16 @@ type TooltipProps = {
 
 const TooltipContainer = styled.div<{ isVisible: boolean; x: number; y: number; align: string }>`
 	position: fixed;
-	top: ${props => props.y}px;
-	left: ${props => props.align === "center" ? props.x + "px" : "auto"};
-	right: ${props => props.align === "right" ? "10px" : "auto"};
-	transform: ${props => props.align === "center" ? "translateX(-50%)" : "none"};
-	opacity: ${props => props.isVisible ? 1 : 0};
-	visibility: ${props => props.isVisible ? "visible" : "hidden"};
-	transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+	top: ${(props) => props.y}px;
+	left: ${(props) => (props.align === "center" ? props.x + "px" : "auto")};
+	right: ${(props) => (props.align === "right" ? "10px" : "auto")};
+	transform: ${(props) => (props.align === "center" ? "translateX(-50%)" : "none")};
+	opacity: ${(props) => (props.isVisible ? 1 : 0)};
+	visibility: ${(props) => (props.isVisible ? "visible" : "hidden")};
+	transition:
+		opacity 0.2s ease,
+		visibility 0.2s ease,
+		transform 0.2s ease;
 	background-color: var(--vscode-editorHoverWidget-background);
 	color: var(--vscode-editorHoverWidget-foreground);
 	padding: 4px 8px;
@@ -75,15 +78,15 @@ const TooltipContainer = styled.div<{ isVisible: boolean; x: number; y: number; 
 const TooltipArrow = styled.div<{ align: string }>`
 	position: absolute;
 	top: -5px;
-	left: ${props => props.align === "center" ? "50%" : props.align === "left" ? "10px" : "auto"};
-	right: ${props => props.align === "right" ? "10px" : "auto"};
-	margin-left: ${props => props.align === "center" ? "-5px" : "0"};
+	left: ${(props) => (props.align === "center" ? "50%" : props.align === "left" ? "10px" : "auto")};
+	right: ${(props) => (props.align === "right" ? "10px" : "auto")};
+	margin-left: ${(props) => (props.align === "center" ? "-5px" : "0")};
 	border-left: 5px solid transparent;
 	border-right: 5px solid transparent;
 	border-bottom: 5px solid var(--vscode-editorHoverWidget-border);
 
 	&::after {
-		content: '';
+		content: "";
 		position: absolute;
 		left: -5px;
 		top: 1px;

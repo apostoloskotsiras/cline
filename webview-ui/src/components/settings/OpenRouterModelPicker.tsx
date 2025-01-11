@@ -357,8 +357,7 @@ const DropdownItem = styled.div<{ isSelected: boolean }>`
 	transition: all 0.2s ease;
 	font-size: 13px;
 
-	background: ${({ isSelected }) => 
-		isSelected ? 'rgba(103, 58, 183, 0.15)' : 'transparent'};
+	background: ${({ isSelected }) => (isSelected ? "rgba(103, 58, 183, 0.15)" : "transparent")};
 
 	&:hover {
 		background: rgba(103, 58, 183, 0.1);
@@ -372,12 +371,16 @@ const StyledMarkdown = styled.div`
 	font-size: 12px;
 	color: var(--vscode-descriptionForeground);
 
-	p, li, ol, ul {
+	p,
+	li,
+	ol,
+	ul {
 		line-height: 1.4;
 		margin: 0;
 	}
 
-	ol, ul {
+	ol,
+	ul {
 		padding-left: 1.5em;
 		margin-left: 0;
 	}
@@ -457,11 +460,8 @@ export const ModelDescriptionMarkdown = memo(
 					</div>
 					{!isExpanded && showSeeMore && (
 						<div className="see-more-container">
-							<button 
-								className="see-more-button"
-								onClick={() => setIsExpanded(true)}
-							>
-								<i className="codicon codicon-chevron-down" style={{ fontSize: '10px' }} />
+							<button className="see-more-button" onClick={() => setIsExpanded(true)}>
+								<i className="codicon codicon-chevron-down" style={{ fontSize: "10px" }} />
 								<span>See more</span>
 							</button>
 						</div>

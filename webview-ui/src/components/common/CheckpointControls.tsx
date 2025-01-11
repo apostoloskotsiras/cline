@@ -61,13 +61,18 @@ const ActionButton = styled.div<{ $isMain?: boolean; $expanded?: boolean }>`
 		}
 	}
 
-	${props => props.$expanded && `
+	${(props) =>
+		props.$expanded &&
+		`
 		i.codicon-history {
 			animation: rotateBack 0.8s ease-out;
 		}
 	`}
 
-	${props => !props.$expanded && props.$isMain && `
+	${(props) =>
+		!props.$expanded &&
+		props.$isMain &&
+		`
 		&.was-expanded i.codicon-history {
 			animation: rotate360 0.8s ease-out;
 		}
@@ -98,23 +103,29 @@ const ActionButton = styled.div<{ $isMain?: boolean; $expanded?: boolean }>`
 	}
 
 	@keyframes glow {
-	    0% { filter: brightness(1); }
-	    50% { filter: brightness(1.3); }
-	    100% { filter: brightness(1); }
+		0% {
+			filter: brightness(1);
+		}
+		50% {
+			filter: brightness(1.3);
+		}
+		100% {
+			filter: brightness(1);
+		}
 	}
 `
 
 const ExpandingOptions = styled.div<{ $expanded: boolean }>`
 	display: flex;
-	width: ${props => props.$expanded ? '52px' : '0'};
+	width: ${(props) => (props.$expanded ? "52px" : "0")};
 	overflow: hidden;
 	transition: all 0.2s ease-out;
 `
 
 const Menu = styled.div<{ $top: number; $right: number }>`
 	position: fixed;
-	top: ${props => props.$top}px;
-	right: ${props => props.$right}px;
+	top: ${(props) => props.$top}px;
+	right: ${(props) => props.$right}px;
 	background: var(--vscode-menu-background);
 	border: 1px solid var(--vscode-widget-border);
 	border-radius: 6px;
@@ -126,7 +137,7 @@ const Menu = styled.div<{ $top: number; $right: number }>`
 
 const MenuItem = styled.div<{ $disabled?: boolean }>`
 	padding: 8px 12px;
-	cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
+	cursor: ${(props) => (props.$disabled ? "not-allowed" : "pointer")};
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
@@ -137,10 +148,12 @@ const MenuItem = styled.div<{ $disabled?: boolean }>`
 	}
 
 	&:hover {
-		background: ${props => props.$disabled ? 'none' : 'var(--vscode-list-hoverBackground)'};
+		background: ${(props) => (props.$disabled ? "none" : "var(--vscode-list-hoverBackground)")};
 	}
 
-	${props => props.$disabled && `
+	${(props) =>
+		props.$disabled &&
+		`
 		opacity: 0.5;
 		pointer-events: none;
 	`}
@@ -171,7 +184,8 @@ const MenuItemTitle = styled.div`
 	}
 
 	@keyframes bounce {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0);
 		}
 		50% {
@@ -180,7 +194,8 @@ const MenuItemTitle = styled.div`
 	}
 
 	@keyframes shake {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateX(0);
 		}
 		25% {
@@ -207,7 +222,7 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 	const [restoreWorkspaceDisabled, setRestoreWorkspaceDisabled] = useState(false)
 	const [restoreBothDisabled, setRestoreBothDisabled] = useState(false)
 	const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
-	
+
 	const buttonRef = useRef<HTMLDivElement>(null)
 	const menuRef = useRef<HTMLDivElement>(null)
 	const chatContainerRef = useRef<HTMLElement | null>(null)
@@ -222,14 +237,14 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 			const handleScroll = () => {
 				requestAnimationFrame(updateMenuPosition)
 			}
-			
+
 			const chatContainer = chatContainerRef.current
-			chatContainer.addEventListener('scroll', handleScroll, { passive: true })
-			window.addEventListener('resize', updateMenuPosition)
-			
+			chatContainer.addEventListener("scroll", handleScroll, { passive: true })
+			window.addEventListener("resize", updateMenuPosition)
+
 			return () => {
-				chatContainer.removeEventListener('scroll', handleScroll)
-				window.removeEventListener('resize', updateMenuPosition)
+				chatContainer.removeEventListener("scroll", handleScroll)
+				window.removeEventListener("resize", updateMenuPosition)
 			}
 		}
 	}, [showMenu])
@@ -249,9 +264,7 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 	useEvent("message", handleMessage)
 
 	useClickAway(menuRef, (event) => {
-		if ((showMenu || expanded) && 
-			buttonRef.current && 
-			!buttonRef.current.contains(event.target as Node)) {
+		if ((showMenu || expanded) && buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
 			if (expanded) setExpanded(false)
 			if (showMenu) setShowMenu(false)
 		}
@@ -261,10 +274,10 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 		if (!buttonRef.current) return
 		const rect = buttonRef.current.getBoundingClientRect()
 		const spaceBelow = window.innerHeight - rect.bottom
-		
+
 		// Position menu below button if there's enough space, otherwise above
 		const top = spaceBelow > 200 ? rect.bottom + 4 : rect.top - 4
-		
+
 		// Always align with the right edge of the button
 		const right = window.innerWidth - rect.right
 
@@ -329,54 +342,40 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 				<ActionButton
 					$isMain
 					$expanded={expanded}
-					className={wasExpanded ? 'was-expanded' : ''}
+					className={wasExpanded ? "was-expanded" : ""}
 					onClick={handleExpandClick}
 					title="Checkpoint Actions">
 					<i className="codicon codicon-history" />
 				</ActionButton>
 			</ButtonGroup>
 
-			{showMenu && createPortal(
-				<Menu
-					ref={menuRef}
-					$top={menuPosition.top}
-					$right={menuPosition.right}>
-					<MenuItem
-						onClick={() => handleRestore("taskAndWorkspace")}
-						$disabled={restoreBothDisabled}>
-						<MenuItemTitle>
-							<i className="codicon codicon-refresh" />
-							Restore Task and Workspace
-						</MenuItemTitle>
-						<MenuItemDescription>
-							Restores both the conversation and your project files
-						</MenuItemDescription>
-					</MenuItem>
-					<MenuItem
-						onClick={() => handleRestore("task")}
-						$disabled={restoreTaskDisabled}>
-						<MenuItemTitle>
-							<i className="codicon codicon-comment-discussion" />
-							Restore Task Only
-						</MenuItemTitle>
-						<MenuItemDescription>
-							Removes messages after this point
-						</MenuItemDescription>
-					</MenuItem>
-					<MenuItem
-						onClick={() => handleRestore("workspace")}
-						$disabled={restoreWorkspaceDisabled}>
-						<MenuItemTitle>
-							<i className="codicon codicon-files" />
-							Restore Workspace Only
-						</MenuItemTitle>
-						<MenuItemDescription>
-							Restores project files only
-						</MenuItemDescription>
-					</MenuItem>
-				</Menu>,
-				document.body
-			)}
+			{showMenu &&
+				createPortal(
+					<Menu ref={menuRef} $top={menuPosition.top} $right={menuPosition.right}>
+						<MenuItem onClick={() => handleRestore("taskAndWorkspace")} $disabled={restoreBothDisabled}>
+							<MenuItemTitle>
+								<i className="codicon codicon-refresh" />
+								Restore Task and Workspace
+							</MenuItemTitle>
+							<MenuItemDescription>Restores both the conversation and your project files</MenuItemDescription>
+						</MenuItem>
+						<MenuItem onClick={() => handleRestore("task")} $disabled={restoreTaskDisabled}>
+							<MenuItemTitle>
+								<i className="codicon codicon-comment-discussion" />
+								Restore Task Only
+							</MenuItemTitle>
+							<MenuItemDescription>Removes messages after this point</MenuItemDescription>
+						</MenuItem>
+						<MenuItem onClick={() => handleRestore("workspace")} $disabled={restoreWorkspaceDisabled}>
+							<MenuItemTitle>
+								<i className="codicon codicon-files" />
+								Restore Workspace Only
+							</MenuItemTitle>
+							<MenuItemDescription>Restores project files only</MenuItemDescription>
+						</MenuItem>
+					</Menu>,
+					document.body,
+				)}
 		</Controls>
 	)
 }

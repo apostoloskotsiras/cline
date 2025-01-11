@@ -12,19 +12,19 @@ import {
 import { MAX_IMAGES_PER_MESSAGE } from "./ChatView"
 import ContextMenu from "./ContextMenu"
 import Thumbnails from "../common/Thumbnails"
-import { 
-	ActionButton, 
-	ChatTextAreaContainer, 
-	SendSvg, 
-	StyledSvg, 
-	TextContainer, 
-	TagsBox, 
-	Tag, 
+import {
+	ActionButton,
+	ChatTextAreaContainer,
+	SendSvg,
+	StyledSvg,
+	TextContainer,
+	TagsBox,
+	Tag,
 	AddContextButton,
 	BottomControls,
 	PhotoButton,
 	TagsSection,
-	ThumbnailsSection
+	ThumbnailsSection,
 } from "./ChatTextArea.styles"
 
 interface ChatTextAreaProps {
@@ -41,8 +41,8 @@ interface ChatTextAreaProps {
 }
 
 interface TaggedItem {
-	type: 'file' | 'folder' | 'problems';
-	value: string;
+	type: "file" | "folder" | "problems"
+	value: string
 }
 
 const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
@@ -154,30 +154,30 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		)
 
 		const handleSendWithAnimation = useCallback(() => {
-			const svg = document.querySelector('.send-icon');
-			const textContainer = document.querySelector('.text-container');
-			
+			const svg = document.querySelector(".send-icon")
+			const textContainer = document.querySelector(".text-container")
+
 			if (svg) {
-				svg.classList.add('flying');
+				svg.classList.add("flying")
 				setTimeout(() => {
-					svg.classList.remove('flying');
-				}, 800);
+					svg.classList.remove("flying")
+				}, 800)
 			}
-			
+
 			if (textContainer) {
-				textContainer.classList.add('disintegrating');
+				textContainer.classList.add("disintegrating")
 				// Call onSend just before the animation completes
 				setTimeout(() => {
-					onSend();
+					onSend()
 					// Remove the class after the text is cleared
 					requestAnimationFrame(() => {
-						textContainer.classList.remove('disintegrating');
-					});
-				}, 590); // Slightly before animation ends
+						textContainer.classList.remove("disintegrating")
+					})
+				}, 590) // Slightly before animation ends
 			} else {
-				onSend();
+				onSend()
 			}
-		}, [onSend]);
+		}, [onSend])
 
 		const handleKeyDown = useCallback(
 			(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -231,17 +231,17 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 
 				// Handle arrow key navigation through mentions
 				if ((event.key === "ArrowLeft" || event.key === "ArrowRight") && !isComposing) {
-					const text = textAreaRef.current?.value || "";
-					const currentPos = textAreaRef.current?.selectionStart || 0;
-					
+					const text = textAreaRef.current?.value || ""
+					const currentPos = textAreaRef.current?.selectionStart || 0
+
 					// Find all mention matches with their positions
-					const mentions: { start: number; end: number }[] = [];
-					let match;
+					const mentions: { start: number; end: number }[] = []
+					let match
 					while ((match = mentionRegexGlobal.exec(text)) !== null) {
 						mentions.push({
 							start: match.index,
-							end: match.index + match[0].length
-						});
+							end: match.index + match[0].length,
+						})
 					}
 
 					// Check if we're at the edge of a mention
@@ -249,18 +249,19 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						if (event.key === "ArrowLeft") {
 							// If cursor is at the end or inside a mention, jump to its start
 							if (currentPos <= mention.end && currentPos > mention.start) {
-								event.preventDefault();
-								const newPos = mention.start;
-								textAreaRef.current?.setSelectionRange(newPos, newPos);
-								return;
+								event.preventDefault()
+								const newPos = mention.start
+								textAreaRef.current?.setSelectionRange(newPos, newPos)
+								return
 							}
-						} else { // ArrowRight
+						} else {
+							// ArrowRight
 							// If cursor is at the start or inside a mention, jump to its end
 							if (currentPos >= mention.start && currentPos < mention.end) {
-								event.preventDefault();
-								const newPos = mention.end;
-								textAreaRef.current?.setSelectionRange(newPos, newPos);
-								return;
+								event.preventDefault()
+								const newPos = mention.end
+								textAreaRef.current?.setSelectionRange(newPos, newPos)
+								return
 							}
 						}
 					}
@@ -489,56 +490,59 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		)
 
 		const extractTaggedItems = useCallback((text: string) => {
-			const matches = text.match(mentionRegexGlobal);
-			if (!matches) return [];
-			
-			return matches.map(match => {
-				const value = match.slice(1); // Remove @ symbol
-				let type: 'file' | 'folder' | 'problems' = 'file';
-				
-				if (value === 'problems') {
-					type = 'problems';
-				} else if (value.endsWith('/')) {
-					type = 'folder';
+			const matches = text.match(mentionRegexGlobal)
+			if (!matches) return []
+
+			return matches.map((match) => {
+				const value = match.slice(1) // Remove @ symbol
+				let type: "file" | "folder" | "problems" = "file"
+
+				if (value === "problems") {
+					type = "problems"
+				} else if (value.endsWith("/")) {
+					type = "folder"
 				}
-				
-				return { type, value };
-			});
-		}, []);
+
+				return { type, value }
+			})
+		}, [])
 
 		useEffect(() => {
-			const items = extractTaggedItems(inputValue);
-			setTaggedItems(items);
-		}, [inputValue, extractTaggedItems]);
+			const items = extractTaggedItems(inputValue)
+			setTaggedItems(items)
+		}, [inputValue, extractTaggedItems])
 
-		const handleRemoveTag = useCallback((tagValue: string) => {
-			const newValue = inputValue.replace(`@${tagValue}`, '').replace(/\s+/g, ' ').trim();
-			setInputValue(newValue);
-		}, [inputValue, setInputValue]);
+		const handleRemoveTag = useCallback(
+			(tagValue: string) => {
+				const newValue = inputValue.replace(`@${tagValue}`, "").replace(/\s+/g, " ").trim()
+				setInputValue(newValue)
+			},
+			[inputValue, setInputValue],
+		)
 
-		const getTagIcon = useCallback((type: 'file' | 'folder' | 'problems') => {
+		const getTagIcon = useCallback((type: "file" | "folder" | "problems") => {
 			switch (type) {
-				case 'folder':
-					return 'folder';
-				case 'problems':
-					return 'warning';
+				case "folder":
+					return "folder"
+				case "problems":
+					return "warning"
 				default:
-					return 'file';
+					return "file"
 			}
-		}, []);
+		}, [])
 
 		const handleAddContext = useCallback(() => {
 			// Trigger the context menu with @ symbol
-			const newValue = inputValue + (inputValue && !inputValue.endsWith(" ") ? " " : "") + "@";
-			setInputValue(newValue);
-			setShowContextMenu(true);
+			const newValue = inputValue + (inputValue && !inputValue.endsWith(" ") ? " " : "") + "@"
+			setInputValue(newValue)
+			setShowContextMenu(true)
 			if (textAreaRef.current) {
-				textAreaRef.current.focus();
-				const newPosition = newValue.length;
-				textAreaRef.current.setSelectionRange(newPosition, newPosition);
-				setCursorPosition(newPosition);
+				textAreaRef.current.focus()
+				const newPosition = newValue.length
+				textAreaRef.current.setSelectionRange(newPosition, newPosition)
+				setCursorPosition(newPosition)
 			}
-		}, [inputValue, setInputValue]);
+		}, [inputValue, setInputValue])
 
 		return (
 			<>
@@ -549,10 +553,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								<Tag key={index}>
 									<i className={`codicon codicon-${getTagIcon(item.type)}`} />
 									<span>{item.value}</span>
-									<div 
-										className="remove-tag" 
-										onClick={() => handleRemoveTag(item.value)}
-									>
+									<div className="remove-tag" onClick={() => handleRemoveTag(item.value)}>
 										<i className="codicon codicon-close" />
 									</div>
 								</Tag>
@@ -569,7 +570,9 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						)}
 					</TagsBox>
 				)}
-				<ChatTextAreaContainer disabled={textAreaDisabled} hasTagsAbove={taggedItems.length > 0 || selectedImages.length > 0}>
+				<ChatTextAreaContainer
+					disabled={textAreaDisabled}
+					hasTagsAbove={taggedItems.length > 0 || selectedImages.length > 0}>
 					<AddContextButton onClick={handleAddContext}>
 						<i className="codicon codicon-plus" />
 						Add context
@@ -669,18 +672,27 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						/>
 					</TextContainer>
 					<BottomControls>
-						<PhotoButton 
+						<PhotoButton
 							disabled={shouldDisableImages}
 							onClick={() => {
 								if (!shouldDisableImages) {
 									onSelectImages()
 								}
-							}}
-						>
+							}}>
 							<StyledSvg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-								<circle cx="8.5" cy="8.5" r="1.5" stroke="none" fill="currentColor"/>
-								<path d="M21 15l-5-5L5 21" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+								<rect
+									x="3"
+									y="3"
+									width="18"
+									height="18"
+									rx="2"
+									ry="2"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+								<circle cx="8.5" cy="8.5" r="1.5" stroke="none" fill="currentColor" />
+								<path d="M21 15l-5-5L5 21" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 							</StyledSvg>
 							<span>photo</span>
 						</PhotoButton>
@@ -688,18 +700,16 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							disabled={textAreaDisabled}
 							onClick={() => {
 								if (!textAreaDisabled) {
-									handleSendWithAnimation();
+									handleSendWithAnimation()
 								}
-							}}
-						>
-							<SendSvg 
+							}}>
+							<SendSvg
 								className="send-icon"
-								width="16" 
-								height="16" 
-								viewBox="0 0 24 24" 
-								fill="none" 
-								stroke="currentColor"
-							>
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor">
 								<path
 									d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
 									strokeWidth="2"

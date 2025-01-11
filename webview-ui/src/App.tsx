@@ -30,7 +30,7 @@ const AppContent = () => {
 
 	return (
 		<div className="h-full flex flex-col">
-			<NavBar 
+			<NavBar
 				showSettings={showSettings}
 				showHistory={showHistory}
 				showMcp={showMcp}
