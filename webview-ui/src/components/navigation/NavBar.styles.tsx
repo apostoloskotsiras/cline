@@ -34,14 +34,15 @@ export const LogoContainer = styled.div`
 
 export const LogoText = styled.span`
     color: #cccccc;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
 `;
 
 export const ButtonContainer = styled.div`
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
 `;
 
 interface NavButtonProps {
@@ -49,17 +50,17 @@ interface NavButtonProps {
 }
 
 export const NavButton = styled.button<NavButtonProps>`
-    padding: 6px 12px;
+    padding: 6px 10px;
     border: none;
     background: ${props => props.$isActive ? '#2d2d2d' : 'transparent'};
     color: ${props => props.$isActive ? '#ffffff' : '#cccccc'};
-    font-size: 13px;
+    font-size: 11px;
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 
     &:hover {
         background: ${props => props.$isActive ? '#2d2d2d' : '#252525'};
