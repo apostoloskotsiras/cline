@@ -3,12 +3,12 @@ import React, { memo, useEffect, useMemo, useRef, useState } from "react"
 import { useSize } from "react-use"
 import { BrowserAction, BrowserActionResult, ClineMessage, ClineSayBrowserAction } from "../../../../src/shared/ExtensionMessage"
 import { vscode } from "../../utils/vscode"
-import CodeBlock, { CODE_BLOCK_BG_COLOR } from "../common/CodeBlock"
+import CodeBlock from "../common/CodeBlock"
 import { ChatRowContent, ProgressIndicator } from "./ChatRow"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import { CheckpointOverlay } from "../common/CheckpointControls"
 import { findLast } from "../../../../src/shared/array"
-import * as S from "./BrowserSessionRow.styles"
+import * as S from "../styles/chat/BrowserSessionRow.styles"
 
 interface BrowserSessionRowProps {
 	messages: ClineMessage[]
@@ -341,7 +341,7 @@ const BrowserSessionRowContent = ({
 						borderRadius: 3,
 						border: "1px solid var(--vscode-editorGroup-border)",
 						overflow: "hidden",
-						backgroundColor: CODE_BLOCK_BG_COLOR,
+						backgroundColor: "var(--vscode-editor-background, --vscode-sideBar-background, rgb(30 30 30))",
 					}}>
 					<CodeBlock source={`${"```"}shell\n${message.text}\n${"```"}`} forceWrap={true} />
 				</div>
@@ -417,7 +417,7 @@ const BrowserActionBox = ({ action, coordinate, text }: { action: BrowserAction;
 			<div
 				style={{
 					borderRadius: 3,
-					backgroundColor: CODE_BLOCK_BG_COLOR,
+					backgroundColor: "var(--vscode-editor-background, --vscode-sideBar-background, rgb(30 30 30))",
 					overflow: "hidden",
 					border: "1px solid var(--vscode-editorGroup-border)",
 				}}>

@@ -1,5 +1,5 @@
 import React from "react"
-import * as S from "./NavBar.styles"
+import * as S from "../styles/navigation/NavBar.styles"
 import { VscAdd, VscServer, VscHistory, VscSettingsGear, VscLinkExternal } from "react-icons/vsc"
 
 interface NavBarProps {

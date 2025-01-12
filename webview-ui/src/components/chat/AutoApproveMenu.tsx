@@ -4,7 +4,7 @@ import { Tag } from "../common/Tag"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { AutoApprovalSettings } from "../../../../src/shared/AutoApprovalSettings"
 import { vscode } from "../../utils/vscode"
-import * as S from "./AutoApproveMenu.styles"
+import * as S from "../styles/chat/AutoApproveMenu.styles"
 
 interface AutoApproveMenuProps {
 	style?: React.CSSProperties

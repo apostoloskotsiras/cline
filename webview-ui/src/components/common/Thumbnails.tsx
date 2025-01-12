@@ -1,6 +1,7 @@
 import React, { useState, useRef, useLayoutEffect, memo } from "react"
 import { useWindowSize } from "react-use"
 import { vscode } from "../../utils/vscode"
+import * as S from "../styles/common/Thumbnails.styles"
 
 interface ThumbnailsProps {
 	images: string[]
@@ -37,61 +38,25 @@ const Thumbnails = ({ images, style, setImages, onHeightChange }: ThumbnailsProp
 	}
 
 	return (
-		<div
-			ref={containerRef}
-			style={{
-				display: "flex",
-				flexWrap: "wrap",
-				gap: 5,
-				rowGap: 3,
-				...style,
-			}}>
+		<S.Container ref={containerRef} style={style}>
 			{images.map((image, index) => (
-				<div
+				<S.ThumbnailWrapper
 					key={index}
-					style={{ position: "relative" }}
 					onMouseEnter={() => setHoveredIndex(index)}
 					onMouseLeave={() => setHoveredIndex(null)}>
-					<img
+					<S.ThumbnailImage
 						src={image}
 						alt={`Thumbnail ${index + 1}`}
-						style={{
-							width: 34,
-							height: 34,
-							objectFit: "cover",
-							borderRadius: 4,
-							cursor: "pointer",
-						}}
 						onClick={() => handleImageClick(image)}
 					/>
 					{isDeletable && hoveredIndex === index && (
-						<div
-							onClick={() => handleDelete(index)}
-							style={{
-								position: "absolute",
-								top: -4,
-								right: -4,
-								width: 13,
-								height: 13,
-								borderRadius: "50%",
-								backgroundColor: "var(--vscode-badge-background)",
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								cursor: "pointer",
-							}}>
-							<span
-								className="codicon codicon-close"
-								style={{
-									color: "var(--vscode-foreground)",
-									fontSize: 10,
-									fontWeight: "bold",
-								}}></span>
-						</div>
+						<S.DeleteButton onClick={() => handleDelete(index)}>
+							<S.DeleteIcon />
+						</S.DeleteButton>
 					)}
-				</div>
+				</S.ThumbnailWrapper>
 			))}
-		</div>
+		</S.Container>
 	)
 }
 

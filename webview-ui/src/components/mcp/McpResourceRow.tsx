@@ -1,4 +1,5 @@
 import { McpResource, McpResourceTemplate } from "../../../../src/shared/mcp"
+import * as S from "../styles/mcp/McpResourceRow.styles"
 
 type McpResourceRowProps = {
 	item: McpResource | McpResourceTemplate
@@ -9,26 +10,12 @@ const McpResourceRow = ({ item }: McpResourceRowProps) => {
 	const uri = hasUri ? item.uri : item.uriTemplate
 
 	return (
-		<div
-			key={uri}
-			style={{
-				padding: "3px 0",
-			}}>
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					marginBottom: "4px",
-				}}>
-				<span className={`codicon codicon-symbol-file`} style={{ marginRight: "6px" }} />
-				<span style={{ fontWeight: 500, wordBreak: "break-all" }}>{uri}</span>
-			</div>
-			<div
-				style={{
-					fontSize: "12px",
-					opacity: 0.8,
-					margin: "4px 0",
-				}}>
+		<S.ResourceRow key={uri}>
+			<S.ResourceHeader>
+				<S.ResourceIcon />
+				<S.ResourceTitle>{uri}</S.ResourceTitle>
+			</S.ResourceHeader>
+			<S.ResourceDescription>
 				{item.name && item.description
 					? `${item.name}: ${item.description}`
 					: !item.name && item.description
@@ -36,23 +23,12 @@ const McpResourceRow = ({ item }: McpResourceRowProps) => {
 						: !item.description && item.name
 							? item.name
 							: "No description"}
-			</div>
-			<div
-				style={{
-					fontSize: "12px",
-				}}>
-				<span style={{ opacity: 0.8 }}>Returns </span>
-				<code
-					style={{
-						color: "var(--vscode-textPreformat-foreground)",
-						background: "var(--vscode-textPreformat-background)",
-						padding: "1px 4px",
-						borderRadius: "3px",
-					}}>
-					{item.mimeType || "Unknown"}
-				</code>
-			</div>
-		</div>
+			</S.ResourceDescription>
+			<S.ResourceMimeType>
+				<S.MimeTypeLabel>Returns </S.MimeTypeLabel>
+				<S.MimeTypeCode>{item.mimeType || "Unknown"}</S.MimeTypeCode>
+			</S.ResourceMimeType>
+		</S.ResourceRow>
 	)
 }
 

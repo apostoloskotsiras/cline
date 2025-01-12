@@ -2,7 +2,7 @@ import { VSCodeBadge, VSCodeProgressRing } from "@vscode/webview-ui-toolkit/reac
 import deepEqual from "fast-deep-equal"
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEvent, useSize } from "react-use"
-import * as S from "./chatrow.styles"
+import * as S from "../styles/chat/chatrow.styles"
 import {
 	ClineApiReqInfo,
 	ClineAskUseMcpServer,
@@ -17,7 +17,7 @@ import { findMatchingResourceOrTemplate } from "../../utils/mcp"
 import { vscode } from "../../utils/vscode"
 import { CheckpointOverlay } from "../common/CheckpointControls"
 import CodeAccordian, { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
-import CodeBlock, { CODE_BLOCK_BG_COLOR } from "../common/CodeBlock"
+import CodeBlock from "../common/CodeBlock"
 import MarkdownBlock from "../common/MarkdownBlock"
 import SuccessButton from "../common/SuccessButton"
 import Thumbnails from "../common/Thumbnails"
@@ -410,7 +410,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 						<div
 							style={{
 								borderRadius: 3,
-								backgroundColor: CODE_BLOCK_BG_COLOR,
+								backgroundColor: "var(--vscode-editor-background, --vscode-sideBar-background, rgb(30 30 30))",
 								overflow: "hidden",
 								border: "1px solid var(--vscode-editorGroup-border)",
 							}}>

@@ -33,7 +33,9 @@ import { ExtensionMessage } from "../../../../src/shared/ExtensionMessage"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 import VSCodeButtonLink from "../common/VSCodeButtonLink"
-import OpenRouterModelPicker, { ModelDescriptionMarkdown, OPENROUTER_MODEL_PICKER_Z_INDEX } from "./OpenRouterModelPicker"
+import OpenRouterModelPicker, { ModelDescriptionMarkdown } from "./OpenRouterModelPicker"
+import * as S from "../styles/settings/ApiOptions.styles"
+import { OPENROUTER_MODEL_PICKER_Z_INDEX } from "../styles/settings/OpenRouterModelPicker.styles"
 
 interface ApiOptionsProps {
 	showModelOptions: boolean
@@ -125,6 +127,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 
 	return (
 		<div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+			<style>{S.styles}</style>
 			<div className="dropdown-container">
 				<span className="settings-label">API Provider</span>
 				<VSCodeDropdown

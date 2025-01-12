@@ -24,7 +24,7 @@ import ChatRow from "./ChatRow"
 import ChatTextArea from "./ChatTextArea"
 import TaskHeader from "./TaskHeader"
 import AutoApproveMenu from "./AutoApproveMenu"
-import * as S from "./ChatView.styles"
+import * as S from "../styles/chat/ChatView.styles"
 
 interface ChatViewProps {
 	isHidden: boolean

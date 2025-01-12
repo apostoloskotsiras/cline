@@ -1,6 +1,7 @@
 import { memo, useMemo } from "react"
 import { getLanguageFromPath } from "../../utils/getLanguageFromPath"
-import CodeBlock, { CODE_BLOCK_BG_COLOR } from "./CodeBlock"
+import CodeBlock from "./CodeBlock"
+import * as S from "../styles/common/CodeAccordian.styles"
 
 interface CodeAccordianProps {
 	code?: string
@@ -39,73 +40,26 @@ const CodeAccordian = ({
 	)
 
 	return (
-		<div
-			style={{
-				borderRadius: 3,
-				backgroundColor: CODE_BLOCK_BG_COLOR,
-				overflow: "hidden", // This ensures the inner scrollable area doesn't overflow the rounded corners
-				border: "1px solid var(--vscode-editorGroup-border)",
-			}}>
+		<S.Container>
 			{(path || isFeedback || isConsoleLogs) && (
-				<div
-					style={{
-						color: "var(--vscode-descriptionForeground)",
-						display: "flex",
-						alignItems: "center",
-						padding: "9px 10px",
-						cursor: isLoading ? "wait" : "pointer",
-						opacity: isLoading ? 0.7 : 1,
-						// pointerEvents: isLoading ? "none" : "auto",
-						userSelect: "none",
-						WebkitUserSelect: "none",
-						MozUserSelect: "none",
-						msUserSelect: "none",
-					}}
-					onClick={isLoading ? undefined : onToggleExpand}>
+				<S.Header isLoading={isLoading} onClick={isLoading ? undefined : onToggleExpand}>
 					{isFeedback || isConsoleLogs ? (
-						<div style={{ display: "flex", alignItems: "center" }}>
-							<span
-								className={`codicon codicon-${isFeedback ? "feedback" : "output"}`}
-								style={{ marginRight: "6px" }}></span>
-							<span
-								style={{
-									whiteSpace: "nowrap",
-									overflow: "hidden",
-									textOverflow: "ellipsis",
-									marginRight: "8px",
-								}}>
-								{isFeedback ? "User Edits" : "Console Logs"}
-							</span>
-						</div>
+						<S.HeaderContent>
+							<S.HeaderIcon className={`codicon codicon-${isFeedback ? "feedback" : "output"}`} />
+							<S.HeaderText>{isFeedback ? "User Edits" : "Console Logs"}</S.HeaderText>
+						</S.HeaderContent>
 					) : (
 						<>
 							{path?.startsWith(".") && <span>.</span>}
-							<span
-								style={{
-									whiteSpace: "nowrap",
-									overflow: "hidden",
-									textOverflow: "ellipsis",
-									marginRight: "8px",
-									// trick to get ellipsis at beginning of string
-									direction: "rtl",
-									textAlign: "left",
-								}}>
-								{removeLeadingNonAlphanumeric(path ?? "") + "\u200E"}
-							</span>
+							<S.PathText>{removeLeadingNonAlphanumeric(path ?? "") + "\u200E"}</S.PathText>
 						</>
 					)}
-					<div style={{ flexGrow: 1 }}></div>
-					<span className={`codicon codicon-chevron-${isExpanded ? "up" : "down"}`}></span>
-				</div>
+					<S.Spacer />
+					<span className={`codicon codicon-chevron-${isExpanded ? "up" : "down"}`} />
+				</S.Header>
 			)}
 			{(!(path || isFeedback || isConsoleLogs) || isExpanded) && (
-				<div
-					//className="code-block-scrollable" this doesn't seem to be necessary anymore, on silicon macs it shows the native mac scrollbar instead of the vscode styled one
-					style={{
-						overflowX: "auto",
-						overflowY: "hidden",
-						maxWidth: "100%",
-					}}>
+				<S.CodeBlockContainer>
 					<CodeBlock
 						source={`${"```"}${diff !== undefined ? "diff" : inferredLanguage}\n${(
 							code ??
@@ -113,9 +67,9 @@ const CodeAccordian = ({
 							""
 						).trim()}\n${"```"}`}
 					/>
-				</div>
+				</S.CodeBlockContainer>
 			)}
-		</div>
+		</S.Container>
 	)
 }
 

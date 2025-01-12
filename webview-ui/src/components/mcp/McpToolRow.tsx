@@ -1,4 +1,5 @@
 import { McpTool } from "../../../../src/shared/mcp"
+import * as S from "../styles/mcp/McpToolRow.styles"
 
 type McpToolRowProps = {
 	tool: McpTool
@@ -6,46 +7,19 @@ type McpToolRowProps = {
 
 const McpToolRow = ({ tool }: McpToolRowProps) => {
 	return (
-		<div
-			key={tool.name}
-			style={{
-				padding: "3px 0",
-			}}>
-			<div style={{ display: "flex" }}>
-				<span className="codicon codicon-symbol-method" style={{ marginRight: "6px" }}></span>
-				<span style={{ fontWeight: 500 }}>{tool.name}</span>
-			</div>
+		<S.ToolRow key={tool.name}>
+			<S.ToolHeader>
+				<S.ToolIcon />
+				<S.ToolName>{tool.name}</S.ToolName>
+			</S.ToolHeader>
 			{tool.description && (
-				<div
-					style={{
-						marginLeft: "0px",
-						marginTop: "4px",
-						opacity: 0.8,
-						fontSize: "12px",
-					}}>
-					{tool.description}
-				</div>
+				<S.ToolDescription>{tool.description}</S.ToolDescription>
 			)}
 			{tool.inputSchema &&
 				"properties" in tool.inputSchema &&
 				Object.keys(tool.inputSchema.properties as Record<string, any>).length > 0 && (
-					<div
-						style={{
-							marginTop: "8px",
-							fontSize: "12px",
-							border: "1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 30%, transparent)",
-							borderRadius: "3px",
-							padding: "8px",
-						}}>
-						<div
-							style={{
-								marginBottom: "4px",
-								opacity: 0.8,
-								fontSize: "11px",
-								textTransform: "uppercase",
-							}}>
-							Parameters
-						</div>
+					<S.ParametersContainer>
+						<S.ParametersHeader>Parameters</S.ParametersHeader>
 						{Object.entries(tool.inputSchema.properties as Record<string, any>).map(([paramName, schema]) => {
 							const isRequired =
 								tool.inputSchema &&
@@ -54,42 +28,20 @@ const McpToolRow = ({ tool }: McpToolRowProps) => {
 								tool.inputSchema.required.includes(paramName)
 
 							return (
-								<div
-									key={paramName}
-									style={{
-										display: "flex",
-										alignItems: "baseline",
-										marginTop: "4px",
-									}}>
-									<code
-										style={{
-											color: "var(--vscode-textPreformat-foreground)",
-											marginRight: "8px",
-										}}>
+								<S.ParameterRow key={paramName}>
+									<S.ParameterCode>
 										{paramName}
-										{isRequired && (
-											<span
-												style={{
-													color: "var(--vscode-errorForeground)",
-												}}>
-												*
-											</span>
-										)}
-									</code>
-									<span
-										style={{
-											opacity: 0.8,
-											overflowWrap: "break-word",
-											wordBreak: "break-word",
-										}}>
+										{isRequired && <S.RequiredIndicator>*</S.RequiredIndicator>}
+									</S.ParameterCode>
+									<S.ParameterDescription>
 										{schema.description || "No description"}
-									</span>
-								</div>
+									</S.ParameterDescription>
+								</S.ParameterRow>
 							)
 						})}
-					</div>
+					</S.ParametersContainer>
 				)}
-		</div>
+		</S.ToolRow>
 	)
 }
 

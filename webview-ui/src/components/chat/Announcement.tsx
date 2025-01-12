@@ -1,6 +1,6 @@
 import { VSCodeButton, VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import { memo } from "react"
-import * as S from "./Announcement.styles"
+import * as S from "../styles/chat/Announcement.styles"
 
 interface AnnouncementProps {
 	version: string

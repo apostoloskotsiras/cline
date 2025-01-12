@@ -3,12 +3,12 @@ import Fuse from "fuse.js"
 import React, { KeyboardEvent, memo, useEffect, useMemo, useRef, useState } from "react"
 import { useRemark } from "react-remark"
 import { useMount } from "react-use"
-import styled from "styled-components"
 import { openRouterDefaultModelId } from "../../../../src/shared/api"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 import { highlight } from "../history/HistoryView"
 import { ModelInfoView, normalizeApiConfiguration } from "./ApiOptions"
+import * as S from "../styles/settings/OpenRouterModelPicker.styles"
 
 const OpenRouterModelPicker: React.FC = () => {
 	const { apiConfiguration, setApiConfiguration, openRouterModels } = useExtensionState()
@@ -132,7 +132,6 @@ const OpenRouterModelPicker: React.FC = () => {
 		<>
 			<style>
 				{`
-
 				.model-search-field {
 					background: rgba(30, 30, 30, 0.6) !important;
 					border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -168,65 +167,13 @@ const OpenRouterModelPicker: React.FC = () => {
 					color: var(--vscode-input-placeholderForeground);
 					opacity: 0.6;
 				}
-
-				.see-more-container {
-					position: absolute;
-					right: 0;
-					bottom: 0;
-					display: flex;
-					align-items: center;
-					background: linear-gradient(to right, 
-						rgba(25, 25, 25, 0) 0%,
-						rgba(25, 25, 25, 0.85) 20%,
-						rgba(25, 25, 25, 0.98) 60%
-					);
-					padding: 4px 8px 4px 24px;
-				}
-
-				.see-more-button {
-					padding: 3px 8px;
-					font-size: 11px;
-					border-radius: 4px;
-					background: rgba(103, 58, 183, 0.15);
-					border: 1px solid rgba(103, 58, 183, 0.25);
-					color: var(--vscode-foreground);
-					cursor: pointer;
-					display: flex;
-					align-items: center;
-					gap: 4px;
-					transition: all 0.2s ease;
-					opacity: 0.9;
-					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				}
-
-				.see-more-button:hover {
-					background: rgba(103, 58, 183, 0.25);
-					border-color: rgba(103, 58, 183, 0.35);
-					opacity: 1;
-					box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-				}
-
-				.see-more-button .codicon {
-					font-size: 11px;
-					opacity: 0.9;
-					transition: transform 0.2s ease;
-				}
-
-				.see-more-button:hover .codicon {
-					transform: translateY(1px);
-				}
-
-				.see-more-button span {
-					font-weight: 500;
-					letter-spacing: 0.2px;
-				}
 				`}
 			</style>
 			<div>
 				<label htmlFor="model-search">
 					<span style={{ fontWeight: 500 }}>Model</span>
 				</label>
-				<DropdownWrapper ref={dropdownRef}>
+				<S.DropdownWrapper ref={dropdownRef}>
 					<VSCodeTextField
 						id="model-search"
 						className="model-search-field"
@@ -240,7 +187,7 @@ const OpenRouterModelPicker: React.FC = () => {
 						onKeyDown={handleKeyDown}
 						style={{
 							width: "100%",
-							zIndex: OPENROUTER_MODEL_PICKER_Z_INDEX,
+							zIndex: S.OPENROUTER_MODEL_PICKER_Z_INDEX,
 							position: "relative",
 						}}>
 						{searchTerm && (
@@ -265,9 +212,9 @@ const OpenRouterModelPicker: React.FC = () => {
 						)}
 					</VSCodeTextField>
 					{isDropdownVisible && (
-						<DropdownList ref={dropdownListRef}>
+						<S.DropdownList ref={dropdownListRef}>
 							{modelSearchResults.map((item, index) => (
-								<DropdownItem
+								<S.DropdownItem
 									key={item.id}
 									ref={(el) => (itemRefs.current[index] = el)}
 									isSelected={index === selectedIndex}
@@ -281,9 +228,9 @@ const OpenRouterModelPicker: React.FC = () => {
 									}}
 								/>
 							))}
-						</DropdownList>
+						</S.DropdownList>
 					)}
-				</DropdownWrapper>
+				</S.DropdownWrapper>
 			</div>
 
 			{hasInfo ? (
@@ -319,88 +266,6 @@ const OpenRouterModelPicker: React.FC = () => {
 
 export default OpenRouterModelPicker
 
-// Dropdown
-
-const DropdownWrapper = styled.div`
-	position: relative;
-	width: 100%;
-`
-
-export const OPENROUTER_MODEL_PICKER_Z_INDEX = 1_000
-
-const DropdownList = styled.div`
-	position: absolute;
-	top: calc(100% + 4px);
-	left: 0;
-	width: 100%;
-	max-height: 200px;
-	overflow-y: auto;
-	background: rgba(30, 30, 30, 0.95);
-	border: 1px solid rgba(103, 58, 183, 0.2);
-	border-radius: 4px;
-	z-index: ${OPENROUTER_MODEL_PICKER_Z_INDEX - 1};
-	backdrop-filter: blur(16px);
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
-	&::-webkit-scrollbar {
-		display: none;
-	}
-	-ms-overflow-style: none;
-	scrollbar-width: none;
-`
-
-const DropdownItem = styled.div<{ isSelected: boolean }>`
-	padding: 8px 12px;
-	cursor: pointer;
-	word-break: break-all;
-	white-space: normal;
-	transition: all 0.2s ease;
-	font-size: 13px;
-
-	background: ${({ isSelected }) => (isSelected ? "rgba(103, 58, 183, 0.15)" : "transparent")};
-
-	&:hover {
-		background: rgba(103, 58, 183, 0.1);
-	}
-`
-
-// Markdown
-
-const StyledMarkdown = styled.div`
-	font-family: var(--vscode-font-family);
-	font-size: 12px;
-	color: var(--vscode-descriptionForeground);
-
-	p,
-	li,
-	ol,
-	ul {
-		line-height: 1.4;
-		margin: 0;
-	}
-
-	ol,
-	ul {
-		padding-left: 1.5em;
-		margin-left: 0;
-	}
-
-	p {
-		white-space: pre-wrap;
-	}
-
-	a {
-		text-decoration: none;
-		color: var(--vscode-textLink-foreground);
-		transition: opacity 0.2s ease;
-
-		&:hover {
-			opacity: 0.8;
-			text-decoration: underline;
-		}
-	}
-`
-
 export const ModelDescriptionMarkdown = memo(
 	({
 		markdown,
@@ -414,7 +279,6 @@ export const ModelDescriptionMarkdown = memo(
 		setIsExpanded: (isExpanded: boolean) => void
 	}) => {
 		const [reactContent, setMarkdown] = useRemark()
-		// const [isExpanded, setIsExpanded] = useState(false)
 		const [showSeeMore, setShowSeeMore] = useState(false)
 		const textContainerRef = useRef<HTMLDivElement>(null)
 		const textRef = useRef<HTMLDivElement>(null)
@@ -429,14 +293,11 @@ export const ModelDescriptionMarkdown = memo(
 				const { clientHeight } = textContainerRef.current
 				const isOverflowing = scrollHeight > clientHeight
 				setShowSeeMore(isOverflowing)
-				// if (!isOverflowing) {
-				// 	setIsExpanded(false)
-				// }
 			}
 		}, [reactContent, setIsExpanded])
 
 		return (
-			<StyledMarkdown key={key} style={{ display: "inline-block", marginBottom: 0 }}>
+			<S.StyledMarkdown key={key} style={{ display: "inline-block", marginBottom: 0 }}>
 				<div
 					ref={textContainerRef}
 					style={{
@@ -452,9 +313,6 @@ export const ModelDescriptionMarkdown = memo(
 							WebkitLineClamp: isExpanded ? "unset" : 3,
 							WebkitBoxOrient: "vertical",
 							overflow: "hidden",
-							// whiteSpace: "pre-wrap",
-							// wordBreak: "break-word",
-							// overflowWrap: "anywhere",
 						}}>
 						{reactContent}
 					</div>
@@ -467,20 +325,7 @@ export const ModelDescriptionMarkdown = memo(
 						</div>
 					)}
 				</div>
-				{/* {isExpanded && showSeeMore && (
-				<div
-					style={{
-						cursor: "pointer",
-						color: "var(--vscode-textLink-foreground)",
-						marginLeft: "auto",
-						textAlign: "right",
-						paddingRight: 2,
-					}}
-					onClick={() => setIsExpanded(false)}>
-					See less
-				</div>
-			)} */}
-			</StyledMarkdown>
+			</S.StyledMarkdown>
 		)
 	},
 )
