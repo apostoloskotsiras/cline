@@ -158,3 +158,267 @@ type ThemeComponentKey = 'settings/SettingsView' | 'chat/ChatView' | 'newCompone
 - [VSCode Theme Color Reference](https://code.visualstudio.com/api/references/theme-color)
 - [Styled Components Documentation](https://styled-components.com/docs)
 - [VSCode Webview UI Toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit) 
+
+## Extending Theme Types
+
+### Adding a New Theme Type
+
+1. **Update Type Definitions**
+   In `src/shared/WebviewMessage.ts`:
+   ```typescript
+   export interface WebviewMessage {
+     // ... other properties
+     themeType?: 'modern' | 'classic' | 'your-new-theme'
+   }
+   ```
+
+2. **Update ExtensionState**
+   In `src/shared/ExtensionMessage.ts`:
+   ```typescript
+   export interface ExtensionState {
+     // ... other properties
+     themeType?: 'modern' | 'classic' | 'your-new-theme'
+   }
+   ```
+
+3. **Update Theme Utilities**
+   In `webview-ui/src/utils/theme.ts`:
+   ```typescript
+   type ThemeType = 'modern' | 'classic' | 'your-new-theme'
+   ```
+
+4. **Create Theme Structure**
+   ```
+   webview-ui/src/components/styles/themes/your-new-theme/
+   ├── dark/
+   │   ├── chat/
+   │   │   └── ChatView.styles.tsx
+   │   └── settings/
+   │       └── SettingsView.styles.tsx
+   └── light/
+       ├── chat/
+       │   └── ChatView.styles.tsx
+       └── settings/
+           └── SettingsView.styles.tsx
+   ```
+
+### Adding Custom Colors
+
+1. **Define Custom CSS Variables**
+   Create a theme-specific variables file:
+   ```typescript
+   // themes/your-new-theme/variables.ts
+   export const darkVariables = css`
+     :root {
+       --theme-primary-color: #007acc;
+       --theme-secondary-color: #6c757d;
+       --theme-success-color: #28a745;
+       --theme-warning-color: #ffc107;
+       --theme-error-color: #dc3545;
+       
+       --theme-background-primary: #1e1e1e;
+       --theme-background-secondary: #252526;
+       --theme-background-tertiary: #333333;
+       
+       --theme-text-primary: #ffffff;
+       --theme-text-secondary: #cccccc;
+       --theme-text-muted: #888888;
+       
+       --theme-border-color: #474747;
+       --theme-divider-color: #404040;
+       
+       --theme-hover-background: rgba(255, 255, 255, 0.1);
+       --theme-active-background: rgba(255, 255, 255, 0.2);
+     }
+   `
+
+   export const lightVariables = css`
+     :root {
+       --theme-primary-color: #0066b8;
+       --theme-secondary-color: #6c757d;
+       --theme-success-color: #28a745;
+       --theme-warning-color: #ffc107;
+       --theme-error-color: #dc3545;
+       
+       --theme-background-primary: #ffffff;
+       --theme-background-secondary: #f5f5f5;
+       --theme-background-tertiary: #e8e8e8;
+       
+       --theme-text-primary: #000000;
+       --theme-text-secondary: #333333;
+       --theme-text-muted: #666666;
+       
+       --theme-border-color: #d4d4d4;
+       --theme-divider-color: #e0e0e0;
+       
+       --theme-hover-background: rgba(0, 0, 0, 0.1);
+       --theme-active-background: rgba(0, 0, 0, 0.2);
+     }
+   `
+   ```
+
+2. **Use Custom Variables in Components**
+   ```typescript
+   // themes/your-new-theme/dark/chat/ChatView.styles.tsx
+   import { css } from 'styled-components'
+   import { darkVariables } from '../../variables'
+
+   export const styles = css`
+     ${darkVariables}
+
+     .chat-container {
+       background: var(--theme-background-primary);
+       color: var(--theme-text-primary);
+     }
+
+     .message {
+       border: 1px solid var(--theme-border-color);
+       background: var(--theme-background-secondary);
+     }
+
+     .message:hover {
+       background: var(--theme-hover-background);
+     }
+
+     .message-timestamp {
+       color: var(--theme-text-muted);
+     }
+
+     .action-button {
+       background: var(--theme-primary-color);
+       color: var(--theme-text-primary);
+       
+       &:hover {
+         background: var(--theme-hover-background);
+       }
+       
+       &:active {
+         background: var(--theme-active-background);
+       }
+     }
+   `
+   ```
+
+### Theme Variants
+
+You can create variants within a theme type:
+
+1. **Define Variant Types**
+   ```typescript
+   type ThemeVariant = 'default' | 'high-contrast' | 'compact'
+   ```
+
+2. **Create Variant-Specific Styles**
+   ```typescript
+   export const styles = css`
+     ${darkVariables}
+     
+     /* Default variant */
+     .theme-default {
+       --spacing-unit: 16px;
+       --border-radius: 4px;
+     }
+     
+     /* High contrast variant */
+     .theme-high-contrast {
+       --theme-text-primary: #ffffff;
+       --theme-background-primary: #000000;
+       --border-radius: 0;
+     }
+     
+     /* Compact variant */
+     .theme-compact {
+       --spacing-unit: 8px;
+       --font-size-base: 12px;
+     }
+   `
+   ```
+
+### Theme Transitions
+
+Add smooth transitions between themes:
+
+```typescript
+export const styles = css`
+  * {
+    transition: background-color 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease;
+  }
+  
+  /* Disable transitions for performance-sensitive elements */
+  .no-transitions {
+    transition: none !important;
+  }
+`
+```
+
+### Theme Debugging
+
+Add debug utilities to your theme:
+
+```typescript
+export const debugStyles = css`
+  /* Add this class to any element to see its boundaries */
+  .debug-layout {
+    outline: 1px solid var(--theme-error-color);
+  }
+  
+  /* Visualize the spacing */
+  .debug-spacing > * {
+    outline: 1px dashed var(--theme-warning-color);
+  }
+`
+```
+
+## Theme Migration
+
+When updating or replacing themes:
+
+1. **Create a Theme Migration Plan**
+   - Document all theme-specific variables and styles
+   - Map old theme values to new theme values
+   - Identify breaking changes
+
+2. **Implement Fallbacks**
+   ```typescript
+   .component {
+     /* Fallback for older themes */
+     background: var(--legacy-background, var(--theme-background-primary));
+     color: var(--legacy-text-color, var(--theme-text-primary));
+   }
+   ```
+
+3. **Version Your Themes**
+   ```typescript
+   export const themeVersion = '2.0.0'
+   export const isLegacyTheme = (version: string) => version.startsWith('1.')
+   ```
+
+## Theme Performance Tips
+
+1. **Minimize CSS Variables**
+   - Group related colors
+   - Use CSS calculations for variations
+   ```css
+   :root {
+     --theme-primary: #007acc;
+     --theme-primary-light: color-mix(in srgb, var(--theme-primary) 80%, white);
+     --theme-primary-dark: color-mix(in srgb, var(--theme-primary) 80%, black);
+   }
+   ```
+
+2. **Use CSS Containment**
+   ```css
+   .theme-container {
+     contain: style layout;
+   }
+   ```
+
+3. **Lazy Load Theme Variants**
+   ```typescript
+   const loadThemeVariant = async (variant: string) => {
+     const styles = await import(`./variants/${variant}.styles`)
+     return styles.default
+   }
+   ``` 
