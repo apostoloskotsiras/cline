@@ -8,7 +8,7 @@ import { formatLargeNumber } from "../../utils/format"
 import { formatSize } from "../../utils/size"
 import { vscode } from "../../utils/vscode"
 import Thumbnails from "../common/Thumbnails"
-import * as S from "../styles/chat/TaskHeader.styles"
+import * as S from "../styles/themes/modern/dark/chat/TaskHeader.styles"
 
 interface TaskHeaderProps {
 	task: ClineMessage

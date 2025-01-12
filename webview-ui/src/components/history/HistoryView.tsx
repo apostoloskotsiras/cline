@@ -6,7 +6,7 @@ import { memo, useMemo, useState, useEffect } from "react"
 import Fuse, { FuseResult } from "fuse.js"
 import { formatLargeNumber } from "../../utils/format"
 import { formatSize } from "../../utils/size"
-import * as S from '../styles/history/HistoryView.styles'
+import * as S from '../styles/themes/modern/dark/history/HistoryView.styles'
 
 type HistoryViewProps = {
 	onDone: () => void

@@ -25,7 +25,7 @@ import {
 	PhotoButton,
 	TagsSection,
 	ThumbnailsSection,
-} from "../styles/chat/ChatTextArea.styles"
+} from "../styles/themes/modern/dark/chat/ChatTextArea.styles"
 
 interface ChatTextAreaProps {
 	inputValue: string

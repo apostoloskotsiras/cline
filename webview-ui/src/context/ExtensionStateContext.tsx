@@ -12,12 +12,16 @@ interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean
 	theme: any
+	themeMode: 'light' | 'dark'
+	themeType: 'modern' | 'classic'
 	openRouterModels: Record<string, ModelInfo>
 	mcpServers: McpServer[]
 	filePaths: string[]
 	setApiConfiguration: (config: ApiConfiguration) => void
 	setCustomInstructions: (value?: string) => void
 	setShowAnnouncement: (value: boolean) => void
+	setThemeMode: (mode: 'light' | 'dark') => void
+	setThemeType: (type: 'modern' | 'classic') => void
 }
 
 const ExtensionStateContext = createContext<ExtensionStateContextType | undefined>(undefined)
@@ -35,6 +39,8 @@ export const ExtensionStateContextProvider: React.FC<{
 	const [didHydrateState, setDidHydrateState] = useState(false)
 	const [showWelcome, setShowWelcome] = useState(false)
 	const [theme, setTheme] = useState<any>(undefined)
+	const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark')
+	const [themeType, setThemeType] = useState<'modern' | 'classic'>('modern')
 	const [filePaths, setFilePaths] = useState<string[]>([])
 	const [openRouterModels, setOpenRouterModels] = useState<Record<string, ModelInfo>>({
 		[openRouterDefaultModelId]: openRouterDefaultModelInfo,
@@ -115,6 +121,8 @@ export const ExtensionStateContextProvider: React.FC<{
 		didHydrateState,
 		showWelcome,
 		theme,
+		themeMode,
+		themeType,
 		openRouterModels,
 		mcpServers,
 		filePaths,
@@ -133,6 +141,14 @@ export const ExtensionStateContextProvider: React.FC<{
 				...prevState,
 				shouldShowAnnouncement: value,
 			})),
+		setThemeMode: (mode) => {
+			setThemeMode(mode)
+			vscode.postMessage({ type: "themeChanged", mode })
+		},
+		setThemeType: (type) => {
+			setThemeType(type)
+			vscode.postMessage({ type: "themeChanged", mode: themeMode, themeType: type })
+		},
 	}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>

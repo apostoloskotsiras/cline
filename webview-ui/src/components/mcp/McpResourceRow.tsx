@@ -1,5 +1,5 @@
 import { McpResource, McpResourceTemplate } from "../../../../src/shared/mcp"
-import * as S from "../styles/mcp/McpResourceRow.styles"
+import * as S from "../styles/themes/modern/dark/mcp/McpResourceRow.styles"
 
 type McpResourceRowProps = {
 	item: McpResource | McpResourceTemplate

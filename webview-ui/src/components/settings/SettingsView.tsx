@@ -3,8 +3,8 @@ import { memo, useEffect, useState } from "react"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { validateApiConfiguration, validateModelId } from "../../utils/validate"
 import { vscode } from "../../utils/vscode"
+import { useThemeStyles } from "../../utils/theme"
 import ApiOptions from "./ApiOptions"
-import * as S from "../styles/settings/SettingsView.styles"
 
 const IS_DEV = true // FIXME: use flags when packaging
 
@@ -13,9 +13,21 @@ type SettingsViewProps = {
 }
 
 const SettingsView = ({ onDone }: SettingsViewProps) => {
-	const { apiConfiguration, version, customInstructions, setCustomInstructions, openRouterModels } = useExtensionState()
+	const { 
+		apiConfiguration, 
+		version, 
+		customInstructions, 
+		setCustomInstructions, 
+		openRouterModels, 
+		themeMode, 
+		themeType,
+		setThemeMode,
+		setThemeType 
+	} = useExtensionState()
 	const [apiErrorMessage, setApiErrorMessage] = useState<string | undefined>(undefined)
 	const [modelIdErrorMessage, setModelIdErrorMessage] = useState<string | undefined>(undefined)
+	const S = useThemeStyles('settings/SettingsView', themeMode || 'dark', themeType || 'modern')
+
 	const handleSubmit = () => {
 		const apiValidationResult = validateApiConfiguration(apiConfiguration)
 		const modelIdValidationResult = validateModelId(apiConfiguration, openRouterModels)
@@ -79,6 +91,51 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 						</VSCodeTextArea>
 						<p className="settings-description">
 							These instructions are added to the end of the system prompt sent with every request.
+						</p>
+					</div>
+
+					<div className="settings-section">
+						<span className="settings-label">Theme Settings</span>
+						<div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+								<select 
+									className="theme-selector"
+									value={themeMode || 'dark'}
+									onChange={(e) => setThemeMode(e.target.value as 'light' | 'dark')}
+									style={{
+										padding: '4px 8px',
+										borderRadius: '4px',
+										border: '1px solid var(--vscode-button-border)',
+										background: 'var(--vscode-dropdown-background)',
+										color: 'var(--vscode-dropdown-foreground)',
+										cursor: 'pointer'
+									}}>
+									<option value="dark">Dark Mode</option>
+									<option value="light">Light Mode</option>
+								</select>
+								<i className={`codicon codicon-${themeMode === 'dark' ? 'moon' : 'sun'}`} />
+							</div>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+								<select 
+									className="theme-selector"
+									value={themeType || 'modern'}
+									onChange={(e) => setThemeType(e.target.value as 'modern' | 'classic')}
+									style={{
+										padding: '4px 8px',
+										borderRadius: '4px',
+										border: '1px solid var(--vscode-button-border)',
+										background: 'var(--vscode-dropdown-background)',
+										color: 'var(--vscode-dropdown-foreground)',
+										cursor: 'pointer'
+									}}>
+									<option value="modern">Modern Theme</option>
+									<option value="classic">Classic Theme</option>
+								</select>
+								<i className="codicon codicon-paintcan" />
+							</div>
+						</div>
+						<p className="settings-description">
+							Customize the appearance of the Cline interface with different themes and color modes.
 						</p>
 					</div>
 

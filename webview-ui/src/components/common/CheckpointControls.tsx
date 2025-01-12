@@ -5,7 +5,7 @@ import { useClickAway, useEvent } from "react-use"
 import { ExtensionMessage } from "../../../../src/shared/ExtensionMessage"
 import { vscode } from "../../utils/vscode"
 import { ClineCheckpointRestore } from "../../../../src/shared/WebviewMessage"
-import * as S from "../styles/common/CheckpointControls.styles"
+import * as S from "../styles/themes/modern/dark/common/CheckpointControls.styles"
 
 interface CheckpointOverlayProps {
 	messageTs?: number

@@ -3,7 +3,7 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 import { memo } from "react"
 import { formatLargeNumber } from "../../utils/format"
-import * as S from '../styles/history/HistoryPreview.styles'
+import * as S from '../styles/themes/modern/dark/history/HistoryPreview.styles'
 
 type HistoryPreviewProps = {
 	showHistoryView: () => void

@@ -30,7 +30,10 @@ export interface WebviewMessage {
 		| "checkpointRestore"
 		| "taskCompletionViewChanges"
 		| "popoutButtonClicked"
+		| "themeChanged"
 	text?: string
+	mode?: 'light' | 'dark'
+	themeType?: 'modern' | 'classic'
 	askResponse?: ClineAskResponse
 	apiConfiguration?: ApiConfiguration
 	images?: string[]

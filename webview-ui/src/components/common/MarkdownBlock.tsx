@@ -3,7 +3,7 @@ import { useRemark } from "react-remark"
 import rehypeHighlight, { Options } from "rehype-highlight"
 import { visit } from "unist-util-visit"
 import { useExtensionState } from "../../context/ExtensionStateContext"
-import * as S from "../styles/common/MarkdownBlock.styles"
+import * as S from "../styles/themes/modern/dark/common/MarkdownBlock.styles"
 
 interface MarkdownBlockProps {
 	markdown?: string

@@ -34,8 +34,8 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 import VSCodeButtonLink from "../common/VSCodeButtonLink"
 import OpenRouterModelPicker, { ModelDescriptionMarkdown } from "./OpenRouterModelPicker"
-import * as S from "../styles/settings/ApiOptions.styles"
-import { OPENROUTER_MODEL_PICKER_Z_INDEX } from "../styles/settings/OpenRouterModelPicker.styles"
+import * as S from "../styles/themes/modern/dark/settings/ApiOptions.styles"
+import { OPENROUTER_MODEL_PICKER_Z_INDEX } from "../styles/themes/modern/dark/settings/OpenRouterModelPicker.styles"
 
 interface ApiOptionsProps {
 	showModelOptions: boolean

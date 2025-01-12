@@ -6,7 +6,7 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { McpServer } from "../../../../src/shared/mcp"
 import McpToolRow from "./McpToolRow"
 import McpResourceRow from "./McpResourceRow"
-import * as S from "../styles/mcp/McpView.styles"
+import * as S from "../styles/themes/modern/dark/mcp/McpView.styles"
 
 type McpViewProps = {
 	onDone: () => void

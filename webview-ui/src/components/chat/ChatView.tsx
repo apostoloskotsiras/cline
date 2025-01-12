@@ -24,7 +24,7 @@ import ChatRow from "./ChatRow"
 import ChatTextArea from "./ChatTextArea"
 import TaskHeader from "./TaskHeader"
 import AutoApproveMenu from "./AutoApproveMenu"
-import * as S from "../styles/chat/ChatView.styles"
+import { useThemeStyles } from "../../utils/theme"
 
 interface ChatViewProps {
 	isHidden: boolean
@@ -36,7 +36,8 @@ interface ChatViewProps {
 export const MAX_IMAGES_PER_MESSAGE = 20 // Anthropic limits to 20 images
 
 const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryView }: ChatViewProps) => {
-	const { version, clineMessages: messages, taskHistory, apiConfiguration } = useExtensionState()
+	const { version, clineMessages: messages, taskHistory, apiConfiguration, themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('chat/ChatView', themeMode || 'dark', themeType || 'modern')
 
 	const task = useMemo(() => messages.at(0), [messages])
 	const modifiedMessages = useMemo(() => combineApiRequests(combineCommandSequences(messages.slice(1))), [messages])

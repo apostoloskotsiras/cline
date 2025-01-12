@@ -2,7 +2,7 @@ import { VSCodeBadge, VSCodeProgressRing } from "@vscode/webview-ui-toolkit/reac
 import deepEqual from "fast-deep-equal"
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEvent, useSize } from "react-use"
-import * as S from "../styles/chat/chatrow.styles"
+import * as S from "../styles/themes/modern/dark/chat/chatrow.styles"
 import {
 	ClineApiReqInfo,
 	ClineAskUseMcpServer,

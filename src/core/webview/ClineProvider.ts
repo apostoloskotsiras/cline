@@ -62,6 +62,8 @@ type GlobalStateKey =
 	| "openRouterModelId"
 	| "openRouterModelInfo"
 	| "autoApprovalSettings"
+	| "themeMode"
+	| "themeType"
 
 export const GlobalFileNames = {
 	apiConversationHistory: "api_conversation_history.json",
@@ -580,6 +582,20 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 						await vscode.commands.executeCommand("workbench.action.lockEditorGroup")
 						break
 					}
+					case "themeChanged": {
+						if (message.mode) {
+							await this.context.globalState.update("themeMode", message.mode)
+						}
+						if (message.themeType) {
+							await this.context.globalState.update("themeType", message.themeType)
+						}
+						// Send updated theme to webview
+						await this.postMessageToWebview({
+							type: "theme",
+							text: JSON.stringify(await getTheme()),
+						})
+						break
+					}
 					// Add more switch case statements here as more webview message commands
 					// are created within the webview context (i.e. inside media/main.js)
 				}
@@ -930,7 +946,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 
 	async deleteTaskFromState(id: string) {
 		// Remove the task from history
-		const taskHistory = ((await this.getGlobalState("taskHistory")) as HistoryItem[] | undefined) || []
+		const taskHistory = ((await this.getGlobalState("taskHistory")) as HistoryItem[]) || []
 		const updatedTaskHistory = taskHistory.filter((task) => task.id !== id)
 		await this.updateGlobalState("taskHistory", updatedTaskHistory)
 
@@ -1042,6 +1058,8 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			customInstructions,
 			taskHistory,
 			autoApprovalSettings,
+			themeMode,
+			themeType,
 		] = await Promise.all([
 			this.getGlobalState("apiProvider") as Promise<ApiProvider | undefined>,
 			this.getGlobalState("apiModelId") as Promise<string | undefined>,
@@ -1072,6 +1090,8 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			this.getGlobalState("customInstructions") as Promise<string | undefined>,
 			this.getGlobalState("taskHistory") as Promise<HistoryItem[] | undefined>,
 			this.getGlobalState("autoApprovalSettings") as Promise<AutoApprovalSettings | undefined>,
+			this.getGlobalState("themeMode") as Promise<'light' | 'dark' | undefined>,
+			this.getGlobalState("themeType") as Promise<'modern' | 'classic' | undefined>,
 		])
 
 		let apiProvider: ApiProvider
@@ -1120,6 +1140,8 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			customInstructions,
 			taskHistory,
 			autoApprovalSettings: autoApprovalSettings || DEFAULT_AUTO_APPROVAL_SETTINGS, // default value can be 0 or empty string
+			themeMode: themeMode || 'dark', // default to dark theme if not set
+			themeType: themeType || 'modern', // default to modern theme if not set
 		}
 	}
 

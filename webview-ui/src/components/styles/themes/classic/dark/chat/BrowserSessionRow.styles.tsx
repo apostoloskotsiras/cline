@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { CheckpointControls } from "../../common/CheckpointControls"
+import { CheckpointControls } from "../../../../../common/CheckpointControls"
 
 export const Container = styled.div`
 	padding: 16px 20px;

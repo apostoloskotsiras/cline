@@ -44,6 +44,8 @@ export interface ExtensionState {
 	taskHistory: HistoryItem[]
 	shouldShowAnnouncement: boolean
 	autoApprovalSettings: AutoApprovalSettings
+	themeMode?: 'light' | 'dark'
+	themeType?: 'modern' | 'classic'
 }
 
 export interface ClineMessage {
