@@ -6,7 +6,7 @@ import { vscode } from "../../utils/vscode"
 import { useThemeStyles } from "../../utils/theme"
 import ApiOptions from "./ApiOptions"
 
-const IS_DEV = true // FIXME: use flags when packaging
+const IS_DEV = false // FIXME: use flags when packaging
 
 type SettingsViewProps = {
 	onDone: () => void
@@ -122,7 +122,11 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 										cursor: 'pointer'
 									}}>
 									<option value="dark">Dark Mode</option>
-									<option value="light">Light Mode</option>
+									{IS_DEV ? (
+										<option value="light">Light Mode</option>
+									) : (
+										<option value="light" disabled>Light Mode (Coming Soon)</option>
+									)}
 								</select>
 								<i className={`codicon codicon-${themeMode === 'dark' ? 'moon' : 'sun'}`} />
 							</div>
@@ -140,7 +144,11 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 										cursor: 'pointer'
 									}}>
 									<option value="modern">Modern Theme</option>
-									<option value="classic">Classic Theme</option>
+									{IS_DEV ? (
+										<option value="classic">Classic Theme</option>
+									) : (
+										<option value="classic" disabled>Classic Theme (Coming Soon)</option>
+									)}
 								</select>
 								<i className="codicon codicon-paintcan" />
 							</div>

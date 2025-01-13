@@ -6,7 +6,7 @@ export const Wrapper = styled.div`
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+	background: linear-gradient(145deg, rgba(15, 15, 15, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
 	color: var(--vscode-editor-foreground);
 	font-family: var(--vscode-font-family);
 	font-size: var(--vscode-font-size);
