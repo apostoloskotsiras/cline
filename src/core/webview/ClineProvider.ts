@@ -338,6 +338,13 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 								text: JSON.stringify(theme),
 							}),
 						)
+						// Send theme settings to webview
+						const { themeMode, themeType } = await this.getState()
+						this.postMessageToWebview({
+							type: "themeChanged",
+							mode: themeMode || 'dark',
+							themeType: themeType || 'modern'
+						})
 						// post last cached models in case the call to endpoint fails
 						this.readOpenRouterModels().then((openRouterModels) => {
 							if (openRouterModels) {
@@ -960,7 +967,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	}
 
 	async getStateToPostToWebview(): Promise<ExtensionState> {
-		const { apiConfiguration, lastShownAnnouncementId, customInstructions, taskHistory, autoApprovalSettings } =
+		const { apiConfiguration, lastShownAnnouncementId, customInstructions, taskHistory, autoApprovalSettings, themeMode, themeType } =
 			await this.getState()
 		return {
 			version: this.context.extension?.packageJSON?.version ?? "",
@@ -973,6 +980,8 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			taskHistory: (taskHistory || []).filter((item) => item.ts && item.task).sort((a, b) => b.ts - a.ts),
 			shouldShowAnnouncement: lastShownAnnouncementId !== this.latestAnnouncementId,
 			autoApprovalSettings,
+			themeMode: themeMode || 'dark',
+			themeType: themeType || 'modern'
 		}
 	}
 

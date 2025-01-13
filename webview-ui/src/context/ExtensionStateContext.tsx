@@ -7,21 +7,27 @@ import { findLastIndex } from "../../../src/shared/array"
 import { McpServer } from "../../../src/shared/mcp"
 import { convertTextMateToHljs } from "../utils/textMateToHljs"
 import { vscode } from "../utils/vscode"
+import * as ModernDarkTheme from '../components/styles/themes/modern/dark'
+import * as ModernLightTheme from '../components/styles/themes/modern/light'
+import * as ClassicDarkTheme from '../components/styles/themes/classic/dark'
+import * as ClassicLightTheme from '../components/styles/themes/classic/light'
+import { ThemeComponentKey, ThemeMode, ThemeStyles, ThemeType } from '../utils/theme'
 
 interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean
 	theme: any
-	themeMode: 'light' | 'dark'
-	themeType: 'modern' | 'classic'
+	themeMode: ThemeMode
+	themeType: ThemeType
 	openRouterModels: Record<string, ModelInfo>
 	mcpServers: McpServer[]
 	filePaths: string[]
 	setApiConfiguration: (config: ApiConfiguration) => void
 	setCustomInstructions: (value?: string) => void
 	setShowAnnouncement: (value: boolean) => void
-	setThemeMode: (mode: 'light' | 'dark') => void
-	setThemeType: (type: 'modern' | 'classic') => void
+	setThemeMode: (mode: ThemeMode) => void
+	setThemeType: (type: ThemeType) => void
+	getThemeStyles: (component: ThemeComponentKey) => any
 }
 
 const ExtensionStateContext = createContext<ExtensionStateContextType | undefined>(undefined)
@@ -39,8 +45,8 @@ export const ExtensionStateContextProvider: React.FC<{
 	const [didHydrateState, setDidHydrateState] = useState(false)
 	const [showWelcome, setShowWelcome] = useState(false)
 	const [theme, setTheme] = useState<any>(undefined)
-	const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark')
-	const [themeType, setThemeType] = useState<'modern' | 'classic'>('modern')
+	const [themeMode, setThemeMode] = useState<ThemeMode>('dark')
+	const [themeType, setThemeType] = useState<ThemeType>('modern')
 	const [filePaths, setFilePaths] = useState<string[]>([])
 	const [openRouterModels, setOpenRouterModels] = useState<Record<string, ModelInfo>>({
 		[openRouterDefaultModelId]: openRouterDefaultModelInfo,
@@ -74,6 +80,15 @@ export const ExtensionStateContextProvider: React.FC<{
 			case "theme": {
 				if (message.text) {
 					setTheme(convertTextMateToHljs(JSON.parse(message.text)))
+				}
+				break
+			}
+			case "themeChanged": {
+				if (message.mode) {
+					setThemeMode(message.mode)
+				}
+				if (message.themeType) {
+					setThemeType(message.themeType)
 				}
 				break
 			}
@@ -116,39 +131,54 @@ export const ExtensionStateContextProvider: React.FC<{
 		vscode.postMessage({ type: "webviewDidLaunch" })
 	}, [])
 
+	const getThemeStyles = useCallback((component: ThemeComponentKey) => {
+		const themeStyles: Record<ThemeType, Record<ThemeMode, ThemeStyles>> = {
+			modern: {
+				dark: ModernDarkTheme.default,
+				light: ModernLightTheme.default
+			},
+			classic: {
+				dark: ClassicDarkTheme.default,
+				light: ClassicLightTheme.default
+			}
+		}
+		return themeStyles[themeType || 'modern'][themeMode || 'dark'][component]
+	}, [themeMode, themeType])
+
 	const contextValue: ExtensionStateContextType = {
 		...state,
 		didHydrateState,
-		showWelcome,
-		theme,
-		themeMode,
-		themeType,
-		openRouterModels,
-		mcpServers,
-		filePaths,
-		setApiConfiguration: (value) =>
-			setState((prevState) => ({
-				...prevState,
-				apiConfiguration: value,
-			})),
-		setCustomInstructions: (value) =>
-			setState((prevState) => ({
-				...prevState,
-				customInstructions: value,
-			})),
-		setShowAnnouncement: (value) =>
-			setState((prevState) => ({
-				...prevState,
-				shouldShowAnnouncement: value,
-			})),
-		setThemeMode: (mode) => {
-			setThemeMode(mode)
-			vscode.postMessage({ type: "themeChanged", mode })
-		},
-		setThemeType: (type) => {
-			setThemeType(type)
-			vscode.postMessage({ type: "themeChanged", mode: themeMode, themeType: type })
-		},
+			showWelcome,
+			theme,
+			themeMode,
+			themeType,
+			openRouterModels,
+			mcpServers,
+			filePaths,
+			setApiConfiguration: (value) =>
+				setState((prevState) => ({
+					...prevState,
+					apiConfiguration: value,
+				})),
+			setCustomInstructions: (value) =>
+				setState((prevState) => ({
+					...prevState,
+					customInstructions: value,
+				})),
+			setShowAnnouncement: (value) =>
+				setState((prevState) => ({
+					...prevState,
+					shouldShowAnnouncement: value,
+				})),
+			setThemeMode: (mode) => {
+				setThemeMode(mode)
+				vscode.postMessage({ type: "themeChanged", mode })
+			},
+			setThemeType: (type) => {
+				setThemeType(type)
+				vscode.postMessage({ type: "themeChanged", mode: themeMode, themeType: type })
+			},
+			getThemeStyles,
 	}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>

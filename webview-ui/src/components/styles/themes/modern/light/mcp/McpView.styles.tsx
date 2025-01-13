@@ -8,7 +8,7 @@ export const Wrapper = styled.div`
   right: 0;
   bottom: 0;
   background: linear-gradient(145deg, 
-    rgba(15, 15, 15, 0.98) 0%,
+    rgba(255, 15, 15, 0.98) 0%,
     rgba(10, 10, 10, 0.98) 100%
   );
   backdrop-filter: blur(12px);

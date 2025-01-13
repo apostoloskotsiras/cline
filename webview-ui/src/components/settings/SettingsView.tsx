@@ -26,7 +26,18 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 	} = useExtensionState()
 	const [apiErrorMessage, setApiErrorMessage] = useState<string | undefined>(undefined)
 	const [modelIdErrorMessage, setModelIdErrorMessage] = useState<string | undefined>(undefined)
+	const [forceUpdate, setForceUpdate] = useState(0)
 	const S = useThemeStyles('settings/SettingsView', themeMode || 'dark', themeType || 'modern')
+
+	const handleThemeModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setThemeMode(e.target.value as 'light' | 'dark')
+		setForceUpdate(prev => prev + 1) // Force re-render
+	}
+
+	const handleThemeTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setThemeType(e.target.value as 'modern' | 'classic')
+		setForceUpdate(prev => prev + 1) // Force re-render
+	}
 
 	const handleSubmit = () => {
 		const apiValidationResult = validateApiConfiguration(apiConfiguration)
@@ -55,7 +66,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 
 	return (
 		<div className="settings-wrapper">
-			<style>{S.styles}</style>
+			<style>{S?.styles}</style>
 
 			<div className="settings-container">
 				<header className="settings-header">
@@ -101,7 +112,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 								<select 
 									className="theme-selector"
 									value={themeMode || 'dark'}
-									onChange={(e) => setThemeMode(e.target.value as 'light' | 'dark')}
+									onChange={handleThemeModeChange}
 									style={{
 										padding: '4px 8px',
 										borderRadius: '4px',
@@ -119,7 +130,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 								<select 
 									className="theme-selector"
 									value={themeType || 'modern'}
-									onChange={(e) => setThemeType(e.target.value as 'modern' | 'classic')}
+									onChange={handleThemeTypeChange}
 									style={{
 										padding: '4px 8px',
 										borderRadius: '4px',

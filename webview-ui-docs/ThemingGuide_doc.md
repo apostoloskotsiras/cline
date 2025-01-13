@@ -1,424 +1,163 @@
 # Cline Theming Guide
 
 ## Overview
+Cline uses a theme system that supports multiple theme types (Modern/Classic) and color modes (Light/Dark). The system is built to be extensible and maintainable.
 
-Cline supports a flexible theming system that allows for multiple theme types (e.g., modern, classic) and modes (light/dark). This guide explains how to create and customize themes.
-
-## Theme Structure
-
-Themes are organized in the following directory structure:
+## Directory Structure
 ```
-webview-ui/src/components/styles/themes/
-├── modern/                  # Modern theme type
-│   ├── dark/               # Dark mode
-│   │   ├── chat/          # Chat component styles
-│   │   │   └── ChatView.styles.tsx
-│   │   └── settings/      # Settings component styles
-│   │       └── SettingsView.styles.tsx
-│   └── light/             # Light mode
-│       ├── chat/
-│       │   └── ChatView.styles.tsx
-│       └── settings/
-│           └── SettingsView.styles.tsx
-└── classic/               # Classic theme type
-    ├── dark/
-    │   ├── chat/
-    │   │   └── ChatView.styles.tsx
-    │   └── settings/
-    │       └── SettingsView.styles.tsx
-    └── light/
-        ├── chat/
-        │   └── ChatView.styles.tsx
-        └── settings/
-            └── SettingsView.styles.tsx
+webview-ui/src/components/styles/
+├── themes/
+│   ├── modern/
+│   │   ├── dark/
+│   │   │   ├── settings/
+│   │   │   │   ├── SettingsView.styles.tsx
+│   │   │   │   └── ...
+│   │   │   ├── chat/
+│   │   │   │   ├── ChatView.styles.tsx
+│   │   │   │   └── ...
+│   │   │   └── index.ts
+│   │   └── light/
+│   │       └── ... (same structure as dark)
+│   └── classic/
+│       ├── dark/
+│       │   └── ... (same structure as modern)
+│       └── light/
+│           └── ... (same structure as modern)
 ```
 
-## Adding a New Theme Type
+## Adding New Components
 
-1. Create a new directory under `webview-ui/src/components/styles/themes/` with your theme name (e.g., `minimal/`)
-2. Create the required mode directories (`dark/` and `light/`)
-3. Create component directories and style files matching the existing structure
-4. Update `webview-ui/src/utils/theme.ts`:
-   - Add imports for the new theme styles
-   - Add the new theme type to the `ThemeType` type
-   - Add the new theme components to the `ThemeComponents` interface
-   - Add the new theme styles to the `themeComponents` object
+### 1. Create Style File
+Create a new `.styles.tsx` file in the appropriate component directory:
 
-Example:
-```typescript
-// Add new imports
-import * as MinimalDarkSettingsView from '../components/styles/themes/minimal/dark/settings/SettingsView.styles'
-import * as MinimalLightSettingsView from '../components/styles/themes/minimal/light/settings/SettingsView.styles'
+```tsx
+// Example: webview-ui/src/components/styles/themes/modern/dark/myfeature/MyComponent.styles.tsx
+import styled from 'styled-components'
 
-// Update ThemeType
-type ThemeType = 'modern' | 'classic' | 'minimal'
+export const Container = styled.div`
+    background: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+`
 
-// Update ThemeComponents interface
-interface ThemeComponents {
-    // ... existing themes ...
-    minimal: {
-        dark: {
-            'settings/SettingsView': typeof MinimalDarkSettingsView;
-            // ... other components
-        };
-        light: {
-            'settings/SettingsView': typeof MinimalLightSettingsView;
-            // ... other components
-        };
-    };
+export const Header = styled.header`
+    border-bottom: 1px solid var(--vscode-panel-border);
+`
+
+// Export styles object that will be used by the theme system
+export default {
+    styles: `
+        .my-component {
+            /* Your styles here */
+        }
+    `
 }
 ```
 
-## Creating Style Files
-
-Each style file should export a `styles` string containing the CSS for that component. Use CSS-in-JS with styled-components:
+### 2. Update Theme Types
+Add your component to the `ThemeComponentKey` type in `webview-ui/src/utils/theme.ts`:
 
 ```typescript
-import { css } from 'styled-components'
-
-export const styles = css`
-  .settings-wrapper {
-    background: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
-  }
-
-  .settings-header {
-    border-bottom: 1px solid var(--vscode-panel-border);
-  }
-
-  // ... more styles
-`
+export type ThemeComponentKey = 
+    | 'myfeature/MyComponent'  // Add your component here
+    | 'settings/SettingsView'
+    | ...
 ```
 
-## Using VSCode Theme Variables
+### 3. Create Component
+Use the theme styles in your component:
 
-For consistency with VSCode's theming, use VSCode CSS variables:
+```tsx
+import { useExtensionState } from "../../context/ExtensionStateContext"
 
-- `--vscode-editor-background`: Main background color
-- `--vscode-editor-foreground`: Main text color
-- `--vscode-button-background`: Button background color
-- `--vscode-button-foreground`: Button text color
-- `--vscode-button-hover-background`: Button hover state
-- `--vscode-input-background`: Input field background
-- `--vscode-input-foreground`: Input text color
-- `--vscode-panel-border`: Border colors
-- `--vscode-dropdown-background`: Dropdown background
-- `--vscode-dropdown-foreground`: Dropdown text color
+const MyComponent = () => {
+    const { themeMode, themeType, getThemeStyles } = useExtensionState()
+    const S = getThemeStyles('myfeature/MyComponent')
+
+    return (
+        <div className="my-component">
+            <style>{S?.styles}</style>
+            {/* Your component content */}
+        </div>
+    )
+}
+```
+
+## Adding New Theme Variants
+
+### 1. Create Theme Directory
+To add a new theme variant (e.g., "Retro"):
+1. Create directory: `webview-ui/src/components/styles/themes/retro/`
+2. Add `dark/` and `light/` subdirectories
+3. Copy component structure from existing theme
+
+### 2. Update Theme Types
+Modify `ThemeType` in `webview-ui/src/utils/theme.ts`:
+
+```typescript
+export type ThemeType = 'modern' | 'classic' | 'retro'  // Add your theme
+```
+
+### 3. Import Theme in Context
+Update `ExtensionStateContext.tsx` to include your theme:
+
+```typescript
+import * as RetroDarkTheme from '../components/styles/themes/retro/dark'
+import * as RetroLightTheme from '../components/styles/themes/retro/light'
+
+// Add to themeStyles object
+const themeStyles = {
+    modern: { ... },
+    classic: { ... },
+    retro: {
+        dark: RetroDarkTheme.default,
+        light: RetroLightTheme.default
+    }
+}
+```
 
 ## Best Practices
 
-1. **Consistency**: Keep style structure consistent across themes
-2. **VSCode Integration**: Use VSCode theme variables when possible
-3. **Fallbacks**: Provide fallback values for critical styles
-4. **Documentation**: Document any custom variables or complex styles
-5. **Component Isolation**: Keep styles scoped to their components
-6. **Responsive Design**: Ensure styles work across different window sizes
-7. **Accessibility**: Maintain sufficient contrast ratios
-8. **Performance**: Minimize use of complex selectors and animations
+### VSCode Theme Integration
+- Use VSCode's built-in theme variables when possible:
+  ```css
+  background: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  border: 1px solid var(--vscode-panel-border);
+  ```
+- Common variables:
+  - `--vscode-editor-background`: Main background
+  - `--vscode-editor-foreground`: Main text color
+  - `--vscode-button-background`: Primary button background
+  - `--vscode-button-foreground`: Primary button text
+  - `--vscode-panel-border`: Border colors
+  - `--vscode-input-background`: Input fields background
+  - `--vscode-input-foreground`: Input text color
 
-## Testing Themes
+### Style Organization
+1. Group related styles together
+2. Use descriptive class/component names
+3. Comment complex style rules
+4. Keep styles modular and reusable
 
-1. Switch between themes using the theme selector in Settings
-2. Test in both light and dark modes
-3. Verify all components render correctly
-4. Check responsive behavior
-5. Validate accessibility
-6. Test theme switching performance
+### Troubleshooting
+Common issues and solutions:
 
-## Common Issues
+1. **Styles not updating:**
+   - Check if `getThemeStyles` is called with correct component key
+   - Verify theme mode and type are set correctly
+   - Ensure style element is present in component
 
-1. **Missing Styles**: Ensure all required components have style files
-2. **Import Errors**: Check path correctness in theme.ts
-3. **Type Errors**: Verify ThemeComponents interface matches implementation
-4. **Style Conflicts**: Use specific selectors to avoid conflicts
-5. **Performance**: Monitor style switching performance
+2. **Type errors:**
+   - Make sure component is added to `ThemeComponentKey`
+   - Check theme imports in context
+   - Verify style object structure matches expected format
 
-## Example: Adding a New Component
-
-1. Create style files in each theme:
-```typescript
-// modern/dark/newComponent/NewComponent.styles.tsx
-export const styles = css`
-  .new-component {
-    background: var(--vscode-editor-background);
-    padding: 16px;
-  }
-`
-```
-
-2. Update theme.ts:
-```typescript
-type ThemeComponentKey = 'settings/SettingsView' | 'chat/ChatView' | 'newComponent/NewComponent'
-```
-
-3. Add to ThemeComponents interface and themeComponents object
+3. **VSCode theme variables not working:**
+   - Ensure VSCode theme is properly loaded
+   - Check variable names in documentation
+   - Use fallback values for custom properties
 
 ## Resources
-
 - [VSCode Theme Color Reference](https://code.visualstudio.com/api/references/theme-color)
 - [Styled Components Documentation](https://styled-components.com/docs)
-- [VSCode Webview UI Toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit) 
-
-## Extending Theme Types
-
-### Adding a New Theme Type
-
-1. **Update Type Definitions**
-   In `src/shared/WebviewMessage.ts`:
-   ```typescript
-   export interface WebviewMessage {
-     // ... other properties
-     themeType?: 'modern' | 'classic' | 'your-new-theme'
-   }
-   ```
-
-2. **Update ExtensionState**
-   In `src/shared/ExtensionMessage.ts`:
-   ```typescript
-   export interface ExtensionState {
-     // ... other properties
-     themeType?: 'modern' | 'classic' | 'your-new-theme'
-   }
-   ```
-
-3. **Update Theme Utilities**
-   In `webview-ui/src/utils/theme.ts`:
-   ```typescript
-   type ThemeType = 'modern' | 'classic' | 'your-new-theme'
-   ```
-
-4. **Create Theme Structure**
-   ```
-   webview-ui/src/components/styles/themes/your-new-theme/
-   ├── dark/
-   │   ├── chat/
-   │   │   └── ChatView.styles.tsx
-   │   └── settings/
-   │       └── SettingsView.styles.tsx
-   └── light/
-       ├── chat/
-       │   └── ChatView.styles.tsx
-       └── settings/
-           └── SettingsView.styles.tsx
-   ```
-
-### Adding Custom Colors
-
-1. **Define Custom CSS Variables**
-   Create a theme-specific variables file:
-   ```typescript
-   // themes/your-new-theme/variables.ts
-   export const darkVariables = css`
-     :root {
-       --theme-primary-color: #007acc;
-       --theme-secondary-color: #6c757d;
-       --theme-success-color: #28a745;
-       --theme-warning-color: #ffc107;
-       --theme-error-color: #dc3545;
-       
-       --theme-background-primary: #1e1e1e;
-       --theme-background-secondary: #252526;
-       --theme-background-tertiary: #333333;
-       
-       --theme-text-primary: #ffffff;
-       --theme-text-secondary: #cccccc;
-       --theme-text-muted: #888888;
-       
-       --theme-border-color: #474747;
-       --theme-divider-color: #404040;
-       
-       --theme-hover-background: rgba(255, 255, 255, 0.1);
-       --theme-active-background: rgba(255, 255, 255, 0.2);
-     }
-   `
-
-   export const lightVariables = css`
-     :root {
-       --theme-primary-color: #0066b8;
-       --theme-secondary-color: #6c757d;
-       --theme-success-color: #28a745;
-       --theme-warning-color: #ffc107;
-       --theme-error-color: #dc3545;
-       
-       --theme-background-primary: #ffffff;
-       --theme-background-secondary: #f5f5f5;
-       --theme-background-tertiary: #e8e8e8;
-       
-       --theme-text-primary: #000000;
-       --theme-text-secondary: #333333;
-       --theme-text-muted: #666666;
-       
-       --theme-border-color: #d4d4d4;
-       --theme-divider-color: #e0e0e0;
-       
-       --theme-hover-background: rgba(0, 0, 0, 0.1);
-       --theme-active-background: rgba(0, 0, 0, 0.2);
-     }
-   `
-   ```
-
-2. **Use Custom Variables in Components**
-   ```typescript
-   // themes/your-new-theme/dark/chat/ChatView.styles.tsx
-   import { css } from 'styled-components'
-   import { darkVariables } from '../../variables'
-
-   export const styles = css`
-     ${darkVariables}
-
-     .chat-container {
-       background: var(--theme-background-primary);
-       color: var(--theme-text-primary);
-     }
-
-     .message {
-       border: 1px solid var(--theme-border-color);
-       background: var(--theme-background-secondary);
-     }
-
-     .message:hover {
-       background: var(--theme-hover-background);
-     }
-
-     .message-timestamp {
-       color: var(--theme-text-muted);
-     }
-
-     .action-button {
-       background: var(--theme-primary-color);
-       color: var(--theme-text-primary);
-       
-       &:hover {
-         background: var(--theme-hover-background);
-       }
-       
-       &:active {
-         background: var(--theme-active-background);
-       }
-     }
-   `
-   ```
-
-### Theme Variants
-
-You can create variants within a theme type:
-
-1. **Define Variant Types**
-   ```typescript
-   type ThemeVariant = 'default' | 'high-contrast' | 'compact'
-   ```
-
-2. **Create Variant-Specific Styles**
-   ```typescript
-   export const styles = css`
-     ${darkVariables}
-     
-     /* Default variant */
-     .theme-default {
-       --spacing-unit: 16px;
-       --border-radius: 4px;
-     }
-     
-     /* High contrast variant */
-     .theme-high-contrast {
-       --theme-text-primary: #ffffff;
-       --theme-background-primary: #000000;
-       --border-radius: 0;
-     }
-     
-     /* Compact variant */
-     .theme-compact {
-       --spacing-unit: 8px;
-       --font-size-base: 12px;
-     }
-   `
-   ```
-
-### Theme Transitions
-
-Add smooth transitions between themes:
-
-```typescript
-export const styles = css`
-  * {
-    transition: background-color 0.3s ease,
-                color 0.3s ease,
-                border-color 0.3s ease;
-  }
-  
-  /* Disable transitions for performance-sensitive elements */
-  .no-transitions {
-    transition: none !important;
-  }
-`
-```
-
-### Theme Debugging
-
-Add debug utilities to your theme:
-
-```typescript
-export const debugStyles = css`
-  /* Add this class to any element to see its boundaries */
-  .debug-layout {
-    outline: 1px solid var(--theme-error-color);
-  }
-  
-  /* Visualize the spacing */
-  .debug-spacing > * {
-    outline: 1px dashed var(--theme-warning-color);
-  }
-`
-```
-
-## Theme Migration
-
-When updating or replacing themes:
-
-1. **Create a Theme Migration Plan**
-   - Document all theme-specific variables and styles
-   - Map old theme values to new theme values
-   - Identify breaking changes
-
-2. **Implement Fallbacks**
-   ```typescript
-   .component {
-     /* Fallback for older themes */
-     background: var(--legacy-background, var(--theme-background-primary));
-     color: var(--legacy-text-color, var(--theme-text-primary));
-   }
-   ```
-
-3. **Version Your Themes**
-   ```typescript
-   export const themeVersion = '2.0.0'
-   export const isLegacyTheme = (version: string) => version.startsWith('1.')
-   ```
-
-## Theme Performance Tips
-
-1. **Minimize CSS Variables**
-   - Group related colors
-   - Use CSS calculations for variations
-   ```css
-   :root {
-     --theme-primary: #007acc;
-     --theme-primary-light: color-mix(in srgb, var(--theme-primary) 80%, white);
-     --theme-primary-dark: color-mix(in srgb, var(--theme-primary) 80%, black);
-   }
-   ```
-
-2. **Use CSS Containment**
-   ```css
-   .theme-container {
-     contain: style layout;
-   }
-   ```
-
-3. **Lazy Load Theme Variants**
-   ```typescript
-   const loadThemeVariant = async (variant: string) => {
-     const styles = await import(`./variants/${variant}.styles`)
-     return styles.default
-   }
-   ``` 
+- [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/) 

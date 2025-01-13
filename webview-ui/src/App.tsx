@@ -11,7 +11,7 @@ import McpView from "./components/mcp/McpView"
 import NavBar from "./components/navigation/NavBar"
 
 const AppContent = () => {
-	const { didHydrateState, showWelcome, shouldShowAnnouncement } = useExtensionState()
+	const { didHydrateState, showWelcome, shouldShowAnnouncement, themeMode, themeType } = useExtensionState()
 	const [showSettings, setShowSettings] = useState(false)
 	const [showHistory, setShowHistory] = useState(false)
 	const [showMcp, setShowMcp] = useState(false)
@@ -23,6 +23,12 @@ const AppContent = () => {
 			vscode.postMessage({ type: "didShowAnnouncement" } as WebviewMessage)
 		}
 	}, [shouldShowAnnouncement])
+
+	// Update theme attributes on root element
+	useEffect(() => {
+		document.documentElement.setAttribute('data-theme-mode', themeMode || 'dark')
+		document.documentElement.setAttribute('data-theme-type', themeType || 'modern')
+	}, [themeMode, themeType])
 
 	if (!didHydrateState) {
 		return null

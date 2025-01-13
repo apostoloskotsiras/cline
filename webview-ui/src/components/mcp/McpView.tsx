@@ -6,7 +6,7 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { McpServer } from "../../../../src/shared/mcp"
 import McpToolRow from "./McpToolRow"
 import McpResourceRow from "./McpResourceRow"
-import * as S from "../styles/themes/modern/dark/mcp/McpView.styles"
+import { useThemeStyles } from "../../utils/theme"
 
 type McpViewProps = {
 	onDone: () => void
@@ -21,7 +21,9 @@ type ServerRowProps = {
 }
 
 const ServerRow = memo(({ server }: ServerRowProps) => {
+	const { themeMode , themeType } = useExtensionState()
 	const [isExpanded, setIsExpanded] = useState(false)
+	const S = useThemeStyles('mcp/McpView', themeMode || 'dark', themeType || 'modern')
 
 	const handleRowClick = () => {
 		if (!server.error) {
@@ -117,6 +119,8 @@ const McpContent = memo(({ servers }: McpContentProps) => {
 	const handleOpenSettings = useCallback(() => {
 		vscode.postMessage({ type: "openMcpSettings" })
 	}, [])
+	const { themeMode , themeType } = useExtensionState()
+	const S = useThemeStyles('mcp/McpView', themeMode || 'dark', themeType || 'modern')
 
 	return (
 		<S.Content>
@@ -157,7 +161,8 @@ const McpContent = memo(({ servers }: McpContentProps) => {
 })
 
 const McpView = memo(({ onDone }: McpViewProps) => {
-	const { mcpServers: servers } = useExtensionState()
+	const { mcpServers: servers , themeMode , themeType } = useExtensionState()
+	const S = useThemeStyles('mcp/McpView', themeMode || 'dark', themeType || 'modern')
 
 	return (
 		<S.Wrapper className="mcp-wrapper">
