@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import { useExtensionState } from '../context/ExtensionStateContext'
 
 export type ThemeMode = 'light' | 'dark'
@@ -32,26 +31,6 @@ export type ThemeComponentKey =
     | 'common/CodeBlock'
     | 'common/CheckpointControls'
 
-export interface ThemeColors {
-    background: string
-    foreground: string
-    border: string
-    primary: string
-    secondary: string
-    success: string
-    error: string
-    warning: string
-    info: string
-    textPrimary: string
-    textSecondary: string
-    textDisabled: string
-    text: string
-    divider: string
-    hover: string
-    active: string
-    selected: string
-    disabled: string
-}
 
 export type ThemeStyles = Record<ThemeComponentKey, any>
 
@@ -62,4 +41,4 @@ export const useThemeStyles = (
 ) => {
     const { themeMode, themeType, getThemeStyles } = useExtensionState()
     return getThemeStyles(component, overrideMode || themeMode, overrideType || themeType)
-} 
+}

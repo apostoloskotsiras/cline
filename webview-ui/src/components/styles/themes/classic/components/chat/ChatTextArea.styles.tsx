@@ -1,12 +1,14 @@
 import styled from "styled-components"
+import { ThemeMode } from "../../../../../../utils/theme"
+import { getThemeColors } from "../../theme"
 
-export const AddContextButton = styled.button`
+export const AddContextButton = styled.button<{ mode: ThemeMode }>`
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
 	padding: 2px 6px;
 	background: transparent;
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid ${({ mode }) => getThemeColors(mode).chatTextArea.tagBorder};
 	border-radius: 3px;
 	color: var(--vscode-foreground);
 	font-size: 11px;
@@ -19,8 +21,8 @@ export const AddContextButton = styled.button`
 	z-index: 10;
 
 	&:hover {
-		background: rgba(255, 255, 255, 0.06);
-		border-color: rgba(255, 255, 255, 0.15);
+		background: ${({ mode }) => getThemeColors(mode).chatTextArea.buttonHover};
+		border-color: ${({ mode }) => getThemeColors(mode).chatTextArea.tagBorder};
 		opacity: 1;
 	}
 
@@ -30,7 +32,7 @@ export const AddContextButton = styled.button`
 	}
 `
 
-export const ChatTextAreaContainer = styled.div<{ disabled: boolean; hasTagsAbove?: boolean }>`
+export const ChatTextAreaContainer = styled.div<{ disabled: boolean; hasTagsAbove?: boolean; mode: ThemeMode }>`
 	padding: 20px 16px 20px 16px;
 	opacity: ${(props) => (props.disabled ? 0.6 : 1)};
 	position: relative;
@@ -38,20 +40,23 @@ export const ChatTextAreaContainer = styled.div<{ disabled: boolean; hasTagsAbov
 	transition: all 0.2s ease;
 	box-shadow: none;
 	border-radius: ${(props) => (props.hasTagsAbove ? "0 0 6px 6px" : "6px")};
-	background: rgb(30, 30, 30);
+	background: ${({ mode }) => `${getThemeColors(mode).chatTextArea.containerBackground}`};
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	transform: ${(props) => (props.disabled ? "none" : "translateY(0)")};
 	margin-top: ${(props) => (props.hasTagsAbove ? "-1px" : "0")};
 	min-height: 56px;
 
 	&:hover {
-		background: ${(props) => (props.disabled ? "rgb(30, 30, 30)" : "rgb(35, 35, 35)")};
+		background: ${(props) => props.disabled ? 
+			getThemeColors(props.mode).chatTextArea.containerBackground : 
+			getThemeColors(props.mode).chatTextArea.containerHover};
 		border-color: rgba(255, 255, 255, 0.15);
 	}
 `
 
 interface TextContainerProps {
-	hasAddContextButton?: boolean
+	hasAddContextButton?: boolean,
+	mode: ThemeMode
 }
 
 export const TextContainer = styled.div<TextContainerProps>`
@@ -62,10 +67,11 @@ export const TextContainer = styled.div<TextContainerProps>`
 	textarea {
 		padding: 10px 52px 10px 12px !important;
 		min-height: 24px !important;
+		background: ${({ mode }) => `${getThemeColors(mode).chatTextArea.textAreaBackground}`};
 	}
 
 	.mention-context-textarea-highlight {
-		background-color: color-mix(in srgb, var(--vscode-badge-foreground) 30%, transparent);
+		background-color: ${({ mode }) => getThemeColors(mode).chatTextArea.mentionHighlight};
 		border-radius: 3px;
 		box-shadow: 0 0 0 0.5px color-mix(in srgb, var(--vscode-badge-foreground) 30%, transparent);
 		color: transparent;
@@ -83,7 +89,7 @@ export const BottomControls = styled.div`
 	z-index: 3;
 `
 
-export const PhotoButton = styled.div<{ disabled: boolean }>`
+export const PhotoButton = styled.div<{ disabled: boolean; mode: ThemeMode }>`
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -91,11 +97,12 @@ export const PhotoButton = styled.div<{ disabled: boolean }>`
 	opacity: ${(props) => (props.disabled ? 0.5 : 0.8)};
 	cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 	transition: opacity 0.2s ease;
-	background: rgb(30, 30, 30);
+	background: ${({ mode }) => `${getThemeColors(mode).chatTextArea.buttonBackground}`};
 	border-radius: 3px;
 
 	&:hover {
 		opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+		background: ${(props) => !props.disabled && getThemeColors(props.mode).chatTextArea.buttonHover};
 	}
 
 	span {
@@ -143,16 +150,16 @@ export const ThumbnailsSection = styled.div`
 	border-left: 1px solid rgba(255, 255, 255, 0.1);
 `
 
-export const Tag = styled.div`
+export const Tag = styled.div<{ mode: ThemeMode }>`
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
 	padding: 2px 6px;
-	background: rgba(255, 255, 255, 0.04);
+	background: ${({ mode }) => getThemeColors(mode).chatTextArea.tagBackground};
 	border-radius: 3px;
 	font-size: 11px;
 	color: var(--vscode-foreground);
-	border: 1px solid rgba(255, 255, 255, 0.08);
+	border: 1px solid ${({ mode }) => getThemeColors(mode).chatTextArea.tagBorder};
 	transition: all 0.15s ease;
 
 	i.codicon {
@@ -178,8 +185,7 @@ export const Tag = styled.div`
 	}
 
 	&:hover {
-		background: rgba(255, 255, 255, 0.06);
-		border-color: rgba(255, 255, 255, 0.12);
+		background: ${({ mode }) => getThemeColors(mode).chatTextArea.tagHover};
 	}
 `
 

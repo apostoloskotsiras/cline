@@ -44,14 +44,16 @@ export const ChatTextAreaContainer = styled.div<{ disabled: boolean; hasTagsAbov
 	transition: all 0.2s ease;
 	box-shadow: none;
 	border-radius: ${(props) => (props.hasTagsAbove ? "0 0 6px 6px" : "6px")};
-	background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
+	background: ${({ mode }) => `${getThemeColors(mode).chatTextArea.containerBackground}FA`};
 	border: 1px solid ${({ mode }) => getThemeColors(mode).border};
 	transform: ${(props) => (props.disabled ? "none" : "translateY(0)")};
 	margin-top: ${(props) => (props.hasTagsAbove ? "-1px" : "0")};
 	min-height: 56px;
 
 	&:hover {
-		background: ${(props) => props.disabled ? getThemeColors(props.mode).background : getThemeColors(props.mode).hover};
+		background: ${(props) => props.disabled ? 
+			getThemeColors(props.mode).chatTextArea.containerBackground : 
+			getThemeColors(props.mode).chatTextArea.containerHover};
 		border-color: ${({ mode }) => getThemeColors(mode).active};
 	}
 `
@@ -70,11 +72,11 @@ export const TextContainer = styled.div<TextContainerProps>`
 		padding: 10px 52px 10px 12px !important;
 		min-height: 24px !important;
 		color: ${({ mode }) => getThemeColors(mode).textPrimary};
-		background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
+		background: ${({ mode }) => `${getThemeColors(mode).chatTextArea.textAreaBackground}FA`};
 	}
 
 	.mention-context-textarea-highlight {
-		background-color: ${({ mode }) => `${getThemeColors(mode).selected}80`};
+		background-color: ${({ mode }) => getThemeColors(mode).chatTextArea.mentionHighlight};
 		border-radius: 3px;
 		box-shadow: 0 0 0 0.5px ${({ mode }) => getThemeColors(mode).selected};
 		color: transparent;
@@ -100,12 +102,12 @@ export const PhotoButton = styled.div<{ disabled: boolean; mode: ThemeMode }>`
 	opacity: ${(props) => (props.disabled ? 0.5 : 0.8)};
 	cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 	transition: opacity 0.2s ease;
-	background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
+	background: ${({ mode }) => `${getThemeColors(mode).chatTextArea.buttonBackground}FA`};
 	border-radius: 3px;
 
 	&:hover {
 		opacity: ${(props) => (props.disabled ? 0.5 : 1)};
-		background: ${(props) => !props.disabled && getThemeColors(props.mode).hover};
+		background: ${(props) => !props.disabled && getThemeColors(props.mode).chatTextArea.buttonHover};
 	}
 
 	span {
@@ -158,11 +160,11 @@ export const Tag = styled.div<{ mode: ThemeMode }>`
 	align-items: center;
 	gap: 4px;
 	padding: 2px 6px;
-	background: ${({ mode }) => `${getThemeColors(mode).hover}FA`};
+	background: ${({ mode }) => getThemeColors(mode).chatTextArea.tagBackground};
 	border-radius: 3px;
 	font-size: 11px;
 	color: ${({ mode }) => getThemeColors(mode).textPrimary};
-	border: 1px solid ${({ mode }) => `${getThemeColors(mode).border}CC`};
+	border: 1px solid ${({ mode }) => getThemeColors(mode).chatTextArea.tagBorder};
 	transition: all 0.15s ease;
 
 	i.codicon {
@@ -188,8 +190,7 @@ export const Tag = styled.div<{ mode: ThemeMode }>`
 	}
 
 	&:hover {
-		background: ${({ mode }) => `${getThemeColors(mode).active}FA`};
-		border-color: ${({ mode }) => `${getThemeColors(mode).border}FA`};
+		background: ${({ mode }) => getThemeColors(mode).chatTextArea.tagHover};
 	}
 `
 

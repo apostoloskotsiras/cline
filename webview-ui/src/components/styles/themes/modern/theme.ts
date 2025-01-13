@@ -1,5 +1,17 @@
 import { ThemeMode } from '../../../../utils/theme'
 
+interface ChatTextAreaColors {
+    containerBackground: string
+    containerHover: string
+    textAreaBackground: string
+    buttonBackground: string
+    buttonHover: string
+    mentionHighlight: string
+    tagBackground: string
+    tagHover: string
+    tagBorder: string
+}
+
 interface ThemeColors {
     background: string
     foreground: string
@@ -19,6 +31,7 @@ interface ThemeColors {
     active: string
     selected: string
     disabled: string
+    chatTextArea: ChatTextAreaColors
 }
 
 const darkColors: ThemeColors = {
@@ -39,7 +52,18 @@ const darkColors: ThemeColors = {
     hover: '#2A2D2E',
     active: '#37373D',
     selected: '#094771',
-    disabled: '#4D4D4D'
+    disabled: '#4D4D4D',
+    chatTextArea: {
+        containerBackground: '#1E1E1E',
+        containerHover: '#252526',
+        textAreaBackground: '#1E1E1E',
+        buttonBackground: '#2D2D2D',
+        buttonHover: '#3D3D3D',
+        mentionHighlight: '#094771CC',
+        tagBackground: '#252526FA',
+        tagHover: '#37373DFA',
+        tagBorder: '#454545CC'
+    }
 }
 
 const lightColors: ThemeColors = {
@@ -60,7 +84,18 @@ const lightColors: ThemeColors = {
     hover: '#F5F5F5',
     active: '#E8E8E8',
     selected: '#CCE5F7',
-    disabled: '#E0E0E0'
+    disabled: '#E0E0E0',
+    chatTextArea: {
+        containerBackground: '#FFFFFF',
+        containerHover: '#F5F5F5',
+        textAreaBackground: '#FFFFFF',
+        buttonBackground: '#F5F5F5',
+        buttonHover: '#E8E8E8',
+        mentionHighlight: '#CCE5F7CC',
+        tagBackground: '#F5F5F5FA',
+        tagHover: '#E8E8E8FA',
+        tagBorder: '#E0E0E0CC'
+    }
 }
 
 export const getThemeColors = (mode: ThemeMode): ThemeColors => {
