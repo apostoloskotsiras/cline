@@ -12,20 +12,7 @@ import {
 import { MAX_IMAGES_PER_MESSAGE } from "./ChatView"
 import ContextMenu from "./ContextMenu"
 import Thumbnails from "../common/Thumbnails"
-import {
-	ActionButton,
-	ChatTextAreaContainer,
-	SendSvg,
-	StyledSvg,
-	TextContainer,
-	TagsBox,
-	Tag,
-	AddContextButton,
-	BottomControls,
-	PhotoButton,
-	TagsSection,
-	ThumbnailsSection,
-} from "../styles/themes/modern/dark/chat/ChatTextArea.styles"
+import { useThemeStyles } from '../../utils/theme'
 
 interface ChatTextAreaProps {
 	inputValue: string
@@ -61,7 +48,21 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		},
 		ref,
 	) => {
-		const { filePaths } = useExtensionState()
+		const { filePaths, themeMode, themeType } = useExtensionState()
+		const {
+			ActionButton,
+			ChatTextAreaContainer,
+			SendSvg,
+			StyledSvg,
+			TextContainer,
+			TagsBox,
+			Tag,
+			AddContextButton,
+			BottomControls,
+			PhotoButton,
+			TagsSection,
+			ThumbnailsSection,
+		} = useThemeStyles('chat/ChatTextArea', themeMode || 'dark', themeType || 'modern')
 		const [isTextAreaFocused, setIsTextAreaFocused] = useState(false)
 		const [thumbnailsHeight, setThumbnailsHeight] = useState(0)
 		const [textAreaBaseHeight, setTextAreaBaseHeight] = useState<number | undefined>(undefined)
@@ -547,10 +548,10 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		return (
 			<>
 				{(taggedItems.length > 0 || selectedImages.length > 0) && (
-					<TagsBox>
+					<TagsBox mode={themeMode || 'dark'}>
 						<TagsSection>
 							{taggedItems.map((item, index) => (
-								<Tag key={index}>
+								<Tag key={index} mode={themeMode || 'dark'}>
 									<i className={`codicon codicon-${getTagIcon(item.type)}`} />
 									<span>{item.value}</span>
 									<div className="remove-tag" onClick={() => handleRemoveTag(item.value)}>
@@ -560,7 +561,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							))}
 						</TagsSection>
 						{selectedImages.length > 0 && (
-							<ThumbnailsSection>
+							<ThumbnailsSection mode={themeMode || 'dark'}>
 								<Thumbnails
 									images={selectedImages}
 									setImages={setSelectedImages}
@@ -572,8 +573,9 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 				)}
 				<ChatTextAreaContainer
 					disabled={textAreaDisabled}
+					mode={themeMode || 'dark'}
 					hasTagsAbove={taggedItems.length > 0 || selectedImages.length > 0}>
-					<AddContextButton onClick={handleAddContext}>
+					<AddContextButton mode={themeMode || 'dark'} onClick={handleAddContext}>
 						<i className="codicon codicon-plus" />
 						Add context
 					</AddContextButton>
@@ -590,7 +592,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							/>
 						</div>
 					)}
-					<TextContainer className="text-container">
+					<TextContainer className="text-container" mode={themeMode || 'dark'}>
 						<div
 							ref={highlightLayerRef}
 							style={{
@@ -674,12 +676,13 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					<BottomControls>
 						<PhotoButton
 							disabled={shouldDisableImages}
+							mode={themeMode || 'dark'}
 							onClick={() => {
 								if (!shouldDisableImages) {
 									onSelectImages()
 								}
 							}}>
-							<StyledSvg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+							<StyledSvg mode={themeMode || 'dark'} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 								<rect
 									x="3"
 									y="3"
@@ -698,6 +701,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						</PhotoButton>
 						<ActionButton
 							disabled={textAreaDisabled}
+							mode={themeMode || 'dark'}
 							onClick={() => {
 								if (!textAreaDisabled) {
 									handleSendWithAnimation()
@@ -705,6 +709,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							}}>
 							<SendSvg
 								className="send-icon"
+								mode={themeMode || 'dark'}
 								width="16"
 								height="16"
 								viewBox="0 0 24 24"

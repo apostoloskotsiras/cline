@@ -7,11 +7,9 @@ import { findLastIndex } from "../../../src/shared/array"
 import { McpServer } from "../../../src/shared/mcp"
 import { convertTextMateToHljs } from "../utils/textMateToHljs"
 import { vscode } from "../utils/vscode"
-import * as ModernDarkTheme from '../components/styles/themes/modern/dark'
-import * as ModernLightTheme from '../components/styles/themes/modern/light'
-import * as ClassicDarkTheme from '../components/styles/themes/classic/dark'
-import * as ClassicLightTheme from '../components/styles/themes/classic/light'
 import { ThemeComponentKey, ThemeMode, ThemeStyles, ThemeType } from '../utils/theme'
+import { modernTheme } from '../components/styles/themes/modern'
+import { classicTheme } from '../components/styles/themes/classic'
 
 interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
@@ -27,7 +25,7 @@ interface ExtensionStateContextType extends ExtensionState {
 	setShowAnnouncement: (value: boolean) => void
 	setThemeMode: (mode: ThemeMode) => void
 	setThemeType: (type: ThemeType) => void
-	getThemeStyles: (component: ThemeComponentKey) => any
+	getThemeStyles: (component: ThemeComponentKey, mode?: ThemeMode, type?: ThemeType) => any
 }
 
 const ExtensionStateContext = createContext<ExtensionStateContextType | undefined>(undefined)
@@ -99,7 +97,6 @@ export const ExtensionStateContextProvider: React.FC<{
 			case "partialMessage": {
 				const partialMessage = message.partialMessage!
 				setState((prevState) => {
-					// worth noting it will never be possible for a more up-to-date message to be sent here or in normal messages post since the presentAssistantContent function uses lock
 					const lastIndex = findLastIndex(prevState.clineMessages, (msg) => msg.ts === partialMessage.ts)
 					if (lastIndex !== -1) {
 						const newClineMessages = [...prevState.clineMessages]
@@ -110,18 +107,6 @@ export const ExtensionStateContextProvider: React.FC<{
 				})
 				break
 			}
-			case "openRouterModels": {
-				const updatedModels = message.openRouterModels ?? {}
-				setOpenRouterModels({
-					[openRouterDefaultModelId]: openRouterDefaultModelInfo, // in case the extension sent a model list without the default model
-					...updatedModels,
-				})
-				break
-			}
-			case "mcpServers": {
-				setMcpServers(message.mcpServers ?? [])
-				break
-			}
 		}
 	}, [])
 
@@ -129,56 +114,62 @@ export const ExtensionStateContextProvider: React.FC<{
 
 	useEffect(() => {
 		vscode.postMessage({ type: "webviewDidLaunch" })
+		vscode.postMessage({ 
+			type: "themeChanged", 
+			mode: themeMode || 'dark', 
+			themeType: themeType || 'modern' 
+		})
 	}, [])
 
-	const getThemeStyles = useCallback((component: ThemeComponentKey) => {
-		const themeStyles: Record<ThemeType, Record<ThemeMode, ThemeStyles>> = {
-			modern: {
-				dark: ModernDarkTheme.default,
-				light: ModernLightTheme.default
-			},
-			classic: {
-				dark: ClassicDarkTheme.default,
-				light: ClassicLightTheme.default
-			}
+	const getThemeStyles = useCallback((
+		component: ThemeComponentKey, 
+		mode?: ThemeMode, 
+		type?: ThemeType
+	) => {
+		const finalType = type || themeType || 'modern'
+		const finalMode = mode || themeMode || 'dark'
+		if (finalType === 'modern') {
+			return modernTheme[finalMode][component]
+		} else if (finalType === 'classic') {
+			return classicTheme[finalMode][component]
 		}
-		return themeStyles[themeType || 'modern'][themeMode || 'dark'][component]
+		return modernTheme[finalMode][component]
 	}, [themeMode, themeType])
 
 	const contextValue: ExtensionStateContextType = {
 		...state,
 		didHydrateState,
-			showWelcome,
-			theme,
-			themeMode,
-			themeType,
-			openRouterModels,
-			mcpServers,
-			filePaths,
-			setApiConfiguration: (value) =>
-				setState((prevState) => ({
-					...prevState,
-					apiConfiguration: value,
-				})),
-			setCustomInstructions: (value) =>
-				setState((prevState) => ({
-					...prevState,
-					customInstructions: value,
-				})),
-			setShowAnnouncement: (value) =>
-				setState((prevState) => ({
-					...prevState,
-					shouldShowAnnouncement: value,
-				})),
-			setThemeMode: (mode) => {
-				setThemeMode(mode)
-				vscode.postMessage({ type: "themeChanged", mode })
-			},
-			setThemeType: (type) => {
-				setThemeType(type)
-				vscode.postMessage({ type: "themeChanged", mode: themeMode, themeType: type })
-			},
-			getThemeStyles,
+		showWelcome,
+		theme,
+		themeMode,
+		themeType,
+		openRouterModels,
+		mcpServers,
+		filePaths,
+		setApiConfiguration: (value) =>
+			setState((prevState) => ({
+				...prevState,
+				apiConfiguration: value,
+			})),
+		setCustomInstructions: (value) =>
+			setState((prevState) => ({
+				...prevState,
+				customInstructions: value,
+			})),
+		setShowAnnouncement: (value) =>
+			setState((prevState) => ({
+				...prevState,
+				shouldShowAnnouncement: value,
+			})),
+		setThemeMode: (mode) => {
+			setThemeMode(mode)
+			vscode.postMessage({ type: "themeChanged", mode, themeType })
+		},
+		setThemeType: (type) => {
+			setThemeType(type)
+			vscode.postMessage({ type: "themeChanged", mode: themeMode, themeType: type })
+		},
+		getThemeStyles,
 	}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>

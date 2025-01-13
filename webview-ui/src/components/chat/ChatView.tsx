@@ -645,8 +645,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	)
 
 	return (
-		<S.Wrapper style={{ display: isHidden ? "none" : "flex" }}>
-			<S.Container>
+		<S.Wrapper mode={themeMode || 'dark'} style={{ display: isHidden ? "none" : "flex" }}>
+			<S.Container mode={themeMode || 'dark'}>
 				{task ? (
 					<TaskHeader
 						task={task}
@@ -662,7 +662,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					<S.ScrollableContent>
 						{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
 						<S.WelcomeContent>
-							<S.WelcomeHeading>Hey I'm CLINE, how can I assist you today?</S.WelcomeHeading>
+							<S.WelcomeHeading mode={themeMode || 'dark'}>Hey I'm CLINE, how can I assist you today?</S.WelcomeHeading>
 							<p>
 								While I can utilize multiple AI models, I work best with Claude 3.5 Sonnet. I can assist with
 								complex coding tasks, create and edit files, explore projects, use the browser, and run terminal
@@ -718,6 +718,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						{showScrollToBottom ? (
 							<div style={{ display: "flex", padding: "10px 15px 0px 15px" }}>
 								<S.ScrollToBottomButton
+									mode={themeMode || 'dark'}
 									onClick={() => {
 										scrollToBottomSmooth()
 										disableAutoScrollRef.current = false
@@ -730,6 +731,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 								{primaryButtonText && !isStreaming && (
 									<S.StyledButton
 										$primary
+										mode={themeMode || 'dark'}
 										disabled={!enableButtons}
 										style={{
 											flex: secondaryButtonText ? 1 : 2,
@@ -741,6 +743,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 								)}
 								{(secondaryButtonText || isStreaming) && (
 									<S.StyledButton
+										mode={themeMode || 'dark'}
 										disabled={!enableButtons && !(isStreaming && !didClickCancel)}
 										style={{
 											flex: isStreaming ? 2 : 1,

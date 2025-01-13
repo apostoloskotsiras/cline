@@ -1,8 +1,5 @@
 import { useCallback } from 'react'
-import * as ModernDarkTheme from '../components/styles/themes/modern/dark'
-import * as ModernLightTheme from '../components/styles/themes/modern/light'
-import * as ClassicDarkTheme from '../components/styles/themes/classic/dark'
-import * as ClassicLightTheme from '../components/styles/themes/classic/light'
+import { useExtensionState } from '../context/ExtensionStateContext'
 
 export type ThemeMode = 'light' | 'dark'
 export type ThemeType = 'modern' | 'classic'
@@ -35,19 +32,34 @@ export type ThemeComponentKey =
     | 'common/CodeBlock'
     | 'common/CheckpointControls'
 
+export interface ThemeColors {
+    background: string
+    foreground: string
+    border: string
+    primary: string
+    secondary: string
+    success: string
+    error: string
+    warning: string
+    info: string
+    textPrimary: string
+    textSecondary: string
+    textDisabled: string
+    text: string
+    divider: string
+    hover: string
+    active: string
+    selected: string
+    disabled: string
+}
+
 export type ThemeStyles = Record<ThemeComponentKey, any>
 
-export const useThemeStyles = (component: ThemeComponentKey, mode: ThemeMode, type: ThemeType) => {
-    const themeStyles: Record<ThemeType, Record<ThemeMode, ThemeStyles>> = {
-        modern: {
-            dark: ModernDarkTheme.default,
-            light: ModernLightTheme.default
-        },
-        classic: {
-            dark: ClassicDarkTheme.default,
-            light: ClassicLightTheme.default
-        }
-    }
-
-    return themeStyles[type][mode][component]
+export const useThemeStyles = (
+    component: ThemeComponentKey,
+    overrideMode?: ThemeMode,
+    overrideType?: ThemeType
+) => {
+    const { themeMode, themeType, getThemeStyles } = useExtensionState()
+    return getThemeStyles(component, overrideMode || themeMode, overrideType || themeType)
 } 

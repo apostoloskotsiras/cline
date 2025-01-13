@@ -1,5 +1,5 @@
 import { CSSProperties } from "react"
-import * as S from "../styles/themes/modern/dark/common/Tag.styles"
+import * as S from "../styles/themes/modern/components/common/Tag.styles"
 
 interface TagProps {
 	value: string

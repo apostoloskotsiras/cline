@@ -4,7 +4,7 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { validateApiConfiguration } from "../../utils/validate"
 import { vscode } from "../../utils/vscode"
 import ApiOptions from "../settings/ApiOptions"
-import * as S from "../styles/themes/modern/dark/welcome/WelcomeView.styles"
+import * as S from "../styles/themes/modern/components/welcome/WelcomeView.styles"
 
 const WelcomeView = () => {
 	const { apiConfiguration } = useExtensionState()

@@ -1,6 +1,6 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import React, { useState } from "react"
-import * as S from "../styles/themes/modern/dark/settings/TabNavbar.styles"
+import * as S from "../styles/themes/modern/components/settings/TabNavbar.styles"
 
 type TabNavbarProps = {
 	onPlusClick: () => void

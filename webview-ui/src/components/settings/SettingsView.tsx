@@ -6,7 +6,7 @@ import { vscode } from "../../utils/vscode"
 import { useThemeStyles } from "../../utils/theme"
 import ApiOptions from "./ApiOptions"
 
-const IS_DEV = false // FIXME: use flags when packaging
+const IS_DEV = true // FIXME: use flags when packaging
 
 type SettingsViewProps = {
 	onDone: () => void

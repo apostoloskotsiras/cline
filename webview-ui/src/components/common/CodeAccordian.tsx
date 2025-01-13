@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react"
 import { getLanguageFromPath } from "../../utils/getLanguageFromPath"
 import CodeBlock from "./CodeBlock"
-import * as S from "../styles/themes/modern/dark/common/CodeAccordian.styles"
+import * as S from "../styles/themes/modern/components/common/CodeAccordian.styles"
 
 interface CodeAccordianProps {
 	code?: string

@@ -1,5 +1,5 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
-import * as S from "../styles/themes/modern/dark/common/SuccessButton.styles"
+import * as S from "../styles/themes/modern/components/common/SuccessButton.styles"
 
 interface SuccessButtonProps extends React.ComponentProps<typeof VSCodeButton> {}
 

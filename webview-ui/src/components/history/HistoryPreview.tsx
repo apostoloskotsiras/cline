@@ -3,14 +3,15 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 import { memo } from "react"
 import { formatLargeNumber } from "../../utils/format"
-import * as S from '../styles/themes/modern/dark/history/HistoryPreview.styles'
+import { useThemeStyles } from '../../utils/theme'
 
 type HistoryPreviewProps = {
 	showHistoryView: () => void
 }
 
 const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
-	const { taskHistory } = useExtensionState()
+	const { taskHistory, themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('history/HistoryPreview', themeMode || 'dark', themeType || 'modern')
 	const handleHistorySelect = (id: string) => {
 		vscode.postMessage({ type: "showTaskWithId", text: id })
 	}

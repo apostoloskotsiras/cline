@@ -8,7 +8,7 @@ import { ChatRowContent, ProgressIndicator } from "./ChatRow"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import { CheckpointOverlay } from "../common/CheckpointControls"
 import { findLast } from "../../../../src/shared/array"
-import * as S from "../styles/themes/modern/dark/chat/BrowserSessionRow.styles"
+import * as S from "../styles/themes/modern/components/chat/BrowserSessionRow.styles"
 
 interface BrowserSessionRowProps {
 	messages: ClineMessage[]

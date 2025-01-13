@@ -1,189 +1,197 @@
 # Cline Theming Guide
 
 ## Overview
-Cline uses a flexible theming system that supports multiple theme types (modern/classic) and modes (light/dark). The system is built using styled-components and TypeScript for type safety.
+Cline uses a flexible theming system that supports multiple theme types (modern, classic) and modes (light, dark). The system is designed to be maintainable and extensible, with centralized color management and component-specific styles.
 
-## Theme Structure
-
+## Directory Structure
 ```
 webview-ui/src/components/styles/themes/
 ├── modern/
-│   ├── dark/
-│   │   └── index.ts        # Main barrel file for modern dark theme
-│   └── light/
-│       └── index.ts        # Main barrel file for modern light theme
-└── classic/
-    ├── dark/
-    │   └── index.ts        # Main barrel file for classic dark theme
-    └── light/
-        └── index.ts        # Main barrel file for classic light theme
+│   ├── components/
+│   │   ├── chat/
+│   │   ├── settings/
+│   │   ├── welcome/
+│   │   ├── navigation/
+│   │   ├── mcp/
+│   │   ├── history/
+│   │   └── common/
+│   ├── theme.ts        # Theme colors and variables
+│   └── index.ts        # Theme exports and component styles
 ```
 
-## Adding Styles to a Component
-
-1. **Create a Style File**
-Create a `.styles.tsx` file next to your component:
+## Theme Colors
+Theme colors are defined in `modern/theme.ts` and provide a consistent color palette for both light and dark modes:
 
 ```typescript
-// MyComponent.styles.tsx
-import styled from 'styled-components'
-
-export const Wrapper = styled.div`
-  background: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
-  padding: 16px;
-`
-
-export const Title = styled.h1`
-  font-size: 20px;
-  margin-bottom: 8px;
-`
-
-export const styles = `
-  .my-component {
-    /* For global styles if needed */
-  }
-`
-```
-
-2. **Use Styles in Component**
-```typescript
-// MyComponent.tsx
-import { useExtensionState } from '../../context/ExtensionStateContext'
-import { useThemeStyles } from '../../utils/theme'
-
-const MyComponent = () => {
-  const { themeMode, themeType } = useExtensionState()
-  const S = useThemeStyles('section/MyComponent', themeMode, themeType)
-
-  return (
-    <S.Wrapper>
-      <style>{S?.styles}</style>
-      <S.Title>My Component</S.Title>
-    </S.Wrapper>
-  )
+export interface ThemeColors {
+    background: string
+    foreground: string
+    border: string
+    primary: string
+    secondary: string
+    success: string
+    error: string
+    warning: string
+    info: string
+    textPrimary: string
+    textSecondary: string
+    textDisabled: string
+    divider: string
+    hover: string
+    active: string
+    selected: string
+    disabled: string
 }
+
+// Access theme colors using getThemeColors(mode)
+const colors = getThemeColors('dark')
 ```
 
-3. **Register Component in Theme**
-Add your component to the theme's index.ts:
+## Adding New Components
 
+1. Create a new style file in the appropriate component directory:
 ```typescript
-// themes/modern/dark/index.ts
-import * as MyComponent from './section/MyComponent.styles'
+// modern/components/your-section/YourComponent.styles.tsx
+import styled from 'styled-components'
+import { ThemeMode } from '../../../../../../utils/theme'
+import { getThemeColors } from '../../../theme'
+
+interface StyledProps {
+    mode: ThemeMode
+}
+
+export const Container = styled.div<StyledProps>`
+    // IMPORTANT: Always use mode prop to get theme colors
+    background: ${({ mode }) => getThemeColors(mode).background};
+    color: ${({ mode }) => getThemeColors(mode).textPrimary};
+    border: 1px solid ${({ mode }) => getThemeColors(mode).border};
+
+    // For colors with opacity, append hex values:
+    // FA = 98% opacity
+    // CC = 80% opacity
+    // 80 = 50% opacity
+    background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
+`
+```
+
+2. Add your component key to `ThemeComponentKey` in `utils/theme.ts`:
+```typescript
+export type ThemeComponentKey = 
+    | 'existing/components'
+    | 'your-section/YourComponent'
+```
+
+3. Import and export your styles in `modern/index.ts`:
+```typescript
+import * as YourComponent from './components/your-section/YourComponent.styles'
 
 const themeStyles = {
-  'section/MyComponent': MyComponent,
-  // ... other components
-}
-
-export default themeStyles
-```
-
-## Adding a New Theme
-
-1. **Create Theme Directory**
-Create a new directory under `themes/` with your theme name:
-```
-themes/
-└── mytheme/
-    ├── dark/
-    │   └── index.ts
-    └── light/
-        └── index.ts
-```
-
-2. **Update Theme Types**
-Add your theme to `utils/theme.ts`:
-```typescript
-export type ThemeType = 'modern' | 'classic' | 'mytheme'
-```
-
-3. **Import Theme Files**
-Update the theme imports in `utils/theme.ts`:
-```typescript
-import * as MyThemeDark from '../components/styles/themes/mytheme/dark'
-import * as MyThemeLight from '../components/styles/themes/mytheme/light'
-
-export const useThemeStyles = (component: ThemeComponentKey, mode: ThemeMode, type: ThemeType) => {
-  const themeStyles = {
-    modern: { /*...*/ },
-    classic: { /*...*/ },
-    mytheme: {
-      dark: MyThemeDark.default,
-      light: MyThemeLight.default
-    }
-  }
-  return themeStyles[type][mode][component]
+    'your-section/YourComponent': YourComponent,
+    // ... other components
 }
 ```
 
-## Using VSCode Theme Variables
+## Using Themed Components
 
-For consistent theming with VSCode:
-
+1. Import the required hooks and styles:
 ```typescript
-// Common VSCode theme variables
-const commonStyles = `
-  --background: var(--vscode-editor-background);
-  --foreground: var(--vscode-editor-foreground);
-  --button-bg: var(--vscode-button-background);
-  --button-fg: var(--vscode-button-foreground);
-  --link: var(--vscode-textLink-foreground);
-`
+import { useExtensionState } from '../../context/ExtensionStateContext'
+import { useThemeStyles } from '../../utils/theme'
+```
 
-// Use in styled components
-export const Button = styled.button`
-  background: var(--button-bg);
-  color: var(--button-fg);
-  border: none;
-  padding: 8px 16px;
-  cursor: pointer;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-`
+2. Get the theme styles and mode in your component:
+```typescript
+const YourComponent = () => {
+    const { themeMode, themeType } = useExtensionState()
+    const { Container, OtherStyledComponent } = useThemeStyles(
+        'your-section/YourComponent',
+        themeMode || 'dark',
+        themeType || 'modern'
+    )
+    
+    return (
+        // IMPORTANT: Always pass mode prop to styled components
+        <Container mode={themeMode || 'dark'}>
+            <OtherStyledComponent mode={themeMode || 'dark'}>
+                Your content
+            </OtherStyledComponent>
+        </Container>
+    )
+}
+```
+
+## Color Usage Examples
+
+1. **Basic Color Usage**
+```typescript
+// Basic color
+color: ${({ mode }) => getThemeColors(mode).textPrimary};
+
+// With opacity (98%)
+background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
+
+// With opacity (80%)
+border: ${({ mode }) => `${getThemeColors(mode).border}CC`};
+
+// With opacity (50%)
+color: ${({ mode }) => `${getThemeColors(mode).textSecondary}80`};
+```
+
+2. **Conditional Colors**
+```typescript
+// Based on props
+background: ${(props) => props.disabled 
+    ? `${getThemeColors(props.mode).background}80`
+    : getThemeColors(props.mode).background};
+
+// Hover states
+&:hover {
+    background: ${({ mode }) => `${getThemeColors(mode).hover}FA`};
+    border-color: ${({ mode }) => getThemeColors(mode).active};
+}
 ```
 
 ## Best Practices
 
-1. **Component Organization**
-   - Keep style files next to their components
-   - Use descriptive names for styled components
-   - Group related styles together
+1. **Theme Mode Handling**
+   - Always provide a fallback for theme mode: `mode={themeMode || 'dark'}`
+   - Pass the mode prop to every styled component that uses `getThemeColors`
+   - Use the same mode value consistently across child components
 
-2. **Theme Consistency**
-   - Use VSCode theme variables when possible
-   - Maintain consistent spacing and colors
-   - Test themes in both light and dark modes
+2. **Color Usage**
+   - Always use theme colors from `getThemeColors` instead of hardcoding values
+   - Use semantic color names (e.g., `textPrimary` instead of specific colors)
+   - Use hex opacity values (FA, CC, 80) for consistent transparency effects
+   - Test colors in both light and dark modes
 
-3. **Type Safety**
-   - Add new components to `ThemeComponentKey` type
-   - Use proper TypeScript types for styled components
-   - Validate theme imports and exports
+3. **Component Organization**
+   - Keep related components in their respective section directories
+   - Use consistent naming for style components
+   - Export styled components with proper TypeScript interfaces
+
+4. **VSCode Theme Integration**
+   - Use VSCode theme variables when needed (e.g., `var(--vscode-editor-background)`)
+   - Test components in both light and dark modes
+   - Ensure sufficient contrast ratios for accessibility
 
 ## Troubleshooting
 
-Common issues and solutions:
-
-1. **Styles Not Updating**
-   - Verify component is registered in theme index
-   - Check theme path in useThemeStyles
-   - Ensure style component names match usage
+1. **Colors Not Updating**
+   - Verify the `mode` prop is passed to all styled components
+   - Check that `getThemeColors` is being called with the mode prop
+   - Ensure the component is wrapped with proper theme context
 
 2. **Type Errors**
-   - Add component to ThemeComponentKey
-   - Check import/export paths
-   - Verify theme type definitions
+   - Add proper interfaces for styled component props including `mode: ThemeMode`
+   - Import `ThemeMode` from the correct path
+   - Ensure all styled components have the mode prop defined
 
-3. **VSCode Integration**
-   - Use correct VSCode theme variables
-   - Test with different VSCode themes
-   - Check variable availability in context
+3. **Theme Not Applying**
+   - Check that `useThemeStyles` is called with correct parameters
+   - Verify the component key is properly registered
+   - Ensure all styled components receive the mode prop
 
 ## Resources
-
+- [Styled Components Documentation](https://styled-components.com/docs)
 - [VSCode Theme Color Reference](https://code.visualstudio.com/api/references/theme-color)
-- [styled-components Documentation](https://styled-components.com/docs)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html) 
+- [Web Accessibility Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html) 

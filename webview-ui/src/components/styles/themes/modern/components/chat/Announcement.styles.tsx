@@ -1,13 +1,15 @@
 import styled from "styled-components"
+import { ThemeMode } from "../../../../../../utils/theme"
+import { getThemeColors } from "../../../modern/theme"
 
-export const Container = styled.div`
-	background: rgba(34, 34, 34, 0.8);
+export const Container = styled.div<{ mode: ThemeMode }>`
+	background: ${({ mode }) => getThemeColors(mode).secondary};
 	border-radius: 12px;
 	padding: 20px 24px;
 	margin: 12px 16px;
 	position: relative;
 	flex-shrink: 0;
-	border: 1px solid rgba(255, 255, 255, 0.05);
+	border: 1px solid ${({ mode }) => getThemeColors(mode).border};
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 	backdrop-filter: blur(8px);
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -15,11 +17,11 @@ export const Container = styled.div`
 	&:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-		border-color: rgba(255, 255, 255, 0.1);
+		border-color: ${({ mode }) => getThemeColors(mode).hover};
 	}
 `
 
-export const CloseButton = styled.div`
+export const CloseButton = styled.div<{ mode: ThemeMode }>`
 	position: absolute;
 	top: 16px;
 	right: 16px;
@@ -32,29 +34,29 @@ export const CloseButton = styled.div`
 	align-items: center;
 	justify-content: center;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.1);
+	background: ${({ mode }) => getThemeColors(mode).hover};
 
 	&:hover {
 		opacity: 1;
-		background: rgba(255, 255, 255, 0.15);
+		background: ${({ mode }) => getThemeColors(mode).active};
 		transform: rotate(90deg);
 	}
 `
 
-export const Title = styled.h3`
+export const Title = styled.h3<{ mode: ThemeMode }>`
 	margin: 0 0 16px;
 	font-size: 1.2em;
 	font-weight: 600;
-	color: var(--vscode-foreground);
+	color: ${({ mode }) => getThemeColors(mode).textPrimary};
 	letter-spacing: -0.01em;
 	padding-right: 32px;
 `
 
-export const List = styled.ul`
+export const List = styled.ul<{ mode: ThemeMode }>`
 	margin: 0 0 16px;
 	padding-left: 20px;
 	line-height: 1.6;
-	color: var(--vscode-foreground);
+	color: ${({ mode }) => getThemeColors(mode).textPrimary};
 	opacity: 0.9;
 `
 
@@ -64,7 +66,7 @@ export const SubList = styled.ul`
 	opacity: 0.85;
 `
 
-export const ListItem = styled.li`
+export const ListItem = styled.li<{ mode: ThemeMode }>`
 	margin-bottom: 8px;
 	transition: opacity 0.2s ease;
 	
@@ -77,7 +79,7 @@ export const ListItem = styled.li`
 		margin-right: 8px;
 		vertical-align: middle;
 		opacity: 0.9;
-		color: var(--vscode-textLink-foreground);
+		color: ${({ mode }) => getThemeColors(mode).primary};
 	}
 
 	&:last-child {
@@ -85,20 +87,20 @@ export const ListItem = styled.li`
 	}
 `
 
-export const Divider = styled.div`
+export const Divider = styled.div<{ mode: ThemeMode }>`
 	height: 1px;
 	background: linear-gradient(
 		to right,
-		rgba(255, 255, 255, 0.1),
-		rgba(255, 255, 255, 0.05)
+		${({ mode }) => getThemeColors(mode).divider},
+		${({ mode }) => `${getThemeColors(mode).divider}50`}
 	);
 	margin: 16px 0;
 `
 
-export const FooterText = styled.p`
+export const FooterText = styled.p<{ mode: ThemeMode }>`
 	margin: 0;
 	font-size: 0.9em;
-	opacity: 0.75;
+	color: ${({ mode }) => getThemeColors(mode).textSecondary};
 	transition: opacity 0.2s ease;
 
 	&:hover {

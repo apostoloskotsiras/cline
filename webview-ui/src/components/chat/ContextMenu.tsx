@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react"
 import { ContextMenuOptionType, ContextMenuQueryItem, getContextMenuOptions } from "../../utils/context-mentions"
 import { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
-import * as S from "../styles/themes/modern/dark/chat/ContextMenu.styles"
+import * as S from "../styles/themes/modern/components/chat/ContextMenu.styles"
 
 interface ContextMenuProps {
 	onSelect: (type: ContextMenuOptionType, value?: string) => void

@@ -1,14 +1,20 @@
 import styled from "styled-components"
+import { ThemeMode } from "../../../../../../utils/theme"
+import { getThemeColors } from "../../theme"
 
-export const AddContextButton = styled.button`
+interface ThemedButtonProps {
+	mode: ThemeMode
+}
+
+export const AddContextButton = styled.button<{ mode: ThemeMode }>`
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
 	padding: 2px 6px;
 	background: transparent;
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid ${({ mode }) => getThemeColors(mode).border};
 	border-radius: 3px;
-	color: var(--vscode-foreground);
+	color: ${({ mode }) => getThemeColors(mode).textPrimary};
 	font-size: 11px;
 	cursor: pointer;
 	transition: all 0.15s ease;
@@ -19,8 +25,8 @@ export const AddContextButton = styled.button`
 	z-index: 10;
 
 	&:hover {
-		background: rgba(255, 255, 255, 0.06);
-		border-color: rgba(255, 255, 255, 0.15);
+		background: ${({ mode }) => getThemeColors(mode).hover};
+		border-color: ${({ mode }) => getThemeColors(mode).active};
 		opacity: 1;
 	}
 
@@ -30,7 +36,7 @@ export const AddContextButton = styled.button`
 	}
 `
 
-export const ChatTextAreaContainer = styled.div<{ disabled: boolean; hasTagsAbove?: boolean }>`
+export const ChatTextAreaContainer = styled.div<{ disabled: boolean; hasTagsAbove?: boolean; mode: ThemeMode }>`
 	padding: 20px 16px 20px 16px;
 	opacity: ${(props) => (props.disabled ? 0.6 : 1)};
 	position: relative;
@@ -38,20 +44,21 @@ export const ChatTextAreaContainer = styled.div<{ disabled: boolean; hasTagsAbov
 	transition: all 0.2s ease;
 	box-shadow: none;
 	border-radius: ${(props) => (props.hasTagsAbove ? "0 0 6px 6px" : "6px")};
-	background: rgb(30, 30, 30);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
+	border: 1px solid ${({ mode }) => getThemeColors(mode).border};
 	transform: ${(props) => (props.disabled ? "none" : "translateY(0)")};
 	margin-top: ${(props) => (props.hasTagsAbove ? "-1px" : "0")};
 	min-height: 56px;
 
 	&:hover {
-		background: ${(props) => (props.disabled ? "rgb(30, 30, 30)" : "rgb(35, 35, 35)")};
-		border-color: rgba(255, 255, 255, 0.15);
+		background: ${(props) => props.disabled ? getThemeColors(props.mode).background : getThemeColors(props.mode).hover};
+		border-color: ${({ mode }) => getThemeColors(mode).active};
 	}
 `
 
 interface TextContainerProps {
 	hasAddContextButton?: boolean
+	mode: ThemeMode
 }
 
 export const TextContainer = styled.div<TextContainerProps>`
@@ -62,12 +69,14 @@ export const TextContainer = styled.div<TextContainerProps>`
 	textarea {
 		padding: 10px 52px 10px 12px !important;
 		min-height: 24px !important;
+		color: ${({ mode }) => getThemeColors(mode).textPrimary};
+		background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
 	}
 
 	.mention-context-textarea-highlight {
-		background-color: color-mix(in srgb, var(--vscode-badge-foreground) 30%, transparent);
+		background-color: ${({ mode }) => `${getThemeColors(mode).selected}80`};
 		border-radius: 3px;
-		box-shadow: 0 0 0 0.5px color-mix(in srgb, var(--vscode-badge-foreground) 30%, transparent);
+		box-shadow: 0 0 0 0.5px ${({ mode }) => getThemeColors(mode).selected};
 		color: transparent;
 	}
 `
@@ -83,7 +92,7 @@ export const BottomControls = styled.div`
 	z-index: 3;
 `
 
-export const PhotoButton = styled.div<{ disabled: boolean }>`
+export const PhotoButton = styled.div<{ disabled: boolean; mode: ThemeMode }>`
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -91,11 +100,12 @@ export const PhotoButton = styled.div<{ disabled: boolean }>`
 	opacity: ${(props) => (props.disabled ? 0.5 : 0.8)};
 	cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 	transition: opacity 0.2s ease;
-	background: rgb(30, 30, 30);
+	background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
 	border-radius: 3px;
 
 	&:hover {
 		opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+		background: ${(props) => !props.disabled && getThemeColors(props.mode).hover};
 	}
 
 	span {
@@ -105,9 +115,9 @@ export const PhotoButton = styled.div<{ disabled: boolean }>`
 	}
 `
 
-export const TagsBox = styled.div`
-	background: rgb(30, 30, 30);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+export const TagsBox = styled.div<{ mode: ThemeMode }>`
+	background: ${({ mode }) => `${getThemeColors(mode).background}FA`};
+	border: 1px solid ${({ mode }) => getThemeColors(mode).border};
 	border-bottom: none;
 	border-radius: 6px 6px 0 0;
 	margin: 0;
@@ -126,7 +136,7 @@ export const TagsBox = styled.div`
 		left: 0;
 		right: 0;
 		height: 1px;
-		background: rgba(255, 255, 255, 0.1);
+		background: ${({ mode }) => getThemeColors(mode).border};
 	}
 `
 
@@ -137,22 +147,22 @@ export const TagsSection = styled.div`
 	align-items: center;
 `
 
-export const ThumbnailsSection = styled.div`
+export const ThumbnailsSection = styled.div<{ mode: ThemeMode }>`
 	margin-left: auto;
 	padding-left: 8px;
-	border-left: 1px solid rgba(255, 255, 255, 0.1);
+	border-left: 1px solid ${({ mode }) => getThemeColors(mode).border};
 `
 
-export const Tag = styled.div`
+export const Tag = styled.div<{ mode: ThemeMode }>`
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
 	padding: 2px 6px;
-	background: rgba(255, 255, 255, 0.04);
+	background: ${({ mode }) => `${getThemeColors(mode).hover}FA`};
 	border-radius: 3px;
 	font-size: 11px;
-	color: var(--vscode-foreground);
-	border: 1px solid rgba(255, 255, 255, 0.08);
+	color: ${({ mode }) => getThemeColors(mode).textPrimary};
+	border: 1px solid ${({ mode }) => `${getThemeColors(mode).border}CC`};
 	transition: all 0.15s ease;
 
 	i.codicon {
@@ -178,13 +188,13 @@ export const Tag = styled.div`
 	}
 
 	&:hover {
-		background: rgba(255, 255, 255, 0.06);
-		border-color: rgba(255, 255, 255, 0.12);
+		background: ${({ mode }) => `${getThemeColors(mode).active}FA`};
+		border-color: ${({ mode }) => `${getThemeColors(mode).border}FA`};
 	}
 `
 
-export const StyledSvg = styled.svg`
-	color: var(--vscode-input-foreground);
+export const StyledSvg = styled.svg<{ mode: ThemeMode }>`
+	color: ${({ mode }) => getThemeColors(mode).textPrimary};
 	transition: opacity 0.2s ease;
 
 	&:hover {
@@ -217,7 +227,7 @@ export const SendSvg = styled(StyledSvg)`
 	}
 `
 
-export const ActionButton = styled.div<{ disabled: boolean }>`
+export const ActionButton = styled.div<{ disabled: boolean; mode: ThemeMode }>`
 	width: 16px;
 	height: 16px;
 	opacity: ${(props) => (props.disabled ? 0.5 : 1)};

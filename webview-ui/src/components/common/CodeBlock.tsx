@@ -3,7 +3,7 @@ import { useRemark } from "react-remark"
 import rehypeHighlight, { Options } from "rehype-highlight"
 import { visit } from "unist-util-visit"
 import { useExtensionState } from "../../context/ExtensionStateContext"
-import * as S from "../styles/themes/modern/dark/common/CodeBlock.styles"
+import * as S from "../styles/themes/modern/components/common/CodeBlock.styles"
 
 interface CodeBlockProps {
 	source?: string

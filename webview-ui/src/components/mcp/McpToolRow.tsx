@@ -1,5 +1,5 @@
 import { McpTool } from "../../../../src/shared/mcp"
-import * as S from "../styles/themes/modern/dark/mcp/McpToolRow.styles"
+import * as S from "../styles/themes/modern/components/mcp/McpToolRow.styles"
 
 type McpToolRowProps = {
 	tool: McpTool

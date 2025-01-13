@@ -8,7 +8,7 @@ import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 import { highlight } from "../history/HistoryView"
 import { ModelInfoView, normalizeApiConfiguration } from "./ApiOptions"
-import * as S from "../styles/themes/modern/dark/settings/OpenRouterModelPicker.styles"
+import * as S from "../styles/themes/modern/components/settings/OpenRouterModelPicker.styles"
 
 const OpenRouterModelPicker: React.FC = () => {
 	const { apiConfiguration, setApiConfiguration, openRouterModels } = useExtensionState()
