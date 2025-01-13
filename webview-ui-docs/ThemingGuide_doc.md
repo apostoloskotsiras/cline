@@ -1,163 +1,189 @@
 # Cline Theming Guide
 
 ## Overview
-Cline uses a theme system that supports multiple theme types (Modern/Classic) and color modes (Light/Dark). The system is built to be extensible and maintainable.
+Cline uses a flexible theming system that supports multiple theme types (modern/classic) and modes (light/dark). The system is built using styled-components and TypeScript for type safety.
 
-## Directory Structure
+## Theme Structure
+
 ```
-webview-ui/src/components/styles/
-├── themes/
-│   ├── modern/
-│   │   ├── dark/
-│   │   │   ├── settings/
-│   │   │   │   ├── SettingsView.styles.tsx
-│   │   │   │   └── ...
-│   │   │   ├── chat/
-│   │   │   │   ├── ChatView.styles.tsx
-│   │   │   │   └── ...
-│   │   │   └── index.ts
-│   │   └── light/
-│   │       └── ... (same structure as dark)
-│   └── classic/
-│       ├── dark/
-│       │   └── ... (same structure as modern)
-│       └── light/
-│           └── ... (same structure as modern)
+webview-ui/src/components/styles/themes/
+├── modern/
+│   ├── dark/
+│   │   └── index.ts        # Main barrel file for modern dark theme
+│   └── light/
+│       └── index.ts        # Main barrel file for modern light theme
+└── classic/
+    ├── dark/
+    │   └── index.ts        # Main barrel file for classic dark theme
+    └── light/
+        └── index.ts        # Main barrel file for classic light theme
 ```
 
-## Adding New Components
+## Adding Styles to a Component
 
-### 1. Create Style File
-Create a new `.styles.tsx` file in the appropriate component directory:
+1. **Create a Style File**
+Create a `.styles.tsx` file next to your component:
 
-```tsx
-// Example: webview-ui/src/components/styles/themes/modern/dark/myfeature/MyComponent.styles.tsx
+```typescript
+// MyComponent.styles.tsx
 import styled from 'styled-components'
 
-export const Container = styled.div`
-    background: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
+export const Wrapper = styled.div`
+  background: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  padding: 16px;
 `
 
-export const Header = styled.header`
-    border-bottom: 1px solid var(--vscode-panel-border);
+export const Title = styled.h1`
+  font-size: 20px;
+  margin-bottom: 8px;
 `
 
-// Export styles object that will be used by the theme system
-export default {
-    styles: `
-        .my-component {
-            /* Your styles here */
-        }
-    `
-}
+export const styles = `
+  .my-component {
+    /* For global styles if needed */
+  }
+`
 ```
 
-### 2. Update Theme Types
-Add your component to the `ThemeComponentKey` type in `webview-ui/src/utils/theme.ts`:
-
+2. **Use Styles in Component**
 ```typescript
-export type ThemeComponentKey = 
-    | 'myfeature/MyComponent'  // Add your component here
-    | 'settings/SettingsView'
-    | ...
-```
-
-### 3. Create Component
-Use the theme styles in your component:
-
-```tsx
-import { useExtensionState } from "../../context/ExtensionStateContext"
+// MyComponent.tsx
+import { useExtensionState } from '../../context/ExtensionStateContext'
+import { useThemeStyles } from '../../utils/theme'
 
 const MyComponent = () => {
-    const { themeMode, themeType, getThemeStyles } = useExtensionState()
-    const S = getThemeStyles('myfeature/MyComponent')
+  const { themeMode, themeType } = useExtensionState()
+  const S = useThemeStyles('section/MyComponent', themeMode, themeType)
 
-    return (
-        <div className="my-component">
-            <style>{S?.styles}</style>
-            {/* Your component content */}
-        </div>
-    )
+  return (
+    <S.Wrapper>
+      <style>{S?.styles}</style>
+      <S.Title>My Component</S.Title>
+    </S.Wrapper>
+  )
 }
 ```
 
-## Adding New Theme Variants
-
-### 1. Create Theme Directory
-To add a new theme variant (e.g., "Retro"):
-1. Create directory: `webview-ui/src/components/styles/themes/retro/`
-2. Add `dark/` and `light/` subdirectories
-3. Copy component structure from existing theme
-
-### 2. Update Theme Types
-Modify `ThemeType` in `webview-ui/src/utils/theme.ts`:
+3. **Register Component in Theme**
+Add your component to the theme's index.ts:
 
 ```typescript
-export type ThemeType = 'modern' | 'classic' | 'retro'  // Add your theme
-```
+// themes/modern/dark/index.ts
+import * as MyComponent from './section/MyComponent.styles'
 
-### 3. Import Theme in Context
-Update `ExtensionStateContext.tsx` to include your theme:
-
-```typescript
-import * as RetroDarkTheme from '../components/styles/themes/retro/dark'
-import * as RetroLightTheme from '../components/styles/themes/retro/light'
-
-// Add to themeStyles object
 const themeStyles = {
-    modern: { ... },
-    classic: { ... },
-    retro: {
-        dark: RetroDarkTheme.default,
-        light: RetroLightTheme.default
-    }
+  'section/MyComponent': MyComponent,
+  // ... other components
 }
+
+export default themeStyles
+```
+
+## Adding a New Theme
+
+1. **Create Theme Directory**
+Create a new directory under `themes/` with your theme name:
+```
+themes/
+└── mytheme/
+    ├── dark/
+    │   └── index.ts
+    └── light/
+        └── index.ts
+```
+
+2. **Update Theme Types**
+Add your theme to `utils/theme.ts`:
+```typescript
+export type ThemeType = 'modern' | 'classic' | 'mytheme'
+```
+
+3. **Import Theme Files**
+Update the theme imports in `utils/theme.ts`:
+```typescript
+import * as MyThemeDark from '../components/styles/themes/mytheme/dark'
+import * as MyThemeLight from '../components/styles/themes/mytheme/light'
+
+export const useThemeStyles = (component: ThemeComponentKey, mode: ThemeMode, type: ThemeType) => {
+  const themeStyles = {
+    modern: { /*...*/ },
+    classic: { /*...*/ },
+    mytheme: {
+      dark: MyThemeDark.default,
+      light: MyThemeLight.default
+    }
+  }
+  return themeStyles[type][mode][component]
+}
+```
+
+## Using VSCode Theme Variables
+
+For consistent theming with VSCode:
+
+```typescript
+// Common VSCode theme variables
+const commonStyles = `
+  --background: var(--vscode-editor-background);
+  --foreground: var(--vscode-editor-foreground);
+  --button-bg: var(--vscode-button-background);
+  --button-fg: var(--vscode-button-foreground);
+  --link: var(--vscode-textLink-foreground);
+`
+
+// Use in styled components
+export const Button = styled.button`
+  background: var(--button-bg);
+  color: var(--button-fg);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+`
 ```
 
 ## Best Practices
 
-### VSCode Theme Integration
-- Use VSCode's built-in theme variables when possible:
-  ```css
-  background: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
-  border: 1px solid var(--vscode-panel-border);
-  ```
-- Common variables:
-  - `--vscode-editor-background`: Main background
-  - `--vscode-editor-foreground`: Main text color
-  - `--vscode-button-background`: Primary button background
-  - `--vscode-button-foreground`: Primary button text
-  - `--vscode-panel-border`: Border colors
-  - `--vscode-input-background`: Input fields background
-  - `--vscode-input-foreground`: Input text color
+1. **Component Organization**
+   - Keep style files next to their components
+   - Use descriptive names for styled components
+   - Group related styles together
 
-### Style Organization
-1. Group related styles together
-2. Use descriptive class/component names
-3. Comment complex style rules
-4. Keep styles modular and reusable
+2. **Theme Consistency**
+   - Use VSCode theme variables when possible
+   - Maintain consistent spacing and colors
+   - Test themes in both light and dark modes
 
-### Troubleshooting
+3. **Type Safety**
+   - Add new components to `ThemeComponentKey` type
+   - Use proper TypeScript types for styled components
+   - Validate theme imports and exports
+
+## Troubleshooting
+
 Common issues and solutions:
 
-1. **Styles not updating:**
-   - Check if `getThemeStyles` is called with correct component key
-   - Verify theme mode and type are set correctly
-   - Ensure style element is present in component
+1. **Styles Not Updating**
+   - Verify component is registered in theme index
+   - Check theme path in useThemeStyles
+   - Ensure style component names match usage
 
-2. **Type errors:**
-   - Make sure component is added to `ThemeComponentKey`
-   - Check theme imports in context
-   - Verify style object structure matches expected format
+2. **Type Errors**
+   - Add component to ThemeComponentKey
+   - Check import/export paths
+   - Verify theme type definitions
 
-3. **VSCode theme variables not working:**
-   - Ensure VSCode theme is properly loaded
-   - Check variable names in documentation
-   - Use fallback values for custom properties
+3. **VSCode Integration**
+   - Use correct VSCode theme variables
+   - Test with different VSCode themes
+   - Check variable availability in context
 
 ## Resources
+
 - [VSCode Theme Color Reference](https://code.visualstudio.com/api/references/theme-color)
-- [Styled Components Documentation](https://styled-components.com/docs)
-- [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/) 
+- [styled-components Documentation](https://styled-components.com/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html) 

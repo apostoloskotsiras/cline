@@ -1,6 +1,7 @@
 import { VSCodeButton, VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import { memo } from "react"
-import * as S from "../styles/themes/modern/dark/chat/Announcement.styles"
+import { useThemeStyles } from "../../utils/theme"
+import { useExtensionState } from "../../context/ExtensionStateContext"
 
 interface AnnouncementProps {
 	version: string
@@ -9,6 +10,9 @@ interface AnnouncementProps {
 
 const Announcement = ({ version, hideAnnouncement }: AnnouncementProps) => {
 	const minorVersion = version.split(".").slice(0, 2).join(".") // 2.0.0 -> 2.0
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('chat/Announcement', themeMode || 'dark', themeType || 'modern')
+	
 	return (
 		<S.Container>
 			<S.CloseButton>
