@@ -5,7 +5,8 @@ import { useClickAway, useEvent } from "react-use"
 import { ExtensionMessage } from "../../../../src/shared/ExtensionMessage"
 import { vscode } from "../../utils/vscode"
 import { ClineCheckpointRestore } from "../../../../src/shared/WebviewMessage"
-import * as S from "../styles/themes/modern/components/common/CheckpointControls.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 
 interface CheckpointOverlayProps {
 	messageTs?: number
@@ -20,6 +21,9 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 	const [restoreWorkspaceDisabled, setRestoreWorkspaceDisabled] = useState(false)
 	const [restoreBothDisabled, setRestoreBothDisabled] = useState(false)
 	const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
+
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('common/CheckpointControls', themeMode || 'dark', themeType || 'modern')
 
 	const buttonRef = useRef<HTMLDivElement>(null)
 	const menuRef = useRef<HTMLDivElement>(null)
@@ -113,10 +117,11 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 	}
 
 	return (
-		<S.Controls ref={buttonRef}>
-			<S.ButtonGroup $expanded={expanded}>
-				<S.ExpandingOptions $expanded={expanded}>
+		<S.Controls ref={buttonRef} mode={themeMode || 'dark'} className="checkpoint-controls">
+			<S.ButtonGroup $expanded={expanded} mode={themeMode || 'dark'}>
+				<S.ExpandingOptions $expanded={expanded} mode={themeMode || 'dark'}>
 					<S.ActionButton
+						mode={themeMode || 'dark'}
 						data-disabled={compareDisabled}
 						onClick={() => {
 							setCompareDisabled(true)
@@ -129,6 +134,7 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 						<i className="codicon codicon-diff" />
 					</S.ActionButton>
 					<S.ActionButton
+						mode={themeMode || 'dark'}
 						onClick={() => {
 							updateMenuPosition()
 							setShowMenu(true)
@@ -138,6 +144,7 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 					</S.ActionButton>
 				</S.ExpandingOptions>
 				<S.ActionButton
+					mode={themeMode || 'dark'}
 					$isMain
 					$expanded={expanded}
 					className={wasExpanded ? "was-expanded" : ""}
@@ -149,27 +156,27 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 
 			{showMenu &&
 				createPortal(
-					<S.Menu ref={menuRef} $top={menuPosition.top} $right={menuPosition.right}>
-						<S.MenuItem onClick={() => handleRestore("taskAndWorkspace")} $disabled={restoreBothDisabled}>
-							<S.MenuItemTitle>
+					<S.Menu ref={menuRef} $top={menuPosition.top} $right={menuPosition.right} mode={themeMode || 'dark'}>
+						<S.MenuItem onClick={() => handleRestore("taskAndWorkspace")} $disabled={restoreBothDisabled} mode={themeMode || 'dark'}>
+							<S.MenuItemTitle mode={themeMode || 'dark'}>
 								<i className="codicon codicon-refresh" />
 								Restore Task and Workspace
 							</S.MenuItemTitle>
-							<S.MenuItemDescription>Restores both the conversation and your project files</S.MenuItemDescription>
+							<S.MenuItemDescription mode={themeMode || 'dark'}>Restores both the conversation and your project files</S.MenuItemDescription>
 						</S.MenuItem>
-						<S.MenuItem onClick={() => handleRestore("task")} $disabled={restoreTaskDisabled}>
-							<S.MenuItemTitle>
+						<S.MenuItem onClick={() => handleRestore("task")} $disabled={restoreTaskDisabled} mode={themeMode || 'dark'}>
+							<S.MenuItemTitle mode={themeMode || 'dark'}>
 								<i className="codicon codicon-comment-discussion" />
 								Restore Task Only
 							</S.MenuItemTitle>
-							<S.MenuItemDescription>Removes messages after this point</S.MenuItemDescription>
+							<S.MenuItemDescription mode={themeMode || 'dark'}>Removes messages after this point</S.MenuItemDescription>
 						</S.MenuItem>
-						<S.MenuItem onClick={() => handleRestore("workspace")} $disabled={restoreWorkspaceDisabled}>
-							<S.MenuItemTitle>
+						<S.MenuItem onClick={() => handleRestore("workspace")} $disabled={restoreWorkspaceDisabled} mode={themeMode || 'dark'}>
+							<S.MenuItemTitle mode={themeMode || 'dark'}>
 								<i className="codicon codicon-files" />
 								Restore Workspace Only
 							</S.MenuItemTitle>
-							<S.MenuItemDescription>Restores project files only</S.MenuItemDescription>
+							<S.MenuItemDescription mode={themeMode || 'dark'}>Restores project files only</S.MenuItemDescription>
 						</S.MenuItem>
 					</S.Menu>,
 					document.body,
@@ -178,4 +185,8 @@ export const CheckpointOverlay = ({ messageTs }: CheckpointOverlayProps) => {
 	)
 }
 
-export const CheckpointControls = S.Controls
+export const CheckpointControls = () => {
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('common/CheckpointControls', themeMode || 'dark', themeType || 'modern')
+	return <S.Controls className="checkpoint-controls" />
+}

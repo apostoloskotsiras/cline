@@ -8,7 +8,8 @@ import { ChatRowContent, ProgressIndicator } from "./ChatRow"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import { CheckpointOverlay } from "../common/CheckpointControls"
 import { findLast } from "../../../../src/shared/array"
-import * as S from "../styles/themes/modern/components/chat/BrowserSessionRow.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 
 interface BrowserSessionRowProps {
 	messages: ClineMessage[]
@@ -21,6 +22,8 @@ interface BrowserSessionRowProps {
 
 const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 	const { messages, isLast, onHeightChange, lastModifiedMessage } = props
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('chat/BrowserSessionRow', themeMode || 'dark', themeType || 'modern')
 	const prevHeightRef = useRef(0)
 	const [maxActionHeight, setMaxActionHeight] = useState(0)
 	const [consoleLogsExpanded, setConsoleLogsExpanded] = useState(false)
@@ -214,8 +217,8 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 	}
 
 	const [browserSessionRow, { height }] = useSize(
-		<S.Container style={{ marginBottom: -10 }}>
-			<S.HeaderContainer>
+		<S.Container style={{ marginBottom: -10 }} mode={themeMode || 'dark'}>
+			<S.HeaderContainer mode={themeMode || 'dark'}>
 				{isBrowsing ? (
 					<ProgressIndicator />
 				) : (
@@ -229,14 +232,15 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				</span>
 			</S.HeaderContainer>
 
-			<S.BrowserContainer>
-				<S.URLBar>
-					<S.URLText $empty={!displayState.url}>{displayState.url || "http"}</S.URLText>
+			<S.BrowserContainer mode={themeMode || 'dark'}>
+				<S.URLBar mode={themeMode || 'dark'}>
+					<S.URLText $empty={!displayState.url} mode={themeMode || 'dark'}>{displayState.url || "http"}</S.URLText>
 				</S.URLBar>
 
-				<S.ScreenshotArea>
+				<S.ScreenshotArea mode={themeMode || 'dark'}>
 					{displayState.screenshot ? (
 						<S.Screenshot
+							mode={themeMode || 'dark'}
 							src={displayState.screenshot}
 							alt="Browser screenshot"
 							onClick={() =>
@@ -247,12 +251,13 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 							}
 						/>
 					) : (
-						<S.EmptyScreenshot>
+						<S.EmptyScreenshot mode={themeMode || 'dark'}>
 							<span className="codicon codicon-globe" />
 						</S.EmptyScreenshot>
 					)}
 					{displayState.mousePosition && (
 						<S.BrowserCursor
+							mode={themeMode || 'dark'}
 							src={cursorBase64}
 							$x={(parseInt(mousePosition.split(",")[0]) / 900) * 100}
 							$y={(parseInt(mousePosition.split(",")[1]) / 600) * 100}
@@ -261,9 +266,9 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				</S.ScreenshotArea>
 
 				<div style={{ width: "100%" }}>
-					<S.ConsoleHeader $expanded={consoleLogsExpanded} onClick={() => setConsoleLogsExpanded(!consoleLogsExpanded)}>
+					<S.ConsoleHeader $expanded={consoleLogsExpanded} mode={themeMode || 'dark'} onClick={() => setConsoleLogsExpanded(!consoleLogsExpanded)}>
 						<span className={`codicon codicon-chevron-${consoleLogsExpanded ? "down" : "right"}`} />
-						<S.ConsoleTitle>Console Logs</S.ConsoleTitle>
+						<S.ConsoleTitle mode={themeMode || 'dark'}>Console Logs</S.ConsoleTitle>
 					</S.ConsoleHeader>
 					{consoleLogsExpanded && (
 						<CodeBlock source={`${"```"}shell\n${displayState.consoleLogs || "(No new logs)"}\n${"```"}`} />
@@ -274,11 +279,11 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 			<div style={{ minHeight: maxActionHeight }}>{actionContent}</div>
 
 			{pages.length > 1 && (
-				<S.PaginationContainer>
+				<S.PaginationContainer mode={themeMode || 'dark'}>
 					<div>
 						Step {currentPageIndex + 1} of {pages.length}
 					</div>
-					<S.PaginationButtons>
+					<S.PaginationButtons mode={themeMode || 'dark'}>
 						<VSCodeButton
 							disabled={currentPageIndex === 0 || isBrowsing}
 							onClick={() => setCurrentPageIndex((i) => i - 1)}>

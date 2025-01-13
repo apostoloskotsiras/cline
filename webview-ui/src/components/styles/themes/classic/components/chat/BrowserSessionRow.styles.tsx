@@ -17,7 +17,7 @@ export const Container = styled.div`
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
-	&:hover ${CheckpointControls} {
+	&:hover .checkpoint-controls {
 		opacity: 1;
 	}
 `
