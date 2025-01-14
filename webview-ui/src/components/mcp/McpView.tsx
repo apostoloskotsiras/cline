@@ -21,7 +21,7 @@ type ServerRowProps = {
 }
 
 const ServerRow = memo(({ server }: ServerRowProps) => {
-	const { themeMode , themeType } = useExtensionState()
+	const { themeMode, themeType } = useExtensionState()
 	const [isExpanded, setIsExpanded] = useState(false)
 	const S = useThemeStyles('mcp/McpView', themeMode || 'dark', themeType || 'modern')
 
@@ -39,24 +39,24 @@ const ServerRow = memo(({ server }: ServerRowProps) => {
 	}
 
 	return (
-		<S.ServerCard>
-			<S.ServerHeader onClick={handleRowClick}>
-				{!server.error && <S.ChevronIcon expanded={isExpanded} />}
+		<S.ServerCard mode={themeMode || 'dark'}>
+			<S.ServerHeader mode={themeMode || 'dark'} onClick={handleRowClick}>
+				{!server.error && <S.ChevronIcon mode={themeMode || 'dark'} expanded={isExpanded} />}
 				<span style={{ flex: 1 }}>{server.name}</span>
-				<S.StatusIndicator status={server.status} />
+				<S.StatusIndicator mode={themeMode || 'dark'} status={server.status} />
 			</S.ServerHeader>
 
 			{server.error ? (
-				<S.ServerContent>
-					<S.ErrorMessage>{server.error}</S.ErrorMessage>
-					<S.Button onClick={handleRestart} disabled={server.status === "connecting"}>
-						<S.ButtonIcon className="codicon codicon-debug-restart" />
+				<S.ServerContent mode={themeMode || 'dark'}>
+					<S.ErrorMessage mode={themeMode || 'dark'}>{server.error}</S.ErrorMessage>
+					<S.Button mode={themeMode || 'dark'} onClick={handleRestart} disabled={server.status === "connecting"}>
+						<S.ButtonIcon mode={themeMode || 'dark'} className="codicon codicon-debug-restart" />
 						<span>{server.status === "connecting" ? "Retrying..." : "Retry Connection"}</span>
 					</S.Button>
 				</S.ServerContent>
 			) : (
 				isExpanded && (
-					<S.ServerContent>
+					<S.ServerContent mode={themeMode || 'dark'}>
 						<VSCodePanels>
 							<VSCodePanelTab id="tools">Tools ({server.tools?.length || 0})</VSCodePanelTab>
 							<VSCodePanelTab id="resources">
@@ -77,7 +77,7 @@ const ServerRow = memo(({ server }: ServerRowProps) => {
 										))}
 									</div>
 								) : (
-									<S.NoContentMessage>No tools found</S.NoContentMessage>
+									<S.NoContentMessage mode={themeMode || 'dark'}>No tools found</S.NoContentMessage>
 								)}
 							</VSCodePanelView>
 
@@ -99,13 +99,13 @@ const ServerRow = memo(({ server }: ServerRowProps) => {
 										))}
 									</div>
 								) : (
-									<S.NoContentMessage>No resources found</S.NoContentMessage>
+									<S.NoContentMessage mode={themeMode || 'dark'}>No resources found</S.NoContentMessage>
 								)}
 							</VSCodePanelView>
 						</VSCodePanels>
 
-						<S.Button onClick={handleRestart} disabled={server.status === "connecting"}>
-							<S.ButtonIcon className="codicon codicon-debug-restart" />
+						<S.Button mode={themeMode || 'dark'} onClick={handleRestart} disabled={server.status === "connecting"}>
+							<S.ButtonIcon mode={themeMode || 'dark'} className="codicon codicon-debug-restart" />
 							<span>{server.status === "connecting" ? "Restarting..." : "Restart Server"}</span>
 						</S.Button>
 					</S.ServerContent>
@@ -119,30 +119,30 @@ const McpContent = memo(({ servers }: McpContentProps) => {
 	const handleOpenSettings = useCallback(() => {
 		vscode.postMessage({ type: "openMcpSettings" })
 	}, [])
-	const { themeMode , themeType } = useExtensionState()
+	const { themeMode, themeType } = useExtensionState()
 	const S = useThemeStyles('mcp/McpView', themeMode || 'dark', themeType || 'modern')
 
 	return (
-		<S.Content>
-			<S.ContentInner>
-				<S.Description>
+		<S.Content mode={themeMode || 'dark'}>
+			<S.ContentInner mode={themeMode || 'dark'}>
+				<S.Description mode={themeMode || 'dark'}>
 					The{" "}
-					<S.StyledLink href="https://github.com/modelcontextprotocol">
+					<S.StyledLink mode={themeMode || 'dark'} href="https://github.com/modelcontextprotocol">
 						Model Context Protocol
 					</S.StyledLink>{" "}
 					enables communication with locally running MCP servers that provide additional tools and resources to extend
 					Cline's capabilities. You can use{" "}
-					<S.StyledLink href="https://github.com/modelcontextprotocol/servers">
+					<S.StyledLink mode={themeMode || 'dark'} href="https://github.com/modelcontextprotocol/servers">
 						community-made servers
 					</S.StyledLink>{" "}
 					or ask Cline to create new tools specific to your workflow (e.g., "add a tool that gets the latest npm docs").{" "}
-					<S.StyledLink href="https://x.com/sdrzn/status/1867271665086074969">
+					<S.StyledLink mode={themeMode || 'dark'} href="https://x.com/sdrzn/status/1867271665086074969">
 						See a demo here.
 					</S.StyledLink>
 				</S.Description>
 
 				{servers.length > 0 && (
-					<S.ServerList>
+					<S.ServerList mode={themeMode || 'dark'}>
 						{servers.map((server) => (
 							<ServerRow key={server.name} server={server} />
 						))}
@@ -150,9 +150,9 @@ const McpContent = memo(({ servers }: McpContentProps) => {
 				)}
 			</S.ContentInner>
 
-			<S.SettingsButtonContainer>
-				<S.SettingsButton onClick={handleOpenSettings}>
-					<S.ButtonIcon className="codicon codicon-edit" />
+			<S.SettingsButtonContainer mode={themeMode || 'dark'}>
+				<S.SettingsButton mode={themeMode || 'dark'} onClick={handleOpenSettings}>
+					<S.ButtonIcon mode={themeMode || 'dark'} className="codicon codicon-edit" />
 					<span>Edit MCP Settings</span>
 				</S.SettingsButton>
 			</S.SettingsButtonContainer>
@@ -161,19 +161,19 @@ const McpContent = memo(({ servers }: McpContentProps) => {
 })
 
 const McpView = memo(({ onDone }: McpViewProps) => {
-	const { mcpServers: servers , themeMode , themeType } = useExtensionState()
+	const { mcpServers: servers, themeMode, themeType } = useExtensionState()
 	const S = useThemeStyles('mcp/McpView', themeMode || 'dark', themeType || 'modern')
 
 	return (
-		<S.Wrapper className="mcp-wrapper">
-			<S.Container>
-				<S.Header>
-					<S.Title>
-						<S.TitleIcon />
-						<S.TitleText>MCP SERVERS</S.TitleText>
+		<S.Wrapper mode={themeMode || 'dark'} className="mcp-wrapper">
+			<S.Container mode={themeMode || 'dark'}>
+				<S.Header mode={themeMode || 'dark'}>
+					<S.Title mode={themeMode || 'dark'}>
+						<S.TitleIcon mode={themeMode || 'dark'} />
+						<S.TitleText mode={themeMode || 'dark'}>MCP SERVERS</S.TitleText>
 					</S.Title>
-					<S.DoneButton onClick={onDone}>
-						<S.DoneButtonIcon />
+					<S.DoneButton mode={themeMode || 'dark'} onClick={onDone}>
+						<S.DoneButtonIcon mode={themeMode || 'dark'} />
 						<span>Done</span>
 					</S.DoneButton>
 				</S.Header>

@@ -1,21 +1,25 @@
 import { McpResource, McpResourceTemplate } from "../../../../src/shared/mcp"
-import * as S from "../styles/themes/modern/components/mcp/McpResourceRow.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 
 type McpResourceRowProps = {
 	item: McpResource | McpResourceTemplate
 }
 
 const McpResourceRow = ({ item }: McpResourceRowProps) => {
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('mcp/McpResourceRow', themeMode || 'dark', themeType || 'modern')
+	
 	const hasUri = "uri" in item
 	const uri = hasUri ? item.uri : item.uriTemplate
 
 	return (
-		<S.ResourceRow key={uri}>
-			<S.ResourceHeader>
-				<S.ResourceIcon />
-				<S.ResourceTitle>{uri}</S.ResourceTitle>
+		<S.ResourceRow mode={themeMode || 'dark'} key={uri}>
+			<S.ResourceHeader mode={themeMode || 'dark'}>
+				<S.ResourceIcon mode={themeMode || 'dark'} />
+				<S.ResourceTitle mode={themeMode || 'dark'}>{uri}</S.ResourceTitle>
 			</S.ResourceHeader>
-			<S.ResourceDescription>
+			<S.ResourceDescription mode={themeMode || 'dark'}>
 				{item.name && item.description
 					? `${item.name}: ${item.description}`
 					: !item.name && item.description
@@ -24,9 +28,9 @@ const McpResourceRow = ({ item }: McpResourceRowProps) => {
 							? item.name
 							: "No description"}
 			</S.ResourceDescription>
-			<S.ResourceMimeType>
-				<S.MimeTypeLabel>Returns </S.MimeTypeLabel>
-				<S.MimeTypeCode>{item.mimeType || "Unknown"}</S.MimeTypeCode>
+			<S.ResourceMimeType mode={themeMode || 'dark'}>
+				<S.MimeTypeLabel mode={themeMode || 'dark'}>Returns </S.MimeTypeLabel>
+				<S.MimeTypeCode mode={themeMode || 'dark'}>{item.mimeType || "Unknown"}</S.MimeTypeCode>
 			</S.ResourceMimeType>
 		</S.ResourceRow>
 	)
