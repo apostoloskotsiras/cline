@@ -1,25 +1,48 @@
 import styled from "styled-components"
+import { ThemeMode } from "../../../../../../utils/theme"
 
-export const styles = `
-.dropdown-container {
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`
+
+export const DropdownContainer = styled.div`
   margin-top: 5px;
-}
+`
 
+export const SettingsLabel = styled.span`
+  font-weight: 500;
+`
+
+export const ErrorMessage = styled.p`
+  margin: -10px 0 4px 0;
+  font-size: 12px;
+  color: var(--vscode-errorForeground);
+`
+
+export const DescriptionText = styled.p`
+  font-size: 12px;
+  margin-top: 3px;
+  color: var(--vscode-descriptionForeground);
+`
+
+export const styles = (mode: ThemeMode) => `
 .model-search-field {
-  background: rgba(30, 30, 30, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: ${mode === 'dark' ? 'rgba(30, 30, 30, 0.6)' : 'rgba(255, 255, 255, 0.6)'} !important;
+  border: 1px solid ${mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'} !important;
   border-radius: 4px !important;
   transition: all 0.2s ease !important;
 }
 
 .model-search-field:hover {
-  background: rgba(35, 35, 35, 0.7) !important;
+  background: ${mode === 'dark' ? 'rgba(35, 35, 35, 0.7)' : 'rgba(245, 245, 245, 0.7)'} !important;
   border-color: rgba(103, 58, 183, 0.2) !important;
 }
 
 .model-search-field:focus-within {
   border-color: rgba(103, 58, 183, 0.3) !important;
-  background: rgba(40, 40, 40, 0.8) !important;
+  background: ${mode === 'dark' ? 'rgba(40, 40, 40, 0.8)' : 'rgba(250, 250, 250, 0.8)'} !important;
 }
 
 .model-search-field .control,
@@ -48,10 +71,10 @@ vscode-text-field::part(control) {
   display: flex;
   align-items: center;
   background: linear-gradient(to right, 
-    rgba(25, 25, 25, 0) 0%,
-    rgba(25, 25, 25, 0.85) 20%,
-    rgba(25, 25, 25, 0.98) 60%
-  );
+    ${mode === 'dark' 
+      ? 'rgba(25, 25, 25, 0) 0%, rgba(25, 25, 25, 0.85) 20%, rgba(25, 25, 25, 0.98) 60%'
+      : 'rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.85) 20%, rgba(255, 255, 255, 0.98) 60%'
+    });
   padding: 4px 8px 4px 24px;
 }
 
@@ -68,14 +91,14 @@ vscode-text-field::part(control) {
   gap: 4px;
   transition: all 0.2s ease;
   opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px ${mode === 'dark' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.05)'};
 }
 
 .see-more-button:hover {
   background: rgba(103, 58, 183, 0.25);
   border-color: rgba(103, 58, 183, 0.35);
   opacity: 1;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px ${mode === 'dark' ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.1)'};
 }
 
 .see-more-button .codicon {

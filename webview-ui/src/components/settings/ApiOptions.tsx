@@ -31,10 +31,10 @@ import {
 } from "../../../../src/shared/api"
 import { ExtensionMessage } from "../../../../src/shared/ExtensionMessage"
 import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 import { vscode } from "../../utils/vscode"
 import VSCodeButtonLink from "../common/VSCodeButtonLink"
 import OpenRouterModelPicker, { ModelDescriptionMarkdown } from "./OpenRouterModelPicker"
-import * as S from "../styles/themes/modern/components/settings/ApiOptions.styles"
 import { OPENROUTER_MODEL_PICKER_Z_INDEX } from "../styles/themes/modern/components/settings/OpenRouterModelPicker.styles"
 
 interface ApiOptionsProps {
@@ -44,7 +44,8 @@ interface ApiOptionsProps {
 }
 
 const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: ApiOptionsProps) => {
-	const { apiConfiguration, setApiConfiguration, uriScheme } = useExtensionState()
+	const { apiConfiguration, setApiConfiguration, uriScheme, themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('settings/ApiOptions', themeMode || 'dark', themeType || 'modern')
 	const [ollamaModels, setOllamaModels] = useState<string[]>([])
 	const [lmStudioModels, setLmStudioModels] = useState<string[]>([])
 	const [anthropicBaseUrlSelected, setAnthropicBaseUrlSelected] = useState(!!apiConfiguration?.anthropicBaseUrl)
@@ -126,10 +127,10 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 	}
 
 	return (
-		<div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-			<style>{S.styles}</style>
-			<div className="dropdown-container">
-				<span className="settings-label">API Provider</span>
+		<S.Container>
+			<style>{S.styles(themeMode || 'dark')}</style>
+			<S.DropdownContainer>
+				<S.SettingsLabel>API Provider</S.SettingsLabel>
 				<VSCodeDropdown
 					id="api-provider"
 					value={selectedProvider}
@@ -150,7 +151,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 					<VSCodeOption value="lmstudio">LM Studio</VSCodeOption>
 					<VSCodeOption value="ollama">Ollama</VSCodeOption>
 				</VSCodeDropdown>
-			</div>
+			</S.DropdownContainer>
 
 			{selectedProvider === "anthropic" && (
 				<div>
@@ -160,7 +161,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 						type="password"
 						onInput={handleInputChange("apiKey")}
 						placeholder="Enter API Key...">
-						<span style={{ fontWeight: 500 }}>Anthropic API Key</span>
+						<S.SettingsLabel>Anthropic API Key</S.SettingsLabel>
 					</VSCodeTextField>
 
 					<VSCodeCheckbox
@@ -188,12 +189,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 						/>
 					)}
 
-					<p
-						style={{
-							fontSize: "12px",
-							marginTop: 3,
-							color: "var(--vscode-descriptionForeground)",
-						}}>
+					<S.DescriptionText>
 						This key is stored locally and only used to make API requests from this extension.
 						{!apiConfiguration?.apiKey && (
 							<VSCodeLink
@@ -205,7 +201,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 								You can get an Anthropic API key by signing up here.
 							</VSCodeLink>
 						)}
-					</p>
+					</S.DescriptionText>
 				</div>
 			)}
 
@@ -670,14 +666,9 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 			)}
 
 			{apiErrorMessage && (
-				<p
-					style={{
-						margin: "-10px 0 4px 0",
-						fontSize: 12,
-						color: "var(--vscode-errorForeground)",
-					}}>
+				<S.ErrorMessage>
 					{apiErrorMessage}
-				</p>
+				</S.ErrorMessage>
 			)}
 
 			{selectedProvider === "openrouter" && showModelOptions && <OpenRouterModelPicker />}
@@ -688,9 +679,9 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 				selectedProvider !== "lmstudio" &&
 				showModelOptions && (
 					<>
-						<div className="dropdown-container">
+						<S.DropdownContainer>
 							<label htmlFor="model-id">
-								<span style={{ fontWeight: 500 }}>Model</span>
+								<S.SettingsLabel>Model</S.SettingsLabel>
 							</label>
 							{selectedProvider === "anthropic" && createDropdown(anthropicModels)}
 							{selectedProvider === "bedrock" && createDropdown(bedrockModels)}
@@ -698,7 +689,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 							{selectedProvider === "gemini" && createDropdown(geminiModels)}
 							{selectedProvider === "openai-native" && createDropdown(openAiNativeModels)}
 							{selectedProvider === "deepseek" && createDropdown(deepSeekModels)}
-						</div>
+						</S.DropdownContainer>
 
 						<ModelInfoView
 							selectedModelId={selectedModelId}
@@ -710,16 +701,11 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage }: 
 				)}
 
 			{modelIdErrorMessage && (
-				<p
-					style={{
-						margin: "-10px 0 4px 0",
-						fontSize: 12,
-						color: "var(--vscode-errorForeground)",
-					}}>
+				<S.ErrorMessage>
 					{modelIdErrorMessage}
-				</p>
+				</S.ErrorMessage>
 			)}
-		</div>
+		</S.Container>
 	)
 }
 

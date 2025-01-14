@@ -5,13 +5,14 @@ import { useRemark } from "react-remark"
 import { useMount } from "react-use"
 import { openRouterDefaultModelId } from "../../../../src/shared/api"
 import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 import { vscode } from "../../utils/vscode"
 import { highlight } from "../history/HistoryView"
 import { ModelInfoView, normalizeApiConfiguration } from "./ApiOptions"
-import * as S from "../styles/themes/modern/components/settings/OpenRouterModelPicker.styles"
 
 const OpenRouterModelPicker: React.FC = () => {
-	const { apiConfiguration, setApiConfiguration, openRouterModels } = useExtensionState()
+	const { apiConfiguration, setApiConfiguration, openRouterModels, themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('settings/OpenRouterModelPicker', themeMode || 'dark', themeType || 'modern')
 	const [searchTerm, setSearchTerm] = useState(apiConfiguration?.openRouterModelId || openRouterDefaultModelId)
 	const [isDropdownVisible, setIsDropdownVisible] = useState(false)
 	const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -212,12 +213,13 @@ const OpenRouterModelPicker: React.FC = () => {
 						)}
 					</VSCodeTextField>
 					{isDropdownVisible && (
-						<S.DropdownList ref={dropdownListRef}>
+						<S.DropdownList ref={dropdownListRef} mode={themeMode || 'dark'}>
 							{modelSearchResults.map((item, index) => (
 								<S.DropdownItem
 									key={item.id}
-									ref={(el) => (itemRefs.current[index] = el)}
+									ref={(el: HTMLDivElement | null) => (itemRefs.current[index] = el)}
 									isSelected={index === selectedIndex}
+									mode={themeMode || 'dark'}
 									onMouseEnter={() => setSelectedIndex(index)}
 									onClick={() => {
 										handleModelChange(item.id)
@@ -282,6 +284,8 @@ export const ModelDescriptionMarkdown = memo(
 		const [showSeeMore, setShowSeeMore] = useState(false)
 		const textContainerRef = useRef<HTMLDivElement>(null)
 		const textRef = useRef<HTMLDivElement>(null)
+		const { themeMode, themeType } = useExtensionState()
+		const S = useThemeStyles('settings/OpenRouterModelPicker', themeMode || 'dark', themeType || 'modern')
 
 		useEffect(() => {
 			setMarkdown(markdown || "")
@@ -297,7 +301,7 @@ export const ModelDescriptionMarkdown = memo(
 		}, [reactContent, setIsExpanded])
 
 		return (
-			<S.StyledMarkdown key={key} style={{ display: "inline-block", marginBottom: 0 }}>
+			<S.StyledMarkdown key={key} style={{ display: "inline-block", marginBottom: 0 }} mode={themeMode || 'dark'}>
 				<div
 					ref={textContainerRef}
 					style={{

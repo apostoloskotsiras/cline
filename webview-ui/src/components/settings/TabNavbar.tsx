@@ -1,6 +1,7 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import React, { useState } from "react"
-import * as S from "../styles/themes/modern/components/settings/TabNavbar.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 
 type TabNavbarProps = {
 	onPlusClick: () => void
@@ -16,15 +17,21 @@ type TooltipProps = {
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ text, isVisible, position, align = "center" }) => {
+	const { themeMode } = useExtensionState()
+	const S = useThemeStyles('settings/TabNavbar', themeMode || 'dark', 'modern')
+	
 	return (
-		<S.TooltipContainer isVisible={isVisible} x={position.x} y={position.y} align={align}>
-			<S.TooltipArrow align={align} />
+		<S.TooltipContainer isVisible={isVisible} x={position.x} y={position.y} align={align} mode={themeMode || 'dark'}>
+			<S.TooltipArrow align={align} mode={themeMode || 'dark'} />
 			{text}
 		</S.TooltipContainer>
 	)
 }
 
 const TabNavbar = ({ onPlusClick, onHistoryClick, onSettingsClick }: TabNavbarProps) => {
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('settings/TabNavbar', themeMode || 'dark', themeType || 'modern')
+	
 	const [tooltip, setTooltip] = useState<TooltipProps>({
 		text: "",
 		isVisible: false,
@@ -48,7 +55,7 @@ const TabNavbar = ({ onPlusClick, onHistoryClick, onSettingsClick }: TabNavbarPr
 
 	return (
 		<>
-			<S.NavbarContainer>
+			<S.NavbarContainer mode={themeMode || 'dark'}>
 				<VSCodeButton
 					onClick={onPlusClick}
 					onMouseEnter={(e: React.MouseEvent<HTMLElement>) => showTooltip("New Chat", e, "center")}

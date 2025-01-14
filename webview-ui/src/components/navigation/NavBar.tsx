@@ -1,5 +1,6 @@
 import React from "react"
-import * as S from "../styles/themes/modern/components/navigation/NavBar.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 import { VscAdd, VscServer, VscHistory, VscSettingsGear, VscLinkExternal } from "react-icons/vsc"
 
 interface NavBarProps {
@@ -25,42 +26,45 @@ const NavBar: React.FC<NavBarProps> = ({
 	onSettings,
 	onPopout,
 }) => {
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('navigation/NavBar', themeMode || 'dark', themeType || 'modern')
+
 	return (
-		<S.NavContainer>
-			<S.NavContent>
-				<S.NavWrapper>
-					<S.LogoContainer>
+		<S.NavContainer mode={themeMode || 'dark'}>
+			<S.NavContent mode={themeMode || 'dark'}>
+				<S.NavWrapper mode={themeMode || 'dark'}>
+					<S.LogoContainer mode={themeMode || 'dark'}>
 						<img src={logoUrl} alt="Cline" width={24} height={24} />
-						<S.LogoText>Cline</S.LogoText>
+						<S.LogoText mode={themeMode || 'dark'}>Cline</S.LogoText>
 					</S.LogoContainer>
 
-					<S.ButtonContainer>
-						<S.NavButton onClick={onNewTask} $isActive={!showSettings && !showHistory && !showMcp}>
-							<S.ButtonIcon>
+					<S.ButtonContainer mode={themeMode || 'dark'}>
+						<S.NavButton onClick={onNewTask} $isActive={!showSettings && !showHistory && !showMcp} mode={themeMode || 'dark'}>
+							<S.ButtonIcon mode={themeMode || 'dark'}>
 								<VscAdd />
 							</S.ButtonIcon>
 							<span>New Task</span>
 						</S.NavButton>
-						<S.NavButton onClick={onMcpServers} $isActive={showMcp}>
-							<S.ButtonIcon>
+						<S.NavButton onClick={onMcpServers} $isActive={showMcp} mode={themeMode || 'dark'}>
+							<S.ButtonIcon mode={themeMode || 'dark'}>
 								<VscServer />
 							</S.ButtonIcon>
 							<span>MCP Servers</span>
 						</S.NavButton>
-						<S.NavButton onClick={onHistory} $isActive={showHistory}>
-							<S.ButtonIcon>
+						<S.NavButton onClick={onHistory} $isActive={showHistory} mode={themeMode || 'dark'}>
+							<S.ButtonIcon mode={themeMode || 'dark'}>
 								<VscHistory />
 							</S.ButtonIcon>
 							<span>History</span>
 						</S.NavButton>
-						<S.NavButton onClick={onSettings} $isActive={showSettings}>
-							<S.ButtonIcon>
+						<S.NavButton onClick={onSettings} $isActive={showSettings} mode={themeMode || 'dark'}>
+							<S.ButtonIcon mode={themeMode || 'dark'}>
 								<VscSettingsGear />
 							</S.ButtonIcon>
 							<span>Settings</span>
 						</S.NavButton>
-						<S.NavButton onClick={onPopout}>
-							<S.ButtonIcon>
+						<S.NavButton onClick={onPopout} mode={themeMode || 'dark'}>
+							<S.ButtonIcon mode={themeMode || 'dark'}>
 								<VscLinkExternal />
 							</S.ButtonIcon>
 							<span>Open in Editor</span>
