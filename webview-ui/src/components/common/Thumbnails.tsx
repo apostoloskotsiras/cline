@@ -1,7 +1,8 @@
 import React, { useState, useRef, useLayoutEffect, memo } from "react"
 import { useWindowSize } from "react-use"
 import { vscode } from "../../utils/vscode"
-import * as S from "../styles/themes/modern/components/common/Thumbnails.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 
 interface ThumbnailsProps {
 	images: string[]
@@ -14,6 +15,8 @@ const Thumbnails = ({ images, style, setImages, onHeightChange }: ThumbnailsProp
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { width } = useWindowSize()
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('common/Thumbnails', themeMode || 'dark', themeType || 'modern')
 
 	useLayoutEffect(() => {
 		if (containerRef.current) {
@@ -38,20 +41,22 @@ const Thumbnails = ({ images, style, setImages, onHeightChange }: ThumbnailsProp
 	}
 
 	return (
-		<S.Container ref={containerRef} style={style}>
+		<S.Container ref={containerRef} style={style} mode={themeMode || 'dark'}>
 			{images.map((image, index) => (
 				<S.ThumbnailWrapper
 					key={index}
 					onMouseEnter={() => setHoveredIndex(index)}
-					onMouseLeave={() => setHoveredIndex(null)}>
+					onMouseLeave={() => setHoveredIndex(null)}
+					mode={themeMode || 'dark'}>
 					<S.ThumbnailImage
 						src={image}
 						alt={`Thumbnail ${index + 1}`}
 						onClick={() => handleImageClick(image)}
+						mode={themeMode || 'dark'}
 					/>
 					{isDeletable && hoveredIndex === index && (
-						<S.DeleteButton onClick={() => handleDelete(index)}>
-							<S.DeleteIcon />
+						<S.DeleteButton onClick={() => handleDelete(index)} mode={themeMode || 'dark'}>
+							<S.DeleteIcon mode={themeMode || 'dark'} />
 						</S.DeleteButton>
 					)}
 				</S.ThumbnailWrapper>

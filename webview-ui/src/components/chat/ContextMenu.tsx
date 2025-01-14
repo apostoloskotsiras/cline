@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef } from "react"
 import { ContextMenuOptionType, ContextMenuQueryItem, getContextMenuOptions } from "../../utils/context-mentions"
 import { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
-import * as S from "../styles/themes/modern/components/chat/ContextMenu.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 
 interface ContextMenuProps {
 	onSelect: (type: ContextMenuOptionType, value?: string) => void
@@ -23,6 +24,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 	queryItems,
 }) => {
 	const menuRef = useRef<HTMLDivElement>(null)
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('chat/ContextMenu', themeMode || 'dark', themeType || 'modern')
 
 	const filteredOptions = useMemo(
 		() => getContextMenuOptions(searchQuery, selectedType, queryItems),
@@ -91,16 +94,17 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 	}
 
 	return (
-		<S.Wrapper onMouseDown={onMouseDown}>
-			<S.Container ref={menuRef}>
+		<S.Wrapper onMouseDown={onMouseDown} mode={themeMode || 'dark'}>
+			<S.Container ref={menuRef} mode={themeMode || 'dark'}>
 				{filteredOptions.map((option, index) => (
 					<S.MenuItem
 						key={`${option.type}-${option.value || index}`}
 						isSelected={index === selectedIndex}
 						isSelectable={isOptionSelectable(option)}
 						onClick={() => isOptionSelectable(option) && onSelect(option.type, option.value)}
-						onMouseEnter={() => isOptionSelectable(option) && setSelectedIndex(index)}>
-						<S.ItemContent>
+						onMouseEnter={() => isOptionSelectable(option) && setSelectedIndex(index)}
+						mode={themeMode || 'dark'}>
+						<S.ItemContent mode={themeMode || 'dark'}>
 							<i className={`codicon codicon-${getIconForOption(option)}`} />
 							{renderOptionContent(option)}
 						</S.ItemContent>

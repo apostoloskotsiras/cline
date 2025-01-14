@@ -8,7 +8,7 @@ import { formatLargeNumber } from "../../utils/format"
 import { formatSize } from "../../utils/size"
 import { vscode } from "../../utils/vscode"
 import Thumbnails from "../common/Thumbnails"
-import * as S from "../styles/themes/modern/components/chat/TaskHeader.styles"
+import { useThemeStyles } from "../../utils/theme"
 
 interface TaskHeaderProps {
 	task: ClineMessage
@@ -31,7 +31,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 	totalCost,
 	onClose,
 }) => {
-	const { apiConfiguration, currentTaskItem, checkpointTrackerErrorMessage } = useExtensionState()
+	const { apiConfiguration, currentTaskItem, checkpointTrackerErrorMessage, themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('chat/TaskHeader', themeMode || 'dark', themeType || 'modern')
 	const [isTaskExpanded, setIsTaskExpanded] = useState(true)
 	const [isTextExpanded, setIsTextExpanded] = useState(false)
 	const [showSeeMore, setShowSeeMore] = useState(false)
@@ -78,42 +79,42 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 	const shouldShowPromptCacheInfo = doesModelSupportPromptCache && apiConfiguration?.apiProvider !== "openrouter"
 
 	return (
-		<S.Container>
-			<S.Content>
-				<S.TopSection>
-					<S.Title onClick={() => setIsTaskExpanded(!isTaskExpanded)}>
+		<S.Container mode={themeMode || 'dark'}>
+			<S.Content mode={themeMode || 'dark'}>
+				<S.TopSection mode={themeMode || 'dark'}>
+					<S.Title mode={themeMode || 'dark'} onClick={() => setIsTaskExpanded(!isTaskExpanded)}>
 						<div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
 							<span className={`codicon codicon-chevron-${isTaskExpanded ? "down" : "right"}`}></span>
 						</div>
-						<S.TitleText>
+						<S.TitleText mode={themeMode || 'dark'}>
 							<span style={{ fontWeight: "bold" }}>Task{!isTaskExpanded && ":"}</span>
 							{!isTaskExpanded && <span style={{ marginLeft: 4 }}>{highlightMentions(task.text, false)}</span>}
 						</S.TitleText>
 					</S.Title>
-					{!isTaskExpanded && isCostAvailable && <S.CostBadge>${totalCost?.toFixed(4)}</S.CostBadge>}
+					{!isTaskExpanded && isCostAvailable && <S.CostBadge mode={themeMode || 'dark'}>${totalCost?.toFixed(4)}</S.CostBadge>}
 					<VSCodeButton appearance="icon" onClick={onClose} style={{ marginLeft: 6, flexShrink: 0 }}>
 						<span className="codicon codicon-close"></span>
 					</VSCodeButton>
 				</S.TopSection>
 				{isTaskExpanded && (
 					<>
-						<S.TextContainer ref={textContainerRef} isExpanded={isTextExpanded}>
-							<S.TextContent ref={textRef}>{highlightMentions(task.text, false)}</S.TextContent>
+						<S.TextContainer mode={themeMode || 'dark'} ref={textContainerRef} isExpanded={isTextExpanded}>
+							<S.TextContent mode={themeMode || 'dark'} ref={textRef}>{highlightMentions(task.text, false)}</S.TextContent>
 							{!isTextExpanded && showSeeMore && (
-								<S.SeeMoreContainer>
-									<S.SeeMoreText onClick={() => setIsTextExpanded(!isTextExpanded)}>See more</S.SeeMoreText>
+								<S.SeeMoreContainer mode={themeMode || 'dark'}>
+									<S.SeeMoreText mode={themeMode || 'dark'} onClick={() => setIsTextExpanded(!isTextExpanded)}>See more</S.SeeMoreText>
 								</S.SeeMoreContainer>
 							)}
 						</S.TextContainer>
 						{isTextExpanded && showSeeMore && (
-							<S.SeeLessText onClick={() => setIsTextExpanded(!isTextExpanded)}>See less</S.SeeLessText>
+							<S.SeeLessText mode={themeMode || 'dark'} onClick={() => setIsTextExpanded(!isTextExpanded)}>See less</S.SeeLessText>
 						)}
 						{task.images && task.images.length > 0 && <Thumbnails images={task.images} />}
-						<S.MetricsContainer>
-							<S.MetricsRow>
-								<S.MetricsLabel>
+						<S.MetricsContainer mode={themeMode || 'dark'}>
+							<S.MetricsRow mode={themeMode || 'dark'}>
+								<S.MetricsLabel mode={themeMode || 'dark'}>
 									<span style={{ fontWeight: "bold" }}>Tokens:</span>
-									<S.MetricsValue>
+									<S.MetricsValue mode={themeMode || 'dark'}>
 										<i
 											className="codicon codicon-arrow-up"
 											style={{
@@ -124,7 +125,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										/>
 										{formatLargeNumber(tokensIn || 0)}
 									</S.MetricsValue>
-									<S.MetricsValue>
+									<S.MetricsValue mode={themeMode || 'dark'}>
 										<i
 											className="codicon codicon-arrow-down"
 											style={{
@@ -142,9 +143,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 							</S.MetricsRow>
 
 							{shouldShowPromptCacheInfo && (cacheReads !== undefined || cacheWrites !== undefined) && (
-								<S.MetricsLabel>
+								<S.MetricsLabel mode={themeMode || 'dark'}>
 									<span style={{ fontWeight: "bold" }}>Cache:</span>
-									<S.MetricsValue>
+									<S.MetricsValue mode={themeMode || 'dark'}>
 										<i
 											className="codicon codicon-database"
 											style={{
@@ -155,7 +156,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										/>
 										+{formatLargeNumber(cacheWrites || 0)}
 									</S.MetricsValue>
-									<S.MetricsValue>
+									<S.MetricsValue mode={themeMode || 'dark'}>
 										<i
 											className="codicon codicon-arrow-right"
 											style={{
@@ -169,8 +170,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 								</S.MetricsLabel>
 							)}
 							{isCostAvailable && (
-								<S.MetricsRow>
-									<S.MetricsLabel>
+								<S.MetricsRow mode={themeMode || 'dark'}>
+									<S.MetricsLabel mode={themeMode || 'dark'}>
 										<span style={{ fontWeight: "bold" }}>API Cost:</span>
 										<span>${totalCost?.toFixed(4)}</span>
 									</S.MetricsLabel>
@@ -178,7 +179,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 								</S.MetricsRow>
 							)}
 							{checkpointTrackerErrorMessage && (
-								<S.ErrorMessage>
+								<S.ErrorMessage mode={themeMode || 'dark'}>
 									<i className="codicon codicon-warning" />
 									<span>
 										{checkpointTrackerErrorMessage}
@@ -229,13 +230,18 @@ export const highlightMentions = (text?: string, withShadow = true) => {
 const DeleteButton: React.FC<{
 	taskSize: string
 	taskId?: string
-}> = ({ taskSize, taskId }) => (
-	<S.StyledDeleteButton appearance="icon" onClick={() => vscode.postMessage({ type: "deleteTaskWithId", text: taskId })}>
-		<S.DeleteButtonContent>
-			<i className={`codicon codicon-trash`} />
-			{taskSize}
-		</S.DeleteButtonContent>
-	</S.StyledDeleteButton>
-)
+}> = ({ taskSize, taskId }) => {
+	const { themeMode } = useExtensionState()
+	const S = useThemeStyles('chat/TaskHeader', themeMode || 'dark', 'modern')
+	
+	return (
+		<S.StyledDeleteButton mode={themeMode || 'dark'} appearance="icon" onClick={() => vscode.postMessage({ type: "deleteTaskWithId", text: taskId })}>
+			<S.DeleteButtonContent mode={themeMode || 'dark'}>
+				<i className={`codicon codicon-trash`} />
+				{taskSize}
+			</S.DeleteButtonContent>
+		</S.StyledDeleteButton>
+	)
+}
 
 export default memo(TaskHeader)

@@ -1,10 +1,14 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
-import * as S from "../styles/themes/modern/components/common/SuccessButton.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 
 interface SuccessButtonProps extends React.ComponentProps<typeof VSCodeButton> {}
 
 const SuccessButton: React.FC<SuccessButtonProps> = (props) => {
-	return <S.StyledButton {...props} />
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('common/SuccessButton', themeMode || 'dark', themeType || 'modern')
+
+	return <S.StyledButton mode={themeMode || 'dark'} {...props} />
 }
 
 export default SuccessButton

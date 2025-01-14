@@ -1,5 +1,7 @@
 import { CSSProperties } from "react"
-import * as S from "../styles/themes/modern/components/common/Tag.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
+import styled from "styled-components"
 
 interface TagProps {
 	value: string
@@ -8,10 +10,17 @@ interface TagProps {
 	style?: CSSProperties
 }
 
+const StyledSpan = styled.span<{ $mode: 'light' | 'dark' }>`
+	display: inline-block;
+`
+
 export const Tag = ({ value, severity = "primary", rounded = false, style }: TagProps) => {
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('common/Tag', themeMode || 'dark', themeType || 'modern')
+
 	return (
-		<span style={{ ...S.getTagStyle(severity, rounded), ...style }}>
+		<StyledSpan $mode={themeMode || 'dark'} style={{ ...S.getTagStyle(severity, rounded), ...style }}>
 			{value}
-		</span>
+		</StyledSpan>
 	)
 }

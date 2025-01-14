@@ -3,7 +3,7 @@ import { useRemark } from "react-remark"
 import rehypeHighlight, { Options } from "rehype-highlight"
 import { visit } from "unist-util-visit"
 import { useExtensionState } from "../../context/ExtensionStateContext"
-import * as S from "../styles/themes/modern/components/common/MarkdownBlock.styles"
+import { useThemeStyles } from "../../utils/theme"
 
 interface MarkdownBlockProps {
 	markdown?: string
@@ -50,7 +50,8 @@ const remarkUrlToLink = () => {
 }
 
 const MarkdownBlock = memo(({ markdown }: MarkdownBlockProps) => {
-	const { theme } = useExtensionState()
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('common/MarkdownBlock', themeMode || 'dark', themeType || 'modern')
 	const [reactContent, setMarkdown] = useRemark({
 		remarkPlugins: [
 			remarkUrlToLink,
@@ -74,18 +75,18 @@ const MarkdownBlock = memo(({ markdown }: MarkdownBlockProps) => {
 		],
 		rehypeReactOptions: {
 			components: {
-				pre: ({ node, ...preProps }: any) => <S.StyledPre {...preProps} theme={theme} />,
+				pre: ({ node, ...preProps }: any) => <S.StyledPre {...preProps} mode={themeMode || 'dark'} />,
 			},
 		},
 	})
 
 	useEffect(() => {
 		setMarkdown(markdown || "")
-	}, [markdown, setMarkdown, theme])
+	}, [markdown, setMarkdown, themeMode])
 
 	return (
 		<div style={{}}>
-			<S.MarkdownWrapper>{reactContent}</S.MarkdownWrapper>
+			<S.MarkdownWrapper mode={themeMode || 'dark'}>{reactContent}</S.MarkdownWrapper>
 		</div>
 	)
 })

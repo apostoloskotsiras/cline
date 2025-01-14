@@ -14,31 +14,31 @@ const Announcement = ({ version, hideAnnouncement }: AnnouncementProps) => {
 	const S = useThemeStyles('chat/Announcement', themeMode || 'dark', themeType || 'modern')
 	
 	return (
-		<S.Container>
-			<S.CloseButton>
+		<S.Container mode={themeMode || 'dark'}>
+			<S.CloseButton mode={themeMode || 'dark'}>
 				<VSCodeButton appearance="icon" onClick={hideAnnouncement}>
 					<span className="codicon codicon-close"></span>
 				</VSCodeButton>
 			</S.CloseButton>
-			<S.Title>
+			<S.Title mode={themeMode || 'dark'}>
 				🎉{"  "}New in v{minorVersion}
 			</S.Title>
-			<S.List>
-				<S.ListItem>
+			<S.List mode={themeMode || 'dark'}>
+				<S.ListItem mode={themeMode || 'dark'}>
 					<b>Checkpoints are here!</b> Cline now saves a snapshot of your workspace at each step of the task. Hover over
 					any message to see two new buttons:
 					<S.SubList>
-						<S.ListItem>
+						<S.ListItem mode={themeMode || 'dark'}>
 							<span className="codicon codicon-diff-multiple"></span>
 							<b>Compare</b> shows you a diff between the snapshot and your current workspace
 						</S.ListItem>
-						<S.ListItem>
+						<S.ListItem mode={themeMode || 'dark'}>
 							<span className="codicon codicon-discard"></span>
 							<b>Restore</b> lets you revert your project's files back to that point in the task
 						</S.ListItem>
 					</S.SubList>
 				</S.ListItem>
-				<S.ListItem>
+				<S.ListItem mode={themeMode || 'dark'}>
 					<b>'See new changes' button</b> when a task is completed, showing you an overview of all the changes Cline
 					made to your workspace throughout the task
 				</S.ListItem>
@@ -48,8 +48,8 @@ const Announcement = ({ version, hideAnnouncement }: AnnouncementProps) => {
 					See a demo of Checkpoints here!
 				</VSCodeLink>
 			</p>
-			<S.Divider />
-			<S.FooterText>
+			<S.Divider mode={themeMode || 'dark'} />
+			<S.FooterText mode={themeMode || 'dark'}>
 				Join
 				<VSCodeLink style={{ display: "inline" }} href="https://discord.gg/cline">
 					discord.gg/cline
