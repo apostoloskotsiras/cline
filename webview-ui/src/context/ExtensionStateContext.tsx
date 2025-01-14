@@ -7,7 +7,7 @@ import { findLastIndex } from "../../../src/shared/array"
 import { McpServer } from "../../../src/shared/mcp"
 import { convertTextMateToHljs } from "../utils/textMateToHljs"
 import { vscode } from "../utils/vscode"
-import { ThemeComponentKey, ThemeMode, ThemeStyles, ThemeType } from '../utils/theme'
+import { ThemeComponentKey, ThemeMode, ThemeType } from '../utils/theme'
 import { modernTheme } from '../components/styles/themes/modern'
 import { classicTheme } from '../components/styles/themes/classic'
 
@@ -105,6 +105,18 @@ export const ExtensionStateContextProvider: React.FC<{
 					}
 					return prevState
 				})
+				break
+			}
+			case "openRouterModels": {
+				const updatedModels = message.openRouterModels ?? {}
+				setOpenRouterModels({
+					[openRouterDefaultModelId]: openRouterDefaultModelInfo, // in case the extension sent a model list without the default model
+					...updatedModels,
+				})
+				break
+			}
+			case "mcpServers": {
+				setMcpServers(message.mcpServers ?? [])
 				break
 			}
 		}
