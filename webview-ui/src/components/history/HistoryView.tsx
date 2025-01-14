@@ -6,7 +6,7 @@ import { memo, useMemo, useState, useEffect } from "react"
 import Fuse, { FuseResult } from "fuse.js"
 import { formatLargeNumber } from "../../utils/format"
 import { formatSize } from "../../utils/size"
-import * as S from '../styles/themes/modern/components/history/HistoryView.styles'
+import { useThemeStyles } from '../../utils/theme'
 
 type HistoryViewProps = {
 	onDone: () => void
@@ -14,8 +14,92 @@ type HistoryViewProps = {
 
 type SortOption = "newest" | "oldest" | "mostExpensive" | "mostTokens" | "mostRelevant"
 
+// https://gist.github.com/evenfrost/1ba123656ded32fb7a0cd4651efd4db0
+export const highlight = (fuseSearchResult: FuseResult<any>[], highlightClassName: string = "history-item-highlight") => {
+	const set = (obj: Record<string, any>, path: string, value: any) => {
+		const pathValue = path.split(".")
+		let i: number
+
+		for (i = 0; i < pathValue.length - 1; i++) {
+			obj = obj[pathValue[i]] as Record<string, any>
+		}
+
+		obj[pathValue[i]] = value
+	}
+
+	// Function to merge overlapping regions
+	const mergeRegions = (regions: [number, number][]): [number, number][] => {
+		if (regions.length === 0) return regions
+
+		// Sort regions by start index
+		regions.sort((a, b) => a[0] - b[0])
+
+		const merged: [number, number][] = [regions[0]]
+
+		for (let i = 1; i < regions.length; i++) {
+			const last = merged[merged.length - 1]
+			const current = regions[i]
+
+			if (current[0] <= last[1] + 1) {
+				// Overlapping or adjacent regions
+				last[1] = Math.max(last[1], current[1])
+			} else {
+				merged.push(current)
+			}
+		}
+
+		return merged
+	}
+
+	const generateHighlightedText = (inputText: string, regions: [number, number][] = []) => {
+		if (regions.length === 0) {
+			return inputText
+		}
+
+		const mergedRegions = mergeRegions(regions)
+
+		let content = ""
+		let nextUnhighlightedRegionStartingIndex = 0
+
+		mergedRegions.forEach((region) => {
+			const start = region[0]
+			const end = region[1]
+			const lastRegionNextIndex = end + 1
+
+			content += [
+				inputText.substring(nextUnhighlightedRegionStartingIndex, start),
+				`<span class="${highlightClassName}">`,
+				inputText.substring(start, lastRegionNextIndex),
+				"</span>",
+			].join("")
+
+			nextUnhighlightedRegionStartingIndex = lastRegionNextIndex
+		})
+
+		content += inputText.substring(nextUnhighlightedRegionStartingIndex)
+
+		return content
+	}
+
+	return fuseSearchResult
+		.filter(({ matches }) => matches && matches.length)
+		.map(({ item, matches }) => {
+			const highlightedItem = { ...item }
+
+			matches?.forEach((match) => {
+				if (match.key && typeof match.value === "string" && match.indices) {
+					const mergedIndices = mergeRegions([...match.indices])
+					set(highlightedItem, match.key, generateHighlightedText(match.value, mergedIndices))
+				}
+			})
+
+			return highlightedItem
+		})
+}
+
 const HistoryView = ({ onDone }: HistoryViewProps) => {
-	const { taskHistory } = useExtensionState()
+	const { taskHistory, themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('history/HistoryView', themeMode || 'dark', themeType || 'modern')
 	const [searchQuery, setSearchQuery] = useState("")
 	const [sortOption, setSortOption] = useState<SortOption>("newest")
 	const [lastNonRelevantSort, setLastNonRelevantSort] = useState<SortOption | null>("newest")
@@ -102,19 +186,19 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 
 	return (
 		<S.HistoryWrapper>
-			<S.HistoryContainer>
-				<S.HistoryHeader>
-					<S.HistoryTitle>
+			<S.HistoryContainer mode={themeMode || 'dark'}>
+				<S.HistoryHeader mode={themeMode || 'dark'}>
+					<S.HistoryTitle mode={themeMode || 'dark'}>
 						<i className="codicon codicon-history"></i>
 						<span>HISTORY</span>
 					</S.HistoryTitle>
-					<S.DoneButton onClick={onDone}>
+					<S.DoneButton mode={themeMode || 'dark'} onClick={onDone}>
 						<i className="codicon codicon-check"></i>
 						<span>Done</span>
 					</S.DoneButton>
 				</S.HistoryHeader>
 
-				<S.SearchContainer>
+				<S.SearchContainer mode={themeMode || 'dark'}>
 					<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
 						<VSCodeTextField
 							style={{ width: "100%" }}
@@ -152,24 +236,25 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 							)}
 						</VSCodeTextField>
 
-						<S.SortOptionsContainer>
-							<S.SortOption selected={sortOption === "newest"} onClick={() => setSortOption("newest")}>
+						<S.SortOptionsContainer mode={themeMode || 'dark'}>
+							<S.SortOption mode={themeMode || 'dark'} selected={sortOption === "newest"} onClick={() => setSortOption("newest")}>
 								<i className="codicon codicon-arrow-up"></i>
 								Newest
 							</S.SortOption>
-							<S.SortOption selected={sortOption === "oldest"} onClick={() => setSortOption("oldest")}>
+							<S.SortOption mode={themeMode || 'dark'} selected={sortOption === "oldest"} onClick={() => setSortOption("oldest")}>
 								<i className="codicon codicon-arrow-down"></i>
 								Oldest
 							</S.SortOption>
-							<S.SortOption selected={sortOption === "mostExpensive"} onClick={() => setSortOption("mostExpensive")}>
+							<S.SortOption mode={themeMode || 'dark'} selected={sortOption === "mostExpensive"} onClick={() => setSortOption("mostExpensive")}>
 								<i className="codicon codicon-credit-card"></i>
 								Most Expensive
 							</S.SortOption>
-							<S.SortOption selected={sortOption === "mostTokens"} onClick={() => setSortOption("mostTokens")}>
+							<S.SortOption mode={themeMode || 'dark'} selected={sortOption === "mostTokens"} onClick={() => setSortOption("mostTokens")}>
 								<i className="codicon codicon-symbol-parameter"></i>
 								Most Tokens
 							</S.SortOption>
 							<S.SortOption
+								mode={themeMode || 'dark'}
 								selected={sortOption === "mostRelevant"}
 								disabled={!searchQuery}
 								onClick={() => {
@@ -190,6 +275,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 						data={taskHistorySearchResults}
 						itemContent={(index, item) => (
 							<S.HistoryItem
+								mode={themeMode || 'dark'}
 								key={item.id}
 								onClick={() => handleHistorySelect(item.id)}
 								style={{
@@ -214,17 +300,17 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 										</VSCodeButton>
 									</div>
 
-									<S.TaskContent dangerouslySetInnerHTML={{ __html: item.task }} />
+									<S.TaskContent mode={themeMode || 'dark'} dangerouslySetInnerHTML={{ __html: item.task }} />
 
-									<S.MetadataContainer>
-										<S.MetadataRow>
+									<S.MetadataContainer mode={themeMode || 'dark'}>
+										<S.MetadataRow mode={themeMode || 'dark'}>
 											<div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
-												<S.MetadataLabel>Tokens:</S.MetadataLabel>
-												<S.MetadataValue>
+												<S.MetadataLabel mode={themeMode || 'dark'}>Tokens:</S.MetadataLabel>
+												<S.MetadataValue mode={themeMode || 'dark'}>
 													<i className="codicon codicon-arrow-up" style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "-2px" }} />
 													{formatLargeNumber(item.tokensIn || 0)}
 												</S.MetadataValue>
-												<S.MetadataValue>
+												<S.MetadataValue mode={themeMode || 'dark'}>
 													<i className="codicon codicon-arrow-down" style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "-2px" }} />
 													{formatLargeNumber(item.tokensOut || 0)}
 												</S.MetadataValue>
@@ -234,21 +320,21 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 
 										{!!item.cacheWrites && (
 											<div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
-												<S.MetadataLabel>Cache:</S.MetadataLabel>
-												<S.MetadataValue>
+												<S.MetadataLabel mode={themeMode || 'dark'}>Cache:</S.MetadataLabel>
+												<S.MetadataValue mode={themeMode || 'dark'}>
 													<i className="codicon codicon-database" style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "-1px" }} />
 													+{formatLargeNumber(item.cacheWrites || 0)}
 												</S.MetadataValue>
-												<S.MetadataValue>
+												<S.MetadataValue mode={themeMode || 'dark'}>
 													<i className="codicon codicon-arrow-right" style={{ fontSize: "12px", fontWeight: "bold", marginBottom: 0 }} />
 													{formatLargeNumber(item.cacheReads || 0)}
 												</S.MetadataValue>
 											</div>
 										)}
 										{!!item.totalCost && (
-											<S.MetadataRow>
+											<S.MetadataRow mode={themeMode || 'dark'}>
 												<div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-													<S.MetadataLabel>API Cost:</S.MetadataLabel>
+													<S.MetadataLabel mode={themeMode || 'dark'}>API Cost:</S.MetadataLabel>
 													<span style={{ color: "var(--vscode-descriptionForeground)" }}>
 														${item.totalCost?.toFixed(4)}
 													</span>
@@ -267,99 +353,21 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 	)
 }
 
-const ExportButton = ({ itemId }: { itemId: string }) => (
-	<VSCodeButton
-		className={S.ExportButton}
-		appearance="icon"
-		onClick={(e: React.MouseEvent) => {
-			e.stopPropagation()
-			vscode.postMessage({ type: "exportTaskWithId", text: itemId })
-		}}>
-		<div style={{ fontSize: "11px", fontWeight: 500, opacity: 1 }}>EXPORT</div>
-	</VSCodeButton>
-)
-
-// https://gist.github.com/evenfrost/1ba123656ded32fb7a0cd4651efd4db0
-export const highlight = (fuseSearchResult: FuseResult<any>[], highlightClassName: string = "history-item-highlight") => {
-	const set = (obj: Record<string, any>, path: string, value: any) => {
-		const pathValue = path.split(".")
-		let i: number
-
-		for (i = 0; i < pathValue.length - 1; i++) {
-			obj = obj[pathValue[i]] as Record<string, any>
-		}
-
-		obj[pathValue[i]] = value
-	}
-
-	// Function to merge overlapping regions
-	const mergeRegions = (regions: [number, number][]): [number, number][] => {
-		if (regions.length === 0) return regions
-
-		// Sort regions by start index
-		regions.sort((a, b) => a[0] - b[0])
-
-		const merged: [number, number][] = [regions[0]]
-
-		for (let i = 1; i < regions.length; i++) {
-			const last = merged[merged.length - 1]
-			const current = regions[i]
-
-			if (current[0] <= last[1] + 1) {
-				// Overlapping or adjacent regions
-				last[1] = Math.max(last[1], current[1])
-			} else {
-				merged.push(current)
-			}
-		}
-
-		return merged
-	}
-
-	const generateHighlightedText = (inputText: string, regions: [number, number][] = []) => {
-		if (regions.length === 0) {
-			return inputText
-		}
-
-		const mergedRegions = mergeRegions(regions)
-
-		let content = ""
-		let nextUnhighlightedRegionStartingIndex = 0
-
-		mergedRegions.forEach((region) => {
-			const start = region[0]
-			const end = region[1]
-			const lastRegionNextIndex = end + 1
-
-			content += [
-				inputText.substring(nextUnhighlightedRegionStartingIndex, start),
-				`<span class="${highlightClassName}">`,
-				inputText.substring(start, lastRegionNextIndex),
-				"</span>",
-			].join("")
-
-			nextUnhighlightedRegionStartingIndex = lastRegionNextIndex
-		})
-
-		content += inputText.substring(nextUnhighlightedRegionStartingIndex)
-
-		return content
-	}
-
-	return fuseSearchResult
-		.filter(({ matches }) => matches && matches.length)
-		.map(({ item, matches }) => {
-			const highlightedItem = { ...item }
-
-			matches?.forEach((match) => {
-				if (match.key && typeof match.value === "string" && match.indices) {
-					const mergedIndices = mergeRegions([...match.indices])
-					set(highlightedItem, match.key, generateHighlightedText(match.value, mergedIndices))
-				}
-			})
-
-			return highlightedItem
-		})
+const ExportButton = ({ itemId }: { itemId: string }) => {
+	const { themeMode } = useExtensionState()
+	const S = useThemeStyles('history/HistoryView', themeMode || 'dark', 'modern')
+	
+	return (
+		<VSCodeButton
+			className={S.ExportButton}
+			appearance="icon"
+			onClick={(e: React.MouseEvent) => {
+				e.stopPropagation()
+				vscode.postMessage({ type: "exportTaskWithId", text: itemId })
+			}}>
+			<div style={{ fontSize: "11px", fontWeight: 500, opacity: 1 }}>EXPORT</div>
+		</VSCodeButton>
+	)
 }
 
 export default memo(HistoryView)

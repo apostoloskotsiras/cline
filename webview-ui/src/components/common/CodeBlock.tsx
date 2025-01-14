@@ -3,7 +3,7 @@ import { useRemark } from "react-remark"
 import rehypeHighlight, { Options } from "rehype-highlight"
 import { visit } from "unist-util-visit"
 import { useExtensionState } from "../../context/ExtensionStateContext"
-import * as S from "../styles/themes/modern/components/common/CodeBlock.styles"
+import { useThemeStyles } from "../../utils/theme"
 
 interface CodeBlockProps {
 	source?: string
@@ -11,7 +11,8 @@ interface CodeBlockProps {
 }
 
 const CodeBlock = memo(({ source, forceWrap = false }: CodeBlockProps) => {
-	const { theme } = useExtensionState()
+	const { theme, themeMode, themeType } = useExtensionState()
+	const { StyledPre, StyledMarkdown } = useThemeStyles('common/CodeBlock', themeMode || 'dark', themeType || 'modern')
 	const [reactContent, setMarkdownSource] = useRemark({
 		remarkPlugins: [
 			() => {
@@ -35,7 +36,7 @@ const CodeBlock = memo(({ source, forceWrap = false }: CodeBlockProps) => {
 		],
 		rehypeReactOptions: {
 			components: {
-				pre: ({ node, ...preProps }: any) => <S.StyledPre {...preProps} theme={theme} />,
+				pre: ({ node, ...preProps }: any) => <StyledPre {...preProps} theme={theme} mode={themeMode || 'dark'} />,
 			},
 		},
 	})
@@ -51,7 +52,7 @@ const CodeBlock = memo(({ source, forceWrap = false }: CodeBlockProps) => {
 				maxHeight: forceWrap ? "none" : "100%",
 				backgroundColor: "var(--vscode-editor-background, --vscode-sideBar-background, rgb(30 30 30))",
 			}}>
-			<S.StyledMarkdown forceWrap={forceWrap}>{reactContent}</S.StyledMarkdown>
+			<StyledMarkdown forceWrap={forceWrap} mode={themeMode || 'dark'}>{reactContent}</StyledMarkdown>
 		</div>
 	)
 })

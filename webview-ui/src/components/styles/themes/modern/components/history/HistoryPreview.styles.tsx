@@ -1,11 +1,12 @@
 import styled from 'styled-components'
+import { ThemeMode } from '../../../../../../utils/theme'
 
-export const PreviewWrapper = styled.div`
+export const PreviewWrapper = styled.div<{ mode: ThemeMode }>`
   flex-shrink: 0;
   padding: 8px 0;
 `
 
-export const HistoryPreviewItem = styled.div`
+export const HistoryPreviewItem = styled.div<{ mode: ThemeMode }>`
   background: var(--vscode-editor-background);
   margin: 12px 16px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -39,7 +40,7 @@ export const HistoryPreviewItem = styled.div`
   }
 `
 
-export const HistoryTitle = styled.div`
+export const HistoryTitle = styled.div<{ mode: ThemeMode }>`
   display: flex;
   align-items: center;
   gap: 10px;
@@ -59,7 +60,7 @@ export const HistoryTitle = styled.div`
   }
 `
 
-export const HistoryMetadata = styled.div`
+export const HistoryMetadata = styled.div<{ mode: ThemeMode }>`
   display: flex;
   align-items: center;
   gap: 12px;
@@ -70,24 +71,24 @@ export const HistoryMetadata = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 `
 
-export const MetadataItem = styled.div`
+export const MetadataItem = styled.div<{ mode: ThemeMode }>`
   display: flex;
   align-items: center;
   gap: 6px;
 `
 
-export const MetadataLabel = styled.span`
+export const MetadataLabel = styled.span<{ mode: ThemeMode }>`
   font-weight: 500;
   color: var(--vscode-descriptionForeground);
 `
 
-export const MetadataValue = styled.div`
+export const MetadataValue = styled.div<{ mode: ThemeMode }>`
   display: flex;
   align-items: center;
   gap: 4px;
 `
 
-export const ViewAllButton = styled.button`
+export const ViewAllButton = styled.button<{ mode: ThemeMode }>`
   margin: 8px auto;
   padding: 4px 12px;
   font-size: 11px;
@@ -116,7 +117,7 @@ export const ViewAllButton = styled.button`
   }
 `
 
-export const TimestampText = styled.span`
+export const TimestampText = styled.span<{ mode: ThemeMode }>`
   color: var(--vscode-textLink-foreground);
   font-size: 0.85em;
   font-weight: 600;
@@ -124,7 +125,7 @@ export const TimestampText = styled.span`
   letter-spacing: 0.3px;
 `
 
-export const TaskText = styled.div`
+export const TaskText = styled.div<{ mode: ThemeMode }>`
   font-size: 13px;
   color: var(--vscode-foreground);
   line-height: 1.6;

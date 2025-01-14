@@ -32,8 +32,8 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 	}
 
 	return (
-		<S.PreviewWrapper>
-			<S.HistoryTitle>
+		<S.PreviewWrapper mode={themeMode || 'dark'}>
+			<S.HistoryTitle mode={themeMode || 'dark'}>
 				<i className="codicon codicon-history"></i>
 				<span>RECENT TASKS</span>
 			</S.HistoryTitle>
@@ -43,40 +43,40 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 					.filter((item) => item.ts && item.task)
 					.slice(0, 3)
 					.map((item) => (
-						<S.HistoryPreviewItem key={item.id} onClick={() => handleHistorySelect(item.id)}>
+						<S.HistoryPreviewItem key={item.id} mode={themeMode || 'dark'} onClick={() => handleHistorySelect(item.id)}>
 							<div style={{ padding: "16px 20px" }}>
 								<div>
-									<S.TimestampText>{formatDate(item.ts)}</S.TimestampText>
+									<S.TimestampText mode={themeMode || 'dark'}>{formatDate(item.ts)}</S.TimestampText>
 								</div>
-								<S.TaskText>{item.task}</S.TaskText>
-								<S.HistoryMetadata>
-									<S.MetadataItem>
-										<S.MetadataLabel>Tokens:</S.MetadataLabel>
-										<S.MetadataValue>
+								<S.TaskText mode={themeMode || 'dark'}>{item.task}</S.TaskText>
+								<S.HistoryMetadata mode={themeMode || 'dark'}>
+									<S.MetadataItem mode={themeMode || 'dark'}>
+										<S.MetadataLabel mode={themeMode || 'dark'}>Tokens:</S.MetadataLabel>
+										<S.MetadataValue mode={themeMode || 'dark'}>
 											<i className="codicon codicon-arrow-up" style={{ fontSize: "12px" }} />
 											{formatLargeNumber(item.tokensIn || 0)}
 										</S.MetadataValue>
-										<S.MetadataValue>
+										<S.MetadataValue mode={themeMode || 'dark'}>
 											<i className="codicon codicon-arrow-down" style={{ fontSize: "12px" }} />
 											{formatLargeNumber(item.tokensOut || 0)}
 										</S.MetadataValue>
 									</S.MetadataItem>
 									{!!item.cacheWrites && (
-										<S.MetadataItem>
-											<S.MetadataLabel>Cache:</S.MetadataLabel>
-											<S.MetadataValue>
+										<S.MetadataItem mode={themeMode || 'dark'}>
+											<S.MetadataLabel mode={themeMode || 'dark'}>Cache:</S.MetadataLabel>
+											<S.MetadataValue mode={themeMode || 'dark'}>
 												<i className="codicon codicon-database" style={{ fontSize: "12px" }} />+
 												{formatLargeNumber(item.cacheWrites || 0)}
 											</S.MetadataValue>
-											<S.MetadataValue>
+											<S.MetadataValue mode={themeMode || 'dark'}>
 												<i className="codicon codicon-arrow-right" style={{ fontSize: "12px" }} />
 												{formatLargeNumber(item.cacheReads || 0)}
 											</S.MetadataValue>
 										</S.MetadataItem>
 									)}
 									{!!item.totalCost && (
-										<S.MetadataItem>
-											<S.MetadataLabel>Cost:</S.MetadataLabel>
+										<S.MetadataItem mode={themeMode || 'dark'}>
+											<S.MetadataLabel mode={themeMode || 'dark'}>Cost:</S.MetadataLabel>
 											<span>${item.totalCost?.toFixed(4)}</span>
 										</S.MetadataItem>
 									)}
@@ -87,7 +87,7 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 			</div>
 
 			<div style={{ display: "flex", justifyContent: "center", padding: "4px 0" }}>
-				<S.ViewAllButton onClick={showHistoryView}>
+				<S.ViewAllButton mode={themeMode || 'dark'} onClick={showHistoryView}>
 					<i className="codicon codicon-history" style={{ fontSize: "11px" }} />
 					<span>View all history</span>
 				</S.ViewAllButton>
