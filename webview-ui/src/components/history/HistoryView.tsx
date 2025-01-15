@@ -185,7 +185,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 	}, [presentableTasks, searchQuery, fuse, sortOption])
 
 	return (
-		<S.HistoryWrapper>
+		<S.HistoryWrapper mode={themeMode || 'dark'}>
 			<S.HistoryContainer mode={themeMode || 'dark'}>
 				<S.HistoryHeader mode={themeMode || 'dark'}>
 					<S.HistoryTitle mode={themeMode || 'dark'}>

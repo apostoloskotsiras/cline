@@ -1,16 +1,15 @@
 import styled from 'styled-components'
+import { ThemeMode } from '../../../../../../utils/theme'
+import getThemeColors from '../../theme'
 
-export const HistoryWrapper = styled.div`
+export const HistoryWrapper = styled.div<{ mode: ThemeMode }>`
   position: fixed;
   top: 33px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(145deg, 
-    rgba(15, 15, 15, 0.98) 0%,
-    rgba(10, 10, 10, 0.98) 100%
-  );
-  backdrop-filter: blur(12px);
+  background: ${props => getThemeColors(props.mode).chatView.wrapper.background};
+  backdrop-filter: ${props => getThemeColors(props.mode).chatView.wrapper.backdropBlur};
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -22,29 +21,22 @@ export const HistoryWrapper = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(
-      circle at 50% 0%,
-      rgba(103, 58, 183, 0.08) 0%,
-      rgba(81, 45, 168, 0.05) 25%,
-      transparent 50%
-    );
+    background: ${props => getThemeColors(props.mode).chatView.wrapper.radialGlow};
     pointer-events: none;
   }
 `
 
-export const HistoryContainer = styled.div`
+export const HistoryContainer = styled.div<{ mode: ThemeMode }>`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(16px);
+  background: ${props => getThemeColors(props.mode).chatView.container.background};
+  backdrop-filter: ${props => getThemeColors(props.mode).chatView.container.backdropBlur};
   position: relative;
   border-radius: 12px;
   margin: 12px;
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: ${props => getThemeColors(props.mode).chatView.container.shadow};
+  border: 1px solid ${props => getThemeColors(props.mode).chatView.container.border};
 
   &::before {
     content: '';
@@ -53,36 +45,30 @@ export const HistoryContainer = styled.div`
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(103, 58, 183, 0.1) 50%,
-      transparent 100%
-    );
+    background: ${props => getThemeColors(props.mode).chatView.container.topGradient};
   }
 `
 
-export const HistoryHeader = styled.header`
+export const HistoryHeader = styled.header<{ mode: ThemeMode }>`
   background: transparent;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid ${props => getThemeColors(props.mode).border};
   padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `
 
-export const HistoryItem = styled.div`
-  background: rgba(25, 25, 25, 0.95);
+export const HistoryItem = styled.div<{ mode: ThemeMode }>`
+  background: ${props => getThemeColors(props.mode).mcp.serverCard.background};
   margin: 8px 16px;
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
   cursor: pointer;
 
   &:hover {
-    background: rgba(35, 35, 35, 0.95);
+    background: ${props => getThemeColors(props.mode).mcp.serverCard.hoverBackground};
   }
 
   &::before {
@@ -97,7 +83,7 @@ export const HistoryItem = styled.div`
   }
 
   &:hover::before {
-    background: var(--vscode-textLink-foreground);
+    background: ${props => getThemeColors(props.mode).mcp.serverCard.hoverBorder};
   }
 `
 
@@ -121,20 +107,20 @@ export const ExportButton = styled.span`
   }
 `
 
-export const HistoryItemHighlight = styled.span`
-  background-color: rgba(103, 58, 183, 0.3);
+export const HistoryItemHighlight = styled.span<{ mode: ThemeMode }>`
+  background-color: ${props => getThemeColors(props.mode).mcp.doneButton.background};
   color: inherit;
   border-radius: 2px;
   padding: 0 2px;
 `
 
-export const SearchContainer = styled.div`
+export const SearchContainer = styled.div<{ mode: ThemeMode }>`
   position: sticky;
   top: 0;
-  background: rgba(20, 20, 20, 0.98);
+  background: ${props => getThemeColors(props.mode).chatView.container.background};
   z-index: 10;
   padding: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid ${props => getThemeColors(props.mode).border};
 `
 
 export const HistoryTitle = styled.div`
@@ -155,13 +141,13 @@ export const HistoryTitle = styled.div`
   }
 `
 
-export const DoneButton = styled.div`
+export const DoneButton = styled.div<{ mode: ThemeMode }>`
   padding: 4px 12px;
   font-size: 11px;
   border-radius: 4px;
-  background: rgba(103, 58, 183, 0.1);
-  border: 1px solid rgba(103, 58, 183, 0.2);
-  color: var(--vscode-foreground);
+  background: ${props => getThemeColors(props.mode).mcp.doneButton.background};
+  border: 1px solid ${props => getThemeColors(props.mode).mcp.doneButton.border};
+  color: ${props => getThemeColors(props.mode).mcp.doneButton.text};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -169,8 +155,8 @@ export const DoneButton = styled.div`
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(103, 58, 183, 0.2);
-    border-color: rgba(103, 58, 183, 0.3);
+    background: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBackground};
+    border-color: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBorder};
   }
 
   i {
@@ -179,21 +165,21 @@ export const DoneButton = styled.div`
   }
 `
 
-export const SortOptionsContainer = styled.div`
+export const SortOptionsContainer = styled.div<{ mode: ThemeMode }>`
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   padding: 4px;
-  background: rgba(30, 30, 30, 0.4);
+  background: ${props => getThemeColors(props.mode).chatView.container.background};
   border-radius: 6px;
 `
 
-export const SortOption = styled.div<{ selected?: boolean; disabled?: boolean }>`
+export const SortOption = styled.div<{ selected?: boolean; disabled?: boolean; mode: ThemeMode }>`
   padding: 4px 10px;
   font-size: 11px;
   border-radius: 4px;
   cursor: pointer;
-  color: var(--vscode-foreground);
+  color: ${props => getThemeColors(props.mode).text};
   opacity: ${props => props.disabled ? 0.4 : 0.6};
   transition: all 0.2s ease;
   background: transparent;
@@ -205,12 +191,12 @@ export const SortOption = styled.div<{ selected?: boolean; disabled?: boolean }>
 
   &:hover:not(.selected) {
     opacity: ${props => props.disabled ? 0.4 : 0.8};
-    background: ${props => props.disabled ? 'transparent' : 'rgba(255, 255, 255, 0.05)'};
+    background: ${props => props.disabled ? 'transparent' : getThemeColors(props.mode).hover};
   }
 
   ${props => props.selected && `
-    background: rgba(103, 58, 183, 0.2);
-    border-color: rgba(103, 58, 183, 0.3);
+    background: ${getThemeColors(props.mode).mcp.doneButton.background};
+    border-color: ${getThemeColors(props.mode).mcp.doneButton.border};
     opacity: 1;
   `}
 

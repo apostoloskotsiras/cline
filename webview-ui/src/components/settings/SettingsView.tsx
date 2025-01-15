@@ -65,31 +65,29 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 	}
 
 	return (
-		<div className="settings-wrapper">
-			<style>{S?.styles}</style>
-
-			<div className="settings-container">
-				<header className="settings-header">
-					<div className="settings-title">
+		<S.SettingsWrapper mode={themeMode || 'dark'}>
+			<S.SettingsContainer mode={themeMode || 'dark'}>
+				<S.SettingsHeader mode={themeMode || 'dark'}>
+					<S.SettingsTitle mode={themeMode || 'dark'}>
 						<i className="codicon codicon-settings-gear"></i>
 						<span>SETTINGS</span>
-					</div>
-					<div className="done-button" onClick={handleSubmit}>
+					</S.SettingsTitle>
+					<S.DoneButton mode={themeMode || 'dark'} onClick={handleSubmit}>
 						<i className="codicon codicon-check"></i>
 						<span>Done</span>
-					</div>
-				</header>
+					</S.DoneButton>
+				</S.SettingsHeader>
 
-				<div className="settings-content">
-					<div className="settings-section">
+				<S.SettingsContent mode={themeMode || 'dark'}>
+					<S.SettingsSection mode={themeMode || 'dark'}>
 						<ApiOptions
 							showModelOptions={true}
 							apiErrorMessage={apiErrorMessage}
 							modelIdErrorMessage={modelIdErrorMessage}
 						/>
-					</div>
+					</S.SettingsSection>
 
-					<div className="settings-section">
+					<S.SettingsSection mode={themeMode || 'dark'}>
 						<VSCodeTextArea
 							value={customInstructions ?? ""}
 							style={{ width: "100%" }}
@@ -98,15 +96,15 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 								'e.g. "Run unit tests at the end", "Use TypeScript with async/await", "Speak in Spanish"'
 							}
 							onInput={(e: any) => setCustomInstructions(e.target?.value ?? "")}>
-							<span className="settings-label">Custom Instructions</span>
+							<S.SettingsLabel mode={themeMode || 'dark'}>Custom Instructions</S.SettingsLabel>
 						</VSCodeTextArea>
-						<p className="settings-description">
+						<S.SettingsDescription mode={themeMode || 'dark'}>
 							These instructions are added to the end of the system prompt sent with every request.
-						</p>
-					</div>
+						</S.SettingsDescription>
+					</S.SettingsSection>
 
-					<div className="settings-section">
-						<span className="settings-label">Theme Settings</span>
+					<S.SettingsSection mode={themeMode || 'dark'}>
+						<S.SettingsLabel mode={themeMode || 'dark'}>Theme Settings</S.SettingsLabel>
 						<div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
 							<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
 								<select 
@@ -153,26 +151,26 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 								<i className="codicon codicon-paintcan" />
 							</div>
 						</div>
-						<p className="settings-description">
+						<S.SettingsDescription mode={themeMode || 'dark'}>
 							Customize the appearance of the Cline interface with different themes and color modes.
-						</p>
-					</div>
+						</S.SettingsDescription>
+					</S.SettingsSection>
 
 					{IS_DEV && (
-						<div className="settings-section">
-							<span className="settings-label">Debug</span>
-							<button className="done-button" onClick={handleResetState} style={{ marginTop: 8 }}>
+						<S.SettingsSection mode={themeMode || 'dark'}>
+							<S.SettingsLabel mode={themeMode || 'dark'}>Debug</S.SettingsLabel>
+							<S.DoneButton mode={themeMode || 'dark'} onClick={handleResetState} style={{ marginTop: 8 }}>
 								<i className="codicon codicon-debug-restart"></i>
 								<span>Reset State</span>
-							</button>
-							<p className="settings-description">
+							</S.DoneButton>
+							<S.SettingsDescription mode={themeMode || 'dark'}>
 								This will reset all global state and secret storage in the extension.
-							</p>
-						</div>
+							</S.SettingsDescription>
+						</S.SettingsSection>
 					)}
-				</div>
+				</S.SettingsContent>
 
-				<div className="settings-footer">
+				<S.SettingsFooter mode={themeMode || 'dark'}>
 					<p style={{ margin: 0 }}>
 						If you have any questions or feedback, feel free to open an issue at{" "}
 						<VSCodeLink href="https://github.com/cline/cline" style={{ display: "inline" }}>
@@ -186,9 +184,9 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 						}}>
 						v{version}
 					</p>
-				</div>
-			</div>
-		</div>
+				</S.SettingsFooter>
+			</S.SettingsContainer>
+		</S.SettingsWrapper>
 	)
 }
 

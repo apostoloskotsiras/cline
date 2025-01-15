@@ -8,10 +8,7 @@ export const Wrapper = styled.div<{ mode: ThemeMode }>`
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(145deg, 
-		${({ mode }) => `${getThemeColors(mode).background}FA`} 0%, 
-		${({ mode }) => `${getThemeColors(mode).background}FA`} 100%
-	);
+	background: ${({ mode }) => getThemeColors(mode).chatView.wrapper.background};
 	color: ${({ mode }) => getThemeColors(mode).textPrimary};
 	font-family: var(--vscode-font-family);
 	font-size: var(--vscode-font-size);
@@ -19,7 +16,7 @@ export const Wrapper = styled.div<{ mode: ThemeMode }>`
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	backdrop-filter: blur(12px);
+	backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.wrapper.backdropBlur};
 
 	&::before {
 		content: "";
@@ -28,12 +25,7 @@ export const Wrapper = styled.div<{ mode: ThemeMode }>`
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: radial-gradient(
-			circle at 50% 0%, 
-			${({ mode }) => `${getThemeColors(mode).primary}14`} 0%, 
-			${({ mode }) => `${getThemeColors(mode).primary}0D`} 25%, 
-			transparent 50%
-		);
+		background: ${({ mode }) => getThemeColors(mode).chatView.wrapper.radialGlow};
 		pointer-events: none;
 	}
 `
@@ -42,15 +34,13 @@ export const Container = styled.div<{ mode: ThemeMode }>`
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	background: ${({ mode }) => `${getThemeColors(mode).secondary}D9`};
-	backdrop-filter: blur(16px);
+	background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
+	backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
 	position: relative;
 	border-radius: 12px;
 	margin: 12px;
-	box-shadow:
-		0 4px 6px rgba(0, 0, 0, 0.1),
-		0 1px 3px rgba(0, 0, 0, 0.08);
-	border: 1px solid ${({ mode }) => `${getThemeColors(mode).border}14`};
+	box-shadow: ${({ mode }) => getThemeColors(mode).chatView.container.shadow};
+	border: 1px solid ${({ mode }) => getThemeColors(mode).chatView.container.border};
 
 	&::before {
 		content: "";
@@ -59,12 +49,7 @@ export const Container = styled.div<{ mode: ThemeMode }>`
 		left: 0;
 		right: 0;
 		height: 1px;
-		background: linear-gradient(
-			90deg, 
-			transparent 0%, 
-			${({ mode }) => `${getThemeColors(mode).primary}1A`} 50%, 
-			transparent 100%
-		);
+		background: ${({ mode }) => getThemeColors(mode).chatView.container.topGradient};
 	}
 `
 
@@ -79,12 +64,11 @@ export const WelcomeHeading = styled.h2<{ mode: ThemeMode }>`
 export const StyledButton = styled.button<{ $primary?: boolean; mode: ThemeMode }>`
 	background: ${({ $primary, mode }) =>
 		$primary
-			? `linear-gradient(145deg, ${getThemeColors(mode).primary}E6 0%, ${getThemeColors(mode).primary}D9 100%)`
-			: `linear-gradient(145deg, ${getThemeColors(mode).secondary}F2 0%, ${getThemeColors(mode).secondary}F2 100%)`};
-	backdrop-filter: blur(16px);
+			? getThemeColors(mode).chatView.button.primaryBackground
+			: getThemeColors(mode).chatView.button.secondaryBackground};
+	backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
 	border-radius: 8px;
-	border: 1px solid ${({ $primary, mode }) => 
-		$primary ? `${getThemeColors(mode).primary}33` : `${getThemeColors(mode).border}14`};
+	border: 1px solid ${({ $primary, mode }) => getThemeColors(mode).chatView.button.border};
 	color: ${({ $primary, mode }) => 
 		$primary ? getThemeColors(mode).textPrimary : `${getThemeColors(mode).textPrimary}E6`};
 	padding: 8px 16px;
@@ -101,13 +85,13 @@ export const StyledButton = styled.button<{ $primary?: boolean; mode: ThemeMode 
 	&:hover {
 		background: ${({ $primary, mode }) =>
 			$primary
-				? `linear-gradient(145deg, ${getThemeColors(mode).primary} 0%, ${getThemeColors(mode).primary}F2 100%)`
-				: `linear-gradient(145deg, ${getThemeColors(mode).secondary}FA 0%, ${getThemeColors(mode).secondary}FA 100%)`};
+				? getThemeColors(mode).chatView.button.primaryHover
+				: getThemeColors(mode).chatView.button.secondaryHover};
 		transform: translateY(-1px);
 		box-shadow: ${({ $primary, mode }) => 
 			$primary 
-				? `0 6px 20px ${getThemeColors(mode).primary}40` 
-				: "0 6px 12px rgba(0, 0, 0, 0.15)"};
+				? getThemeColors(mode).chatView.button.hoverShadow
+				: getThemeColors(mode).chatView.button.shadow};
 	}
 
 	&:disabled {
@@ -123,19 +107,19 @@ export const StyledButton = styled.button<{ $primary?: boolean; mode: ThemeMode 
 `
 
 export const ScrollToBottomButton = styled.div<{ mode: ThemeMode }>`
-	background: ${({ mode }) => `${getThemeColors(mode).secondary}F2`};
-	backdrop-filter: blur(8px);
+	background: ${({ mode }) => getThemeColors(mode).chatView.scrollToTop.background};
+	backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
 	border-radius: 12px;
 	padding: 8px;
 	cursor: pointer;
-	border: 1px solid ${({ mode }) => `${getThemeColors(mode).border}1A`};
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+	border: 1px solid ${({ mode }) => getThemeColors(mode).chatView.scrollToTop.border};
+	box-shadow: ${({ mode }) => getThemeColors(mode).chatView.scrollToTop.shadow};
 	transition: all 0.2s ease;
 
 	&:hover {
-		background: ${({ mode }) => `${getThemeColors(mode).secondary}FA`};
+		background: ${({ mode }) => getThemeColors(mode).chatView.scrollToTop.hover};
 		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+		box-shadow: ${({ mode }) => getThemeColors(mode).chatView.scrollToTop.hoverShadow};
 	}
 
 	.codicon {

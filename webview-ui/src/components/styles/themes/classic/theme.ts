@@ -12,6 +12,75 @@ interface ChatTextAreaColors {
     tagBorder: string
 }
 
+interface ChatViewColors {
+    wrapper: {
+        background: string
+        backdropBlur: string
+        radialGlow: string
+    }
+    container: {
+        background: string
+        backdropBlur: string
+        border: string
+        shadow: string
+        topGradient: string
+    }
+    button: {
+        primaryBackground: string
+        primaryHover: string
+        secondaryBackground: string
+        secondaryHover: string
+        border: string
+        shadow: string
+        hoverShadow: string
+    }
+    scrollToTop: {
+        background: string
+        hover: string
+        border: string
+        shadow: string
+        hoverShadow: string
+    }
+}
+
+interface GradientColors {
+    primaryGradient: string
+    secondaryGradient: string
+    backgroundGradient: string
+    buttonPrimaryGradient: string
+    buttonSecondaryGradient: string
+}
+
+interface EffectColors {
+    blur: string
+    glow: string
+    shadow: string
+    radialGlow: string
+}
+
+interface McpColors {
+    serverCard: {
+        background: string
+        hoverBackground: string
+        border: string
+        hoverBorder: string
+    }
+    doneButton: {
+        background: string
+        hoverBackground: string
+        border: string
+        hoverBorder: string
+        text: string
+    }
+    settingsButton: {
+        background: string
+        hoverBackground: string
+        border: string
+        hoverBorder: string
+        text: string
+    }
+}
+
 interface ThemeColors {
     background: string
     foreground: string
@@ -32,6 +101,10 @@ interface ThemeColors {
     selected: string
     disabled: string
     chatTextArea: ChatTextAreaColors
+    gradients: GradientColors
+    effects: EffectColors
+    chatView: ChatViewColors
+    mcp: McpColors
 }
 
 const darkColors: ThemeColors = {
@@ -63,6 +136,71 @@ const darkColors: ThemeColors = {
         tagBackground: 'rgba(255, 255, 255, 0.04)',
         tagHover: 'rgba(255, 255, 255, 0.06)',
         tagBorder: 'rgba(255, 255, 255, 0.08)'
+    },
+    gradients: {
+        primaryGradient: '#0E639C',
+        secondaryGradient: '#252526',
+        backgroundGradient: '#1E1E1E',
+        buttonPrimaryGradient: '#0E639C',
+        buttonSecondaryGradient: '#252526'
+    },
+    effects: {
+        blur: 'none',
+        glow: 'none',
+        shadow: 'none',
+        radialGlow: 'none'
+    },
+    chatView: {
+        wrapper: {
+            background: '#1E1E1E',
+            backdropBlur: 'none',
+            radialGlow: 'none'
+        },
+        container: {
+            background: '#252526',
+            backdropBlur: 'none',
+            border: '#454545',
+            shadow: 'none',
+            topGradient: 'none'
+        },
+        button: {
+            primaryBackground: '#0E639C',
+            primaryHover: '#1177BB',
+            secondaryBackground: '#252526',
+            secondaryHover: '#2D2D2D',
+            border: '#454545',
+            shadow: 'none',
+            hoverShadow: 'none'
+        },
+        scrollToTop: {
+            background: '#252526',
+            hover: '#2D2D2D',
+            border: '#454545',
+            shadow: 'none',
+            hoverShadow: 'none'
+        }
+    },
+    mcp: {
+        serverCard: {
+            background: '#252526',
+            hoverBackground: '#2D2D2D',
+            border: '#454545',
+            hoverBorder: 'rgb(66, 153, 244)'
+        },
+        doneButton: {
+            background: 'rgb(66, 153, 244)',
+            hoverBackground: 'rgb(82, 166, 255)',
+            border: 'rgb(66, 153, 244)',
+            hoverBorder: 'rgb(82, 166, 255)',
+            text: '#FFFFFF'
+        },
+        settingsButton: {
+            background: 'rgb(66, 153, 244)',
+            hoverBackground: 'rgb(82, 166, 255)',
+            border: 'rgb(66, 153, 244)',
+            hoverBorder: 'rgb(82, 166, 255)',
+            text: '#FFFFFF'
+        }
     }
 }
 
@@ -95,6 +233,71 @@ const lightColors: ThemeColors = {
         tagBackground: 'rgba(0, 0, 0, 0.04)',
         tagHover: 'rgba(0, 0, 0, 0.06)',
         tagBorder: 'rgba(0, 0, 0, 0.08)'
+    },
+    gradients: {
+        primaryGradient: '#0078D4',
+        secondaryGradient: '#F5F5F5',
+        backgroundGradient: '#FFFFFF',
+        buttonPrimaryGradient: '#0078D4',
+        buttonSecondaryGradient: '#F5F5F5'
+    },
+    effects: {
+        blur: 'none',
+        glow: 'none',
+        shadow: 'none',
+        radialGlow: 'none'
+    },
+    chatView: {
+        wrapper: {
+            background: '#FFFFFF',
+            backdropBlur: 'none',
+            radialGlow: 'none'
+        },
+        container: {
+            background: '#F5F5F5',
+            backdropBlur: 'none',
+            border: '#E0E0E0',
+            shadow: 'none',
+            topGradient: 'none'
+        },
+        button: {
+            primaryBackground: '#0078D4',
+            primaryHover: '#0086F0',
+            secondaryBackground: '#F5F5F5',
+            secondaryHover: '#E8E8E8',
+            border: '#E0E0E0',
+            shadow: 'none',
+            hoverShadow: 'none'
+        },
+        scrollToTop: {
+            background: '#F5F5F5',
+            hover: '#E8E8E8',
+            border: '#E0E0E0',
+            shadow: 'none',
+            hoverShadow: 'none'
+        }
+    },
+    mcp: {
+        serverCard: {
+            background: '#F8F8F8',
+            hoverBackground: '#F0F0F0',
+            border: '#E0E0E0',
+            hoverBorder: 'rgb(22, 104, 194)'
+        },
+        doneButton: {
+            background: 'rgb(22, 104, 194)',
+            hoverBackground: 'rgb(28, 116, 214)',
+            border: 'rgb(22, 104, 194)',
+            hoverBorder: 'rgb(28, 116, 214)',
+            text: '#FFFFFF'
+        },
+        settingsButton: {
+            background: 'rgb(22, 104, 194)',
+            hoverBackground: 'rgb(28, 116, 214)',
+            border: 'rgb(22, 104, 194)',
+            hoverBorder: 'rgb(28, 116, 214)',
+            text: '#FFFFFF'
+        }
     }
 }
 

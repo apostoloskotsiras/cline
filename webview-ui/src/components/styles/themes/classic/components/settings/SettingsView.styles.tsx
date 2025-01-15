@@ -1,146 +1,172 @@
 import styled from "styled-components"
+import { ThemeMode } from '../../../../../../utils/theme'
+import getThemeColors from '../../theme'
 
-export const styles = `
-.settings-wrapper {
+export const SettingsWrapper = styled.div<{ mode: ThemeMode }>`
   position: fixed;
   top: 33px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(145deg, 
-    rgba(15, 15, 15, 0.98) 0%,
-    rgba(10, 10, 10, 0.98) 100%
-  );
-  backdrop-filter: blur(12px);
+  background: ${props => getThemeColors(props.mode).chatView.wrapper.background};
+  backdrop-filter: ${props => getThemeColors(props.mode).chatView.wrapper.backdropBlur};
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
 
-.settings-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at 50% 0%,
-    rgba(103, 58, 183, 0.08) 0%,
-    rgba(81, 45, 168, 0.05) 25%,
-    transparent 50%
-  );
-  pointer-events: none;
-}
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: ${props => getThemeColors(props.mode).chatView.wrapper.radialGlow};
+    pointer-events: none;
+  }
+`
 
-.settings-container {
+export const SettingsContainer = styled.div<{ mode: ThemeMode }>`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(16px);
+  background: ${props => getThemeColors(props.mode).chatView.container.background};
+  backdrop-filter: ${props => getThemeColors(props.mode).chatView.container.backdropBlur};
   position: relative;
   border-radius: 12px;
   margin: 12px;
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
+  box-shadow: ${props => getThemeColors(props.mode).chatView.container.shadow};
+  border: 1px solid ${props => getThemeColors(props.mode).chatView.container.border};
 
-.settings-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(103, 58, 183, 0.1) 50%,
-    transparent 100%
-  );
-}
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: ${props => getThemeColors(props.mode).chatView.container.topGradient};
+  }
+`
 
-.settings-header {
+export const SettingsHeader = styled.header<{ mode: ThemeMode }>`
   background: transparent;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid ${props => getThemeColors(props.mode).border};
   padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
+`
 
-.settings-title {
+export const SettingsTitle = styled.div<{ mode: ThemeMode }>`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--vscode-foreground);
-}
+  color: ${props => getThemeColors(props.mode).text};
 
-.settings-title i {
-  font-size: 16px;
-  opacity: 0.8;
-}
+  i {
+    font-size: 16px;
+    opacity: 0.8;
+  }
 
-.settings-title span {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-}
+  span {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+`
 
-.done-button {
+export const DoneButton = styled.div<{ mode: ThemeMode }>`
   padding: 4px 12px;
   font-size: 11px;
   border-radius: 4px;
-  background: rgba(103, 58, 183, 0.1);
-  border: 1px solid rgba(103, 58, 183, 0.2);
-  color: var(--vscode-foreground);
+  background: ${props => getThemeColors(props.mode).mcp.doneButton.background};
+  border: 1px solid ${props => getThemeColors(props.mode).mcp.doneButton.border};
+  color: ${props => getThemeColors(props.mode).mcp.doneButton.text};
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
   transition: all 0.2s ease;
-}
 
-.done-button:hover {
-  background: rgba(103, 58, 183, 0.2);
-  border-color: rgba(103, 58, 183, 0.3);
-}
+  &:hover {
+    background: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBackground};
+    border-color: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBorder};
+  }
 
-.done-button i {
-  font-size: 14px;
-  opacity: 0.8;
-}
+  i {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+`
 
-.settings-content {
+export const SettingsContent = styled.div<{ mode: ThemeMode }>`
   flex: 1;
   overflow-y: auto;
   padding: 16px 20px;
-  /* Hide scrollbar */
+
   &::-webkit-scrollbar {
     display: none;
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
+`
 
-.settings-footer {
+export const SettingsFooter = styled.div<{ mode: ThemeMode }>`
   text-align: center;
-  color: var(--vscode-descriptionForeground);
+  color: ${props => getThemeColors(props.mode).textSecondary};
   font-size: 12px;
   line-height: 1.2;
   padding: 10px 20px 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
+  border-top: 1px solid ${props => getThemeColors(props.mode).border};
+`
 
+export const SettingsLabel = styled.span<{ mode: ThemeMode }>`
+  font-size: 12px;
+  font-weight: 500;
+  color: ${props => getThemeColors(props.mode).text};
+  opacity: 0.9;
+  margin-bottom: 4px;
+  display: block;
+`
+
+export const SettingsSection = styled.div<{ mode: ThemeMode }>`
+  background: ${props => getThemeColors(props.mode).mcp.serverCard.background};
+  border: 1px solid ${props => getThemeColors(props.mode).mcp.serverCard.border};
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+
+  &:hover {
+    border-color: ${props => getThemeColors(props.mode).mcp.serverCard.hoverBorder};
+  }
+`
+
+export const SettingsDescription = styled.p<{ mode: ThemeMode }>`
+  font-size: 12px;
+  color: ${props => getThemeColors(props.mode).textSecondary};
+  margin-top: 4px;
+  line-height: 1.4;
+`
+
+export const SettingsError = styled.div<{ mode: ThemeMode }>`
+  color: ${props => getThemeColors(props.mode).error};
+  background: ${props => getThemeColors(props.mode).chatTextArea.containerBackground};
+  border: 1px solid ${props => getThemeColors(props.mode).error};
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 12px;
+`
+
+// Global styles for VSCode components
+export const styles = (mode: ThemeMode) => `
 /* Input field styles */
 vscode-text-field,
 vscode-text-area,
 vscode-dropdown {
   --input-background: transparent !important;
-  background: rgba(30, 30, 30, 0.6) !important;
+  background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
   border-radius: 4px !important;
   transition: all 0.2s ease !important;
 }
@@ -148,65 +174,23 @@ vscode-dropdown {
 vscode-text-field:hover,
 vscode-text-area:hover,
 vscode-dropdown:hover {
-  background: rgba(35, 35, 35, 0.7) !important;
-  border-color: rgba(103, 58, 183, 0.2) !important;
+  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
+  border-color: ${getThemeColors(mode).mcp.doneButton.border} !important;
 }
 
 vscode-text-field:focus-within,
 vscode-text-area:focus-within,
 vscode-dropdown:focus-within {
-  border-color: rgba(103, 58, 183, 0.3) !important;
-  background: rgba(40, 40, 40, 0.8) !important;
-}
-
-/* Label styles */
-.settings-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--vscode-foreground);
-  opacity: 0.9;
-  margin-bottom: 4px;
-  display: block;
-}
-
-/* Section styles */
-.settings-section {
-  background: rgba(25, 25, 25, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-
-.settings-section:hover {
-  border-color: rgba(103, 58, 183, 0.15);
-}
-
-/* Description text styles */
-.settings-description {
-  font-size: 12px;
-  color: var(--vscode-descriptionForeground);
-  margin-top: 4px;
-  line-height: 1.4;
-}
-
-/* Error message styles */
-.settings-error {
-  color: var(--vscode-inputValidation-errorForeground);
-  background: var(--vscode-inputValidation-errorBackground);
-  border: 1px solid var(--vscode-inputValidation-errorBorder);
-  border-radius: 4px;
-  padding: 8px 12px;
-  margin-top: 8px;
-  font-size: 12px;
+  border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
+  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
 }
 
 /* Override VS Code default input styles */
 vscode-text-field .control,
 vscode-text-area .control,
 vscode-dropdown .control {
-  background: rgba(30, 30, 30, 0.6) !important;
-  color: var(--vscode-foreground) !important;
+  background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
+  color: ${getThemeColors(mode).text} !important;
   font-family: var(--vscode-font-family) !important;
   font-size: 13px !important;
 }
@@ -214,15 +198,15 @@ vscode-dropdown .control {
 vscode-text-field:hover .control,
 vscode-text-area:hover .control,
 vscode-dropdown:hover .control {
-  background: rgba(35, 35, 35, 0.7) !important;
-  border-color: rgba(103, 58, 183, 0.2) !important;
+  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
+  border-color: ${getThemeColors(mode).mcp.doneButton.border} !important;
 }
 
 vscode-text-field:focus-within .control,
 vscode-text-area:focus-within .control,
 vscode-dropdown:focus-within .control {
-  border-color: rgba(103, 58, 183, 0.3) !important;
-  background: rgba(40, 40, 40, 0.8) !important;
+  border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
+  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
 }
 
 /* Remove default VS Code input background */
@@ -234,12 +218,12 @@ vscode-dropdown:focus-within .control {
 
 /* Style the dropdown options */
 vscode-dropdown::part(listbox) {
-  background: rgba(25, 25, 25, 0.95) !important;
-  border: 1px solid rgba(103, 58, 183, 0.2) !important;
+  background: ${getThemeColors(mode).mcp.serverCard.background} !important;
+  border: 1px solid ${getThemeColors(mode).mcp.serverCard.border} !important;
   border-radius: 4px !important;
   padding: 4px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-  backdrop-filter: blur(8px) !important;
+  box-shadow: ${getThemeColors(mode).chatView.container.shadow} !important;
+  backdrop-filter: ${getThemeColors(mode).chatView.container.backdropBlur} !important;
 }
 
 vscode-option {
@@ -253,18 +237,18 @@ vscode-option {
 }
 
 vscode-option:hover {
-  background: rgba(103, 58, 183, 0.15) !important;
+  background: ${getThemeColors(mode).mcp.doneButton.background} !important;
 }
 
 vscode-option[selected] {
-  background: rgba(103, 58, 183, 0.2) !important;
-  color: var(--vscode-foreground) !important;
+  background: ${getThemeColors(mode).mcp.doneButton.background} !important;
+  color: ${getThemeColors(mode).text} !important;
 }
 
 /* Enhance dropdown trigger button */
 vscode-dropdown::part(control) {
-  background: rgba(30, 30, 30, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
+  border: 1px solid ${getThemeColors(mode).border} !important;
   border-radius: 4px !important;
   padding: 4px 8px !important;
   height: 28px !important;
@@ -272,23 +256,23 @@ vscode-dropdown::part(control) {
 }
 
 vscode-dropdown:hover::part(control) {
-  background: rgba(35, 35, 35, 0.7) !important;
-  border-color: rgba(103, 58, 183, 0.2) !important;
+  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
+  border-color: ${getThemeColors(mode).mcp.doneButton.border} !important;
 }
 
 vscode-dropdown:focus-within::part(control) {
-  border-color: rgba(103, 58, 183, 0.3) !important;
-  background: rgba(40, 40, 40, 0.8) !important;
+  border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
+  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
 }
 
 /* Style dropdown indicators */
 vscode-dropdown::part(indicator) {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: ${getThemeColors(mode).textSecondary} !important;
   font-size: 12px !important;
   transition: all 0.2s ease !important;
 }
 
 vscode-dropdown:hover::part(indicator) {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: ${getThemeColors(mode).text} !important;
 }
 ` 

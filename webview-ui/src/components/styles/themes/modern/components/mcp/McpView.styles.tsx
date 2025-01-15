@@ -1,17 +1,16 @@
 import styled from "styled-components"
 import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
+import { ThemeMode } from "../../../../../../utils/theme"
+import { getThemeColors } from "../../theme"
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ mode: ThemeMode }>`
   position: fixed;
   top: 33px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(145deg, 
-    rgba(15, 15, 15, 0.98) 0%,
-    rgba(10, 10, 10, 0.98) 100%
-  );
-  backdrop-filter: blur(12px);
+  background: ${({ mode }) => getThemeColors(mode).chatView.wrapper.background};
+  backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.wrapper.backdropBlur};
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -26,29 +25,22 @@ export const Wrapper = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(
-      circle at 50% 0%,
-      rgba(103, 58, 183, 0.08) 0%,
-      rgba(81, 45, 168, 0.05) 25%,
-      transparent 50%
-    );
+    background: ${({ mode }) => getThemeColors(mode).chatView.wrapper.radialGlow};
     pointer-events: none;
   }
 `
 
-export const Container = styled.div`
+export const Container = styled.div<{ mode: ThemeMode }>`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(16px);
+  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
+  backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
   position: relative;
   border-radius: 12px;
   margin: 12px;
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: ${({ mode }) => getThemeColors(mode).chatView.container.shadow};
+  border: 1px solid ${({ mode }) => getThemeColors(mode).chatView.container.border};
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -60,22 +52,19 @@ export const Container = styled.div`
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(103, 58, 183, 0.1) 50%,
-      transparent 100%
-    );
+    background: ${({ mode }) => getThemeColors(mode).chatView.container.topGradient};
   }
 `
 
-export const Header = styled.header`
+export const Header = styled.header<{ mode: ThemeMode }>`
   background: transparent;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid ${({ mode }) => `${getThemeColors(mode).border}0A`};
   padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 `
 
 export const Title = styled.div`
@@ -85,9 +74,10 @@ export const Title = styled.div`
   color: var(--vscode-foreground);
 `
 
-export const TitleIcon = styled.i.attrs({ className: "codicon codicon-server" })`
+export const TitleIcon = styled.i.attrs<{ mode: ThemeMode }>({ className: "codicon codicon-server" })`
   font-size: 16px;
   opacity: 0.8;
+  color: ${({ mode }) => getThemeColors(mode).mcp.doneButton.text};
 `
 
 export const TitleText = styled.span`
@@ -96,28 +86,36 @@ export const TitleText = styled.span`
   letter-spacing: 0.3px;
 `
 
-export const DoneButton = styled.div`
-  padding: 4px 12px;
+export const DoneButton = styled.div<{ mode: ThemeMode }>`
+  padding: 6px 14px;
   font-size: 11px;
-  border-radius: 4px;
-  background: rgba(103, 58, 183, 0.1);
-  border: 1px solid rgba(103, 58, 183, 0.2);
-  color: var(--vscode-foreground);
+  border-radius: 6px;
+  background: ${({ mode }) => getThemeColors(mode).mcp.doneButton.background};
+  border: 1px solid ${({ mode }) => getThemeColors(mode).mcp.doneButton.border};
+  color: ${({ mode }) => getThemeColors(mode).mcp.doneButton.text};
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background: rgba(103, 58, 183, 0.2);
-    border-color: rgba(103, 58, 183, 0.3);
+    background: ${({ mode }) => getThemeColors(mode).mcp.doneButton.hoverBackground};
+    border-color: ${({ mode }) => getThemeColors(mode).mcp.doneButton.hoverBorder};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 `
 
 export const DoneButtonIcon = styled.i.attrs({ className: "codicon codicon-check" })`
   font-size: 14px;
-  opacity: 0.8;
+  opacity: 0.9;
 `
 
 export const Content = styled.div`
@@ -126,6 +124,8 @@ export const Content = styled.div`
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 0;
 
   &::-webkit-scrollbar {
     display: none;
@@ -145,55 +145,82 @@ export const Description = styled.div`
   font-size: 13px;
   margin-bottom: 20px;
   margin-top: 5px;
+  line-height: 1.5;
 `
 
 export const StyledLink = styled(VSCodeLink)`
   display: inline;
+  color: ${({ mode }) => getThemeColors(mode).mcp.doneButton.background};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `
 
 export const ServerList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 `
 
-export const ServerCard = styled.div`
-  background: rgba(25, 25, 25, 0.95);
+export const ServerCard = styled.div<{ mode: ThemeMode }>`
+  background: ${({ mode }) => getThemeColors(mode).mcp.serverCard.background};
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid ${({ mode }) => getThemeColors(mode).mcp.serverCard.border};
   overflow: hidden;
   transition: all 0.2s ease;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
   &:hover {
-    border-color: rgba(103, 58, 183, 0.2);
-    transform: translateY(-1px);
+    background: ${({ mode }) => getThemeColors(mode).mcp.serverCard.hoverBackground};
+    border-color: ${({ mode }) => getThemeColors(mode).mcp.serverCard.hoverBorder};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `
 
-export const ServerHeader = styled.div`
+export const ServerHeader = styled.div<{ mode: ThemeMode }>`
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 14px 18px;
   cursor: pointer;
-  background: rgba(30, 30, 30, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: ${({ mode }) => getThemeColors(mode).mcp.serverCard.background};
+  border-bottom: 1px solid ${({ mode }) => getThemeColors(mode).mcp.serverCard.border};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${({ mode }) => getThemeColors(mode).mcp.serverCard.hoverBackground};
+  }
 `
 
-export const ServerContent = styled.div`
-  background: rgba(25, 25, 25, 0.95);
-  padding: 16px;
+export const ServerContent = styled.div<{ mode: ThemeMode }>`
+  background: ${({ mode }) => getThemeColors(mode).mcp.serverCard.background};
+  padding: 16px 18px;
   font-size: 13px;
+  line-height: 1.5;
 `
 
 export const ErrorMessage = styled.div`
   color: var(--vscode-testing-iconFailed);
   margin-bottom: 8px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '⚠';
+    font-size: 14px;
+  }
 `
 
 export const NoContentMessage = styled.div`
-  padding: 10px 0;
+  padding: 12px 0;
   color: var(--vscode-descriptionForeground);
+  font-style: italic;
+  font-size: 12px;
 `
 
 export const StatusIndicator = styled.div<{ status: string }>`
@@ -228,42 +255,52 @@ export const StatusIndicator = styled.div<{ status: string }>`
   }};
 `
 
-export const SettingsButtonContainer = styled.div`
+export const SettingsButtonContainer = styled.div<{ mode: ThemeMode }>`
   margin-top: auto;
-  padding: 10px 0;
+  padding: 16px 20px;
   width: 100%;
   position: sticky;
   bottom: 0;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(16px);
+  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
+  backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
+  border-top: 1px solid ${({ mode }) => `${getThemeColors(mode).border}0A`};
 `
 
-export const Button = styled.button<{ disabled?: boolean }>`
-  padding: 8px 12px;
-  font-size: 11px;
-  border-radius: 4px;
-  background: rgba(103, 58, 183, 0.1);
-  border: 1px solid rgba(103, 58, 183, 0.2);
-  color: var(--vscode-foreground);
+export const Button = styled.button<{ disabled?: boolean; mode: ThemeMode }>`
+  padding: 10px 16px;
+  font-size: 12px;
+  border-radius: 6px;
+  background: ${({ mode }) => getThemeColors(mode).mcp.settingsButton.background};
+  border: 1px solid ${({ mode }) => getThemeColors(mode).mcp.settingsButton.border};
+  color: ${({ mode }) => getThemeColors(mode).mcp.settingsButton.text};
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  gap: 8px;
+  transition: all 0.2s ease;
   width: 100%;
-  margin: 8px 0;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
 
   &:hover:not(:disabled) {
-    background: rgba(103, 58, 183, 0.2);
-    border-color: rgba(103, 58, 183, 0.3);
+    background: ${({ mode }) => getThemeColors(mode).mcp.settingsButton.hoverBackground};
+    border-color: ${({ mode }) => getThemeColors(mode).mcp.settingsButton.hoverBorder};
     transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 `
 
@@ -276,7 +313,7 @@ export const SettingsButton = styled(Button)`
 
 export const ButtonIcon = styled.i`
   font-size: 14px;
-  opacity: 0.8;
+  opacity: 0.9;
 `
 
 export const ChevronIcon = styled.i.attrs<{ expanded: boolean }>(props => ({
@@ -284,5 +321,7 @@ export const ChevronIcon = styled.i.attrs<{ expanded: boolean }>(props => ({
 }))<{ expanded: boolean }>`
   margin-right: 8px;
   font-size: 14px;
-  opacity: 0.8;
+  opacity: 0.9;
+  transition: transform 0.2s ease;
+  transform: ${props => props.expanded ? 'rotate(0deg)' : 'rotate(-90deg)'};
 ` 

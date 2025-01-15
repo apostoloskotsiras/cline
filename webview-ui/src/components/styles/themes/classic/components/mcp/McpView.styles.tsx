@@ -1,17 +1,16 @@
 import styled from "styled-components"
 import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
+import { ThemeMode } from "../../../../../../utils/theme"
+import { getThemeColors } from "../../theme"
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ mode: ThemeMode }>`
   position: fixed;
   top: 33px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(145deg, 
-    rgba(15, 15, 15, 0.98) 0%,
-    rgba(10, 10, 10, 0.98) 100%
-  );
-  backdrop-filter: blur(12px);
+  background: ${({ mode }) => getThemeColors(mode).chatView.wrapper.background};
+  backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.wrapper.backdropBlur};
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -26,29 +25,22 @@ export const Wrapper = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(
-      circle at 50% 0%,
-      rgba(103, 58, 183, 0.08) 0%,
-      rgba(81, 45, 168, 0.05) 25%,
-      transparent 50%
-    );
+    background: ${({ mode }) => getThemeColors(mode).chatView.wrapper.radialGlow};
     pointer-events: none;
   }
 `
 
-export const Container = styled.div`
+export const Container = styled.div<{ mode: ThemeMode }>`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(16px);
+  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
+  backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
   position: relative;
   border-radius: 12px;
   margin: 12px;
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: ${({ mode }) => getThemeColors(mode).chatView.container.shadow};
+  border: 1px solid ${({ mode }) => getThemeColors(mode).chatView.container.border};
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -60,18 +52,13 @@ export const Container = styled.div`
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(103, 58, 183, 0.1) 50%,
-      transparent 100%
-    );
+    background: ${({ mode }) => getThemeColors(mode).chatView.container.topGradient};
   }
 `
 
-export const Header = styled.header`
+export const Header = styled.header<{ mode: ThemeMode }>`
   background: transparent;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid ${({ mode }) => `${getThemeColors(mode).border}0A`};
   padding: 12px 16px;
   display: flex;
   justify-content: space-between;
@@ -96,12 +83,12 @@ export const TitleText = styled.span`
   letter-spacing: 0.3px;
 `
 
-export const DoneButton = styled.div`
+export const DoneButton = styled.div<{ mode: ThemeMode }>`
   padding: 4px 12px;
   font-size: 11px;
   border-radius: 4px;
-  background: rgba(103, 58, 183, 0.1);
-  border: 1px solid rgba(103, 58, 183, 0.2);
+  background: ${({ mode }) => getThemeColors(mode).chatView.button.secondaryBackground};
+  border: 1px solid ${({ mode }) => getThemeColors(mode).chatView.button.border};
   color: var(--vscode-foreground);
   cursor: pointer;
   display: flex;
@@ -110,8 +97,8 @@ export const DoneButton = styled.div`
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(103, 58, 183, 0.2);
-    border-color: rgba(103, 58, 183, 0.3);
+    background: ${({ mode }) => getThemeColors(mode).chatView.button.secondaryHover};
+    border-color: ${({ mode }) => getThemeColors(mode).chatView.button.border};
   }
 `
 
@@ -157,31 +144,31 @@ export const ServerList = styled.div`
   gap: 10px;
 `
 
-export const ServerCard = styled.div`
-  background: rgba(25, 25, 25, 0.95);
+export const ServerCard = styled.div<{ mode: ThemeMode }>`
+  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid ${({ mode }) => getThemeColors(mode).chatView.container.border};
   overflow: hidden;
   transition: all 0.2s ease;
   margin-bottom: 10px;
 
   &:hover {
-    border-color: rgba(103, 58, 183, 0.2);
+    border-color: ${({ mode }) => getThemeColors(mode).chatView.button.border};
     transform: translateY(-1px);
   }
 `
 
-export const ServerHeader = styled.div`
+export const ServerHeader = styled.div<{ mode: ThemeMode }>`
   display: flex;
   align-items: center;
   padding: 12px 16px;
   cursor: pointer;
-  background: rgba(30, 30, 30, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
+  border-bottom: 1px solid ${({ mode }) => getThemeColors(mode).chatView.container.border};
 `
 
-export const ServerContent = styled.div`
-  background: rgba(25, 25, 25, 0.95);
+export const ServerContent = styled.div<{ mode: ThemeMode }>`
+  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
   padding: 16px;
   font-size: 13px;
 `
@@ -228,22 +215,22 @@ export const StatusIndicator = styled.div<{ status: string }>`
   }};
 `
 
-export const SettingsButtonContainer = styled.div`
+export const SettingsButtonContainer = styled.div<{ mode: ThemeMode }>`
   margin-top: auto;
   padding: 10px 0;
   width: 100%;
   position: sticky;
   bottom: 0;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(16px);
+  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
+  backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
 `
 
-export const Button = styled.button<{ disabled?: boolean }>`
+export const Button = styled.button<{ disabled?: boolean; mode: ThemeMode }>`
   padding: 8px 12px;
   font-size: 11px;
   border-radius: 4px;
-  background: rgba(103, 58, 183, 0.1);
-  border: 1px solid rgba(103, 58, 183, 0.2);
+  background: ${({ mode }) => getThemeColors(mode).chatView.button.secondaryBackground};
+  border: 1px solid ${({ mode }) => getThemeColors(mode).chatView.button.border};
   color: var(--vscode-foreground);
   cursor: pointer;
   display: flex;
@@ -255,8 +242,8 @@ export const Button = styled.button<{ disabled?: boolean }>`
   margin: 8px 0;
 
   &:hover:not(:disabled) {
-    background: rgba(103, 58, 183, 0.2);
-    border-color: rgba(103, 58, 183, 0.3);
+    background: ${({ mode }) => getThemeColors(mode).chatView.button.secondaryHover};
+    border-color: ${({ mode }) => getThemeColors(mode).chatView.button.border};
     transform: translateY(-1px);
   }
 

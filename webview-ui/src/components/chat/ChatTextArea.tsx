@@ -697,7 +697,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								<circle cx="8.5" cy="8.5" r="1.5" stroke="none" fill="currentColor" />
 								<path d="M21 15l-5-5L5 21" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 							</StyledSvg>
-							<span>photo</span>
+							<span>image</span>
 						</PhotoButton>
 						<ActionButton
 							disabled={textAreaDisabled}
