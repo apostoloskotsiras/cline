@@ -2,7 +2,8 @@ import { VSCodeBadge, VSCodeProgressRing } from "@vscode/webview-ui-toolkit/reac
 import deepEqual from "fast-deep-equal"
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEvent, useSize } from "react-use"
-import * as S from "../styles/themes/modern/components/chat/chatrow.styles"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { useThemeStyles } from "../../utils/theme"
 import {
 	ClineApiReqInfo,
 	ClineAskUseMcpServer,
@@ -12,7 +13,6 @@ import {
 	COMPLETION_RESULT_CHANGES_FLAG,
 } from "../../../../src/shared/ExtensionMessage"
 import { COMMAND_OUTPUT_STRING, COMMAND_REQ_APP_STRING } from "../../../../src/shared/combineCommandSequences"
-import { useExtensionState } from "../../context/ExtensionStateContext"
 import { findMatchingResourceOrTemplate } from "../../utils/mcp"
 import { vscode } from "../../utils/vscode"
 import { CheckpointOverlay } from "../common/CheckpointControls"
@@ -40,6 +40,8 @@ const ChatRow = memo(
 	(props: ChatRowProps) => {
 		const { isLast, onHeightChange, message, lastModifiedMessage } = props
 		const prevHeightRef = useRef(0)
+		const { themeMode, themeType } = useExtensionState()
+		const S = useThemeStyles('chat/ChatRow', themeMode || 'dark', themeType || 'modern')
 
 		const apiState = useMemo(() => {
 			if (message.text != null && message.say === "api_req_started") {
@@ -86,12 +88,13 @@ const ChatRow = memo(
 
 		const [chatrow, { height }] = useSize(
 			message.type === "ask" ? (
-				<S.QuestionContainer>
+				<S.QuestionContainer mode={themeMode || 'dark'}>
 					<ChatRowContent {...props} />
 					{shouldShowCheckpoints && <CheckpointOverlay messageTs={message.ts} />}
 				</S.QuestionContainer>
 			) : (
 				<S.UserMessageContainer
+					mode={themeMode || 'dark'}
 					className={`
 				  ${apiState.state === "loading" && !apiState.requestFailedMessage && !apiState.streamingFailedMessage ? "loading-api" : ""}
 				  ${apiState.state === "completed" ? "completed-api" : ""}
@@ -128,6 +131,8 @@ export default ChatRow
 
 export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifiedMessage, isLast }: ChatRowContentProps) => {
 	const { mcpServers } = useExtensionState()
+	const { themeMode, themeType } = useExtensionState()
+	const S = useThemeStyles('chat/ChatRow', themeMode || 'dark', themeType || 'modern')
 
 	const [seeNewChangesDisabled, setSeeNewChangesDisabled] = useState(false)
 
@@ -322,6 +327,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 		isMcpServerResponding,
 		message.text,
 		message.type,
+		S,
 	])
 
 	const headerStyle: React.CSSProperties = {
@@ -612,7 +618,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					{icon}
 					{title}
 				</div>
-				<S.CommandContent>
+				<S.CommandContent mode={themeMode || 'dark'}>
 					<CodeBlock source={`${"```"}shell\n${command}\n${"```"}`} forceWrap={true} />
 					{output.length > 0 && (
 						<div style={{ width: "100%" }}>
@@ -635,7 +641,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					)}
 				</S.CommandContent>
 				{requestsApproval && (
-					<S.CommandApprovalWarning>
+					<S.CommandApprovalWarning mode={themeMode || 'dark'}>
 						<i className="codicon codicon-warning" />
 						<span>The model has determined this command requires explicit approval.</span>
 					</S.CommandApprovalWarning>
@@ -838,13 +844,13 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 				case "user_feedback":
 					return (
 						<>
-							<S.UserMessageHeader>
-								<S.UserIconContainer>
+							<S.UserMessageHeader mode={themeMode || 'dark'}>
+								<S.UserIconContainer mode={themeMode || 'dark'}>
 									<span className="codicon codicon-account" />
 								</S.UserIconContainer>
-								<S.UserMessageTitle>User's Message</S.UserMessageTitle>
+								<S.UserMessageTitle mode={themeMode || 'dark'}>User's Message</S.UserMessageTitle>
 							</S.UserMessageHeader>
-							<S.UserMessageContent>
+							<S.UserMessageContent mode={themeMode || 'dark'}>
 								<span style={{ display: "block" }}>{highlightMentions(message.text)}</span>
 								{message.images && message.images.length > 0 && (
 									<Thumbnails images={message.images} style={{ marginTop: "12px" }} />
@@ -929,17 +935,18 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 					const text = hasChanges ? message.text?.slice(0, -COMPLETION_RESULT_CHANGES_FLAG.length) : message.text
 					return (
 						<>
-							<S.TaskCompletedHeader>
-								<S.TaskCompletedIconContainer>
+							<S.TaskCompletedHeader mode={themeMode || 'dark'}>
+								<S.TaskCompletedIconContainer mode={themeMode || 'dark'}>
 									<span className="codicon codicon-check" />
 								</S.TaskCompletedIconContainer>
-								<S.TaskCompletedTitle>Task Completed</S.TaskCompletedTitle>
+								<S.TaskCompletedTitle mode={themeMode || 'dark'}>Task Completed</S.TaskCompletedTitle>
 							</S.TaskCompletedHeader>
-							<S.TaskCompletedContent>
+							<S.TaskCompletedContent mode={themeMode || 'dark'}>
 								<Markdown markdown={text} />
 							</S.TaskCompletedContent>
 							{message.partial !== true && hasChanges && (
 								<S.SeeNewChangesBtn
+									mode={themeMode || 'dark'}
 									disabled={seeNewChangesDisabled}
 									onClick={() => {
 										setSeeNewChangesDisabled(true)
@@ -1134,7 +1141,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 									{title}
 								</div>
 							)}
-							<S.QuestionContent>
+							<S.QuestionContent mode={themeMode || 'dark'}>
 								<Markdown markdown={message.text} />
 							</S.QuestionContent>
 						</>

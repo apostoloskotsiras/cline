@@ -1,193 +1,169 @@
 import styled from "styled-components"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
+import { ThemeMode } from '../../../../../../utils/theme'
+import getThemeColors from '../../theme'
 
-export const Container = styled.div`
-	padding: 12px 16px;
-	background: linear-gradient(145deg, rgba(30, 30, 30, 0.95) 0%, rgba(25, 25, 25, 0.95) 100%);
-	backdrop-filter: blur(16px);
-	border-radius: 12px;
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	box-shadow:
-		0 4px 6px rgba(0, 0, 0, 0.1),
-		0 1px 3px rgba(0, 0, 0, 0.08);
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+interface Props {
+	mode: ThemeMode
+}
 
-	&:hover {
-		background: linear-gradient(145deg, rgba(35, 35, 35, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
-		transform: translateY(-1px);
-		box-shadow:
-			0 6px 12px rgba(0, 0, 0, 0.15),
-			0 2px 4px rgba(0, 0, 0, 0.1);
-	}
+interface TextProps {
+	isExpanded: boolean
+}
+
+export const Container = styled.div<Props>`
+	padding: 10px 13px 10px 13px;
 `
 
-export const Content = styled.div`
+export const Content = styled.div<Props>`
+	background-color: ${props => getThemeColors(props.mode).badge.background};
+	color: ${props => getThemeColors(props.mode).badge.foreground};
+	border-radius: 3px;
+	padding: 9px 10px 9px 14px;
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 6px;
+	position: relative;
+	z-index: 1;
 `
 
 export const TopSection = styled.div`
 	display: flex;
-	align-items: center;
 	justify-content: space-between;
-	gap: 8px;
+	align-items: center;
 `
 
 export const Title = styled.div`
 	display: flex;
 	align-items: center;
-	gap: 6px;
 	cursor: pointer;
+	margin-left: -2px;
 	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	flex-grow: 1;
 	min-width: 0;
-	padding: 4px;
-	border-radius: 4px;
-	transition: background-color 0.2s ease;
+`
 
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.05);
-	}
+export const TitleIcon = styled.div`
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
 `
 
 export const TitleText = styled.div`
-	font-size: 14px;
-	font-weight: 500;
+	margin-left: 6px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	color: var(--vscode-foreground);
+	flex-grow: 1;
+	min-width: 0;
 `
 
-export const CostBadge = styled.div`
-	background-color: rgba(103, 58, 183, 0.15);
-	color: var(--vscode-foreground);
-	padding: 2px 8px;
-	border-radius: 12px;
-	font-size: 12px;
+export const CostBadge = styled.div<Props>`
+	margin-left: 10px;
+	background-color: color-mix(in srgb, ${props => getThemeColors(props.mode).badge.foreground} 70%, transparent);
+	color: ${props => getThemeColors(props.mode).badge.background};
+	padding: 2px 4px;
+	border-radius: 500px;
+	font-size: 11px;
 	font-weight: 500;
-	margin-left: 8px;
+	display: inline-block;
 	flex-shrink: 0;
 `
 
 export const TextContainer = styled.div<{ isExpanded: boolean }>`
-	margin-top: 4px;
-	font-size: 13px;
-	line-height: 1.5;
-	color: var(--vscode-foreground);
+	margin-top: -2px;
+	font-size: var(--vscode-font-size);
+	overflow-y: ${props => props.isExpanded ? "auto" : "hidden"};
+	word-break: break-word;
+	overflow-wrap: anywhere;
 	position: relative;
-	transition: all 0.2s ease;
-	overflow-y: ${(props) => (props.isExpanded ? "auto" : "hidden")};
 `
 
-export const TextContent = styled.div`
+export const TextContent = styled.div<TextProps>`
+	display: -webkit-box;
+	-webkit-line-clamp: ${props => props.isExpanded ? "unset" : 3};
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 	white-space: pre-wrap;
 	word-break: break-word;
 	overflow-wrap: anywhere;
-	line-height: 1.5;
 `
 
-export const SeeMoreContainer = styled.div`
+export const SeeMoreContainer = styled.div<Props>`
 	position: absolute;
 	right: 0;
 	bottom: 0;
 	display: flex;
 	align-items: center;
-	background: linear-gradient(to right, transparent, rgba(30, 30, 30, 0.95) 50%);
-	padding-left: 24px;
-	backdrop-filter: blur(4px);
-	border-radius: 0 0 8px 0;
 `
 
-const sharedButtonStyles = `
-  cursor: pointer;
-  color: var(--vscode-textLink-foreground);
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4px 12px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  background-color: rgba(30, 30, 30, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
+export const SeeMoreGradient = styled.div<Props>`
+	width: 30px;
+	height: 1.2em;
+	background: linear-gradient(to right, transparent, ${props => getThemeColors(props.mode).badge.background});
 `
 
-export const SeeMoreText = styled.div`
-	${sharedButtonStyles}
+export const SeeMoreButton = styled.div<Props>`
+	cursor: pointer;
+	color: ${props => getThemeColors(props.mode).primary};
+	padding-right: 0;
+	padding-left: 3px;
+	background-color: ${props => getThemeColors(props.mode).badge.background};
 `
 
-export const SeeLessText = styled.div`
-	${sharedButtonStyles}
-	text-align: right;
+export const SeeLessButton = styled.div<Props>`
+	cursor: pointer;
+	color: ${props => getThemeColors(props.mode).primary};
 	margin-left: auto;
+	text-align: right;
+	padding-right: 2px;
 `
 
 export const MetricsContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
-	padding: 8px;
-	background-color: rgba(255, 255, 255, 0.03);
-	border-radius: 8px;
-	margin-top: 8px;
+	gap: 4px;
 `
 
 export const MetricsRow = styled.div`
 	display: flex;
-	align-items: center;
 	justify-content: space-between;
-	gap: 8px;
+	align-items: center;
 `
 
 export const MetricsLabel = styled.div`
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	font-size: 12px;
-	color: var(--vscode-foreground);
+	gap: 4px;
+	flex-wrap: wrap;
 `
 
 export const MetricsValue = styled.span`
 	display: flex;
 	align-items: center;
-	gap: 4px;
-	font-size: 12px;
-	color: var(--vscode-foreground);
+	gap: 3px;
 `
 
-export const ErrorMessage = styled.div`
+export const ErrorMessage = styled.div<Props>`
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	color: var(--vscode-errorForeground);
-	font-size: 12px;
-	padding: 8px;
-	background-color: rgba(255, 0, 0, 0.05);
-	border-radius: 4px;
-	margin-top: 8px;
+	color: ${props => getThemeColors(props.mode).error};
+	font-size: 11px;
 `
 
 export const StyledDeleteButton = styled(VSCodeButton)`
-	padding: 0;
-	margin-left: 8px;
+	padding: 0px 0px;
 `
 
 export const DeleteButtonContent = styled.div`
 	display: flex;
 	align-items: center;
-	gap: 4px;
-	font-size: 12px;
-	font-weight: 500;
-	color: var(--vscode-foreground);
-	opacity: 0.7;
-	transition: opacity 0.2s ease;
-
-	&:hover {
-		opacity: 1;
-	}
+	gap: 3px;
+	font-size: 10px;
+	font-weight: bold;
+	opacity: 0.6;
 `
