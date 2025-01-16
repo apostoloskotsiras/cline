@@ -8,275 +8,201 @@ export const SettingsWrapper = styled.div<{ mode: ThemeMode }>`
   left: 0;
   right: 0;
   bottom: 0;
-  background: ${props => getThemeColors(props.mode).chatView.wrapper.background};
-  backdrop-filter: ${props => getThemeColors(props.mode).chatView.wrapper.backdropBlur};
+  padding: 10px 0px 0px 20px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: ${props => getThemeColors(props.mode).chatView.wrapper.radialGlow};
-    pointer-events: none;
-  }
+  background: ${props => getThemeColors(props.mode).chatView.wrapper.background};
 `
 
 export const SettingsContainer = styled.div<{ mode: ThemeMode }>`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: ${props => getThemeColors(props.mode).chatView.container.background};
-  backdrop-filter: ${props => getThemeColors(props.mode).chatView.container.backdropBlur};
+  background: transparent;
   position: relative;
-  border-radius: 12px;
-  margin: 12px;
-  box-shadow: ${props => getThemeColors(props.mode).chatView.container.shadow};
-  border: 1px solid ${props => getThemeColors(props.mode).chatView.container.border};
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: ${props => getThemeColors(props.mode).chatView.container.topGradient};
-  }
 `
 
 export const SettingsHeader = styled.header<{ mode: ThemeMode }>`
-  background: transparent;
-  border-bottom: 1px solid ${props => getThemeColors(props.mode).border};
-  padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 17px;
+  padding-right: 17px;
 `
 
-export const SettingsTitle = styled.div<{ mode: ThemeMode }>`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: ${props => getThemeColors(props.mode).text};
-
-  i {
-    font-size: 16px;
-    opacity: 0.8;
-  }
-
-  span {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
+export const SettingsTitle = styled.h3<{ mode: ThemeMode }>`
+  color: var(--vscode-foreground);
+  margin: 0;
 `
 
 export const DoneButton = styled.div<{ mode: ThemeMode }>`
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: 1px solid var(--vscode-button-border);
   padding: 4px 12px;
-  font-size: 11px;
-  border-radius: 4px;
-  background: ${props => getThemeColors(props.mode).mcp.doneButton.background};
-  border: 1px solid ${props => getThemeColors(props.mode).mcp.doneButton.border};
-  color: ${props => getThemeColors(props.mode).mcp.doneButton.text};
+  border-radius: 2px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease-out;
 
   &:hover {
-    background: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBackground};
-    border-color: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBorder};
+    background-color: var(--vscode-button-hoverBackground);
   }
 
-  i {
-    font-size: 14px;
-    opacity: 0.8;
+  &:active {
+    background-color: var(--vscode-button-background);
   }
 `
 
 export const SettingsContent = styled.div<{ mode: ThemeMode }>`
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-`
-
-export const SettingsFooter = styled.div<{ mode: ThemeMode }>`
-  text-align: center;
-  color: ${props => getThemeColors(props.mode).textSecondary};
-  font-size: 12px;
-  line-height: 1.2;
-  padding: 10px 20px 15px;
-  border-top: 1px solid ${props => getThemeColors(props.mode).border};
-`
-
-export const SettingsLabel = styled.span<{ mode: ThemeMode }>`
-  font-size: 12px;
-  font-weight: 500;
-  color: ${props => getThemeColors(props.mode).text};
-  opacity: 0.9;
-  margin-bottom: 4px;
-  display: block;
+  flex-grow: 1;
+  overflow-y: scroll;
+  padding-right: 8px;
+  display: flex;
+  flex-direction: column;
 `
 
 export const SettingsSection = styled.div<{ mode: ThemeMode }>`
-  background: ${props => getThemeColors(props.mode).mcp.serverCard.background};
-  border: 1px solid ${props => getThemeColors(props.mode).mcp.serverCard.border};
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 5px;
+`
 
-  &:hover {
-    border-color: ${props => getThemeColors(props.mode).mcp.serverCard.hoverBorder};
-  }
+export const SettingsLabel = styled.span<{ mode: ThemeMode }>`
+  font-weight: 500;
+  color: var(--vscode-foreground);
 `
 
 export const SettingsDescription = styled.p<{ mode: ThemeMode }>`
   font-size: 12px;
-  color: ${props => getThemeColors(props.mode).textSecondary};
-  margin-top: 4px;
-  line-height: 1.4;
+  margin-top: 5px;
+  color: var(--vscode-descriptionForeground);
 `
 
-export const SettingsError = styled.div<{ mode: ThemeMode }>`
-  color: ${props => getThemeColors(props.mode).error};
-  background: ${props => getThemeColors(props.mode).chatTextArea.containerBackground};
-  border: 1px solid ${props => getThemeColors(props.mode).error};
-  border-radius: 4px;
-  padding: 8px 12px;
-  margin-top: 8px;
+export const SettingsFooter = styled.div<{ mode: ThemeMode }>`
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
   font-size: 12px;
+  line-height: 1.2;
+  margin-top: auto;
+  padding: 10px 8px 15px 0px;
+
+  p {
+    word-wrap: break-word;
+    margin: 0;
+    padding: 0;
+  }
+
+  .version {
+    font-style: italic;
+    margin: 10px 0 0 0;
+    padding: 0;
+  }
+`
+
+export const DebugSection = styled.div<{ mode: ThemeMode }>`
+  margin-top: 10px;
+  margin-bottom: 4px;
+`
+
+export const DebugButton = styled.div<{ mode: ThemeMode }>`
+  margin-top: 5px;
+  width: auto;
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: 1px solid var(--vscode-button-secondaryBorder);
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease-out;
+
+  &:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+  }
+
+  &:active {
+    background-color: var(--vscode-button-secondaryBackground);
+  }
+
+  i {
+    margin-right: 4px;
+  }
 `
 
 // Global styles for VSCode components
 export const styles = (mode: ThemeMode) => `
-/* Input field styles */
-vscode-text-field,
-vscode-text-area,
-vscode-dropdown {
-  --input-background: transparent !important;
-  background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
-  border-radius: 4px !important;
-  transition: all 0.2s ease !important;
-}
+  vscode-text-area {
+    width: 100%;
+  }
 
-vscode-text-field:hover,
-vscode-text-area:hover,
-vscode-dropdown:hover {
-  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
-  border-color: ${getThemeColors(mode).mcp.doneButton.border} !important;
-}
+  vscode-text-area::part(control) {
+    width: 100%;
+  }
 
-vscode-text-field:focus-within,
-vscode-text-area:focus-within,
-vscode-dropdown:focus-within {
-  border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
-  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
-}
+  vscode-button {
+    --vscode-button-background: var(--vscode-button-background);
+    --vscode-button-foreground: var(--vscode-button-foreground);
+    --vscode-button-border: var(--vscode-button-border);
+    --vscode-button-hoverBackground: var(--vscode-button-hoverBackground);
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: 1px solid var(--vscode-button-border);
+    padding: 4px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+    transition: background-color 0.2s ease-out;
+  }
 
-/* Override VS Code default input styles */
-vscode-text-field .control,
-vscode-text-area .control,
-vscode-dropdown .control {
-  background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
-  color: ${getThemeColors(mode).text} !important;
-  font-family: var(--vscode-font-family) !important;
-  font-size: 13px !important;
-}
+  vscode-button:hover {
+    background-color: var(--vscode-button-hoverBackground);
+  }
 
-vscode-text-field:hover .control,
-vscode-text-area:hover .control,
-vscode-dropdown:hover .control {
-  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
-  border-color: ${getThemeColors(mode).mcp.doneButton.border} !important;
-}
+  vscode-button:active {
+    background-color: var(--vscode-button-background);
+  }
 
-vscode-text-field:focus-within .control,
-vscode-text-area:focus-within .control,
-vscode-dropdown:focus-within .control {
-  border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
-  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
-}
+  vscode-button[appearance="secondary"] {
+    --vscode-button-background: var(--vscode-button-secondaryBackground);
+    --vscode-button-foreground: var(--vscode-button-secondaryForeground);
+    --vscode-button-border: var(--vscode-button-secondaryBorder);
+    --vscode-button-hoverBackground: var(--vscode-button-secondaryHoverBackground);
+  }
 
-/* Remove default VS Code input background */
-.settings-section vscode-text-field,
-.settings-section vscode-text-area,
-.settings-section vscode-dropdown {
-  background: transparent !important;
-}
+  vscode-button[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 
-/* Style the dropdown options */
-vscode-dropdown::part(listbox) {
-  background: ${getThemeColors(mode).mcp.serverCard.background} !important;
-  border: 1px solid ${getThemeColors(mode).mcp.serverCard.border} !important;
-  border-radius: 4px !important;
-  padding: 4px !important;
-  box-shadow: ${getThemeColors(mode).chatView.container.shadow} !important;
-  backdrop-filter: ${getThemeColors(mode).chatView.container.backdropBlur} !important;
-}
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 
-vscode-option {
-  background: transparent !important;
-  transition: all 0.2s ease !important;
-  border-radius: 3px !important;
-  padding: 6px 8px !important;
-  margin: 2px 0 !important;
-  cursor: pointer !important;
-  font-size: 13px !important;
-}
+  vscode-link {
+    display: inline;
+    color: var(--vscode-textLink-foreground);
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-vscode-option:hover {
-  background: ${getThemeColors(mode).mcp.doneButton.background} !important;
-}
-
-vscode-option[selected] {
-  background: ${getThemeColors(mode).mcp.doneButton.background} !important;
-  color: ${getThemeColors(mode).text} !important;
-}
-
-/* Enhance dropdown trigger button */
-vscode-dropdown::part(control) {
-  background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
-  border: 1px solid ${getThemeColors(mode).border} !important;
-  border-radius: 6px !important;
-  padding: 6px 12px !important;
-  height: 32px !important;
-  transition: all 0.2s ease !important;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-vscode-dropdown:hover::part(control) {
-  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
-  border-color: ${getThemeColors(mode).mcp.doneButton.border} !important;
-}
-
-vscode-dropdown:focus-within::part(control) {
-  border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
-  background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
-  box-shadow: 0 0 0 2px ${getThemeColors(mode).mcp.doneButton.hoverBorder}33 !important;
-}
-
-/* Style dropdown indicators */
-vscode-dropdown::part(indicator) {
-  color: ${getThemeColors(mode).textSecondary} !important;
-  font-size: 12px !important;
-  transition: all 0.2s ease !important;
-}
-
-vscode-dropdown:hover::part(indicator) {
-  color: ${getThemeColors(mode).text} !important;
-}
+  vscode-link:hover {
+    color: var(--vscode-textLink-activeForeground);
+    text-decoration: underline;
+  }
 `

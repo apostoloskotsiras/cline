@@ -17,12 +17,12 @@ export const Container = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 60px;
+    padding: 32px;
     max-width: 900px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 16px;
     overflow-y: auto;
     animation: ${fadeIn} 0.6s ease-out;
 
@@ -45,7 +45,7 @@ export const Container = styled.div`
 `
 
 export const Title = styled.h2`
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
     margin: 0;
     background: linear-gradient(120deg, 
@@ -61,8 +61,8 @@ export const Title = styled.h2`
 `
 
 export const Description = styled.p<{ delay?: number }>`
-    font-size: 1.2rem;
-    line-height: 1.7;
+    font-size: 1.1rem;
+    line-height: 1.5;
     margin: 0;
     color: var(--vscode-editor-foreground);
     opacity: 0.92;
@@ -70,43 +70,38 @@ export const Description = styled.p<{ delay?: number }>`
 `
 
 export const FeatureList = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin: 10px 0;
-`
-
-export const Feature = styled.div`
-    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 6px 0;
+    padding: 12px 20px;
     background: var(--vscode-editor-background);
     border: 1px solid var(--vscode-widget-border);
     border-radius: 12px;
-    transition: all 0.2s ease;
     animation: ${fadeIn} 0.6s ease-out 0.3s both;
+`
 
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-color: var(--vscode-textLink-foreground);
-    }
+export const Feature = styled.div`
+    padding: 2px 0;
+    color: var(--vscode-editor-foreground);
 
     &::before {
         content: "•";
         color: var(--vscode-textLink-foreground);
         margin-right: 8px;
-        font-size: 1.4em;
+        font-size: 1.2em;
         vertical-align: middle;
     }
 `
 
 export const Highlight = styled.div`
     display: block;
-    margin: 16px 0;
-    font-size: 1.3rem;
+    margin: 8px 0;
+    font-size: 1.2rem;
     font-weight: 500;
     color: var(--vscode-editor-foreground);
     animation: ${fadeIn} 0.6s ease-out 0.4s both;
-    padding: 24px;
+    padding: 16px 20px;
     background: linear-gradient(
         120deg,
         var(--vscode-editor-background) 0%,
@@ -119,9 +114,9 @@ export const Highlight = styled.div`
 export const ButtonContainer = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-top: 12px;
-    padding: 32px;
+    gap: 16px;
+    margin-top: 8px;
+    padding: 20px;
     background: var(--vscode-editor-background);
     border: 1px solid var(--vscode-widget-border);
     border-radius: 16px;

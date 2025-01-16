@@ -105,41 +105,38 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 
 					<S.SettingsSection mode={themeMode || 'dark'}>
 						<S.SettingsLabel mode={themeMode || 'dark'}>Theme Settings</S.SettingsLabel>
-						<div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-								<select 
-									className="theme-selector"
-									value={themeMode || 'dark'}
-									onChange={handleThemeModeChange}
-									style={{
-										padding: '4px 8px',
-										borderRadius: '4px',
-										border: '1px solid var(--vscode-button-border)',
-										background: 'var(--vscode-dropdown-background)',
-										color: 'var(--vscode-dropdown-foreground)',
-										cursor: 'pointer'
-									}}>
-									<option value="dark">Dark Mode</option>
-									{IS_DEV ? (
-										<option value="light">Light Mode</option>
-									) : (
-										<option value="light" disabled>Light Mode (Coming Soon)</option>
-									)}
-								</select>
-								<i className={`codicon codicon-${themeMode === 'dark' ? 'moon' : 'sun'}`} />
-							</div>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+						<S.SettingsDescription mode={themeMode || 'dark'}>
+							Customize the appearance of the Cline interface with different themes and color modes.
+						</S.SettingsDescription>
+						
+						<div style={{ 
+							display: 'flex', 
+							gap: '12px', 
+							marginTop: '16px' 
+						}}>
+							<div style={{ flex: 1 }}>
+								<span style={{ 
+									fontSize: '12px', 
+									color: 'var(--vscode-foreground)',
+									opacity: 0.8,
+									marginBottom: '4px',
+									display: 'block'
+								}}>
+									Theme Style
+								</span>
 								<select 
 									className="theme-selector"
 									value={themeType || 'modern'}
 									onChange={handleThemeTypeChange}
 									style={{
-										padding: '4px 8px',
-										borderRadius: '4px',
+										width: '100%',
+										padding: '8px 12px',
+										borderRadius: '6px',
 										border: '1px solid var(--vscode-button-border)',
 										background: 'var(--vscode-dropdown-background)',
 										color: 'var(--vscode-dropdown-foreground)',
-										cursor: 'pointer'
+										cursor: 'pointer',
+										fontSize: '13px'
 									}}>
 									<option value="modern">Modern Theme</option>
 									{IS_DEV ? (
@@ -148,12 +145,41 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 										<option value="classic" disabled>Classic Theme (Coming Soon)</option>
 									)}
 								</select>
-								<i className="codicon codicon-paintcan" />
+							</div>
+
+							<div style={{ flex: 1 }}>
+								<span style={{ 
+									fontSize: '12px', 
+									color: 'var(--vscode-foreground)',
+									opacity: 0.8,
+									marginBottom: '4px',
+									display: 'block'
+								}}>
+									Color Mode
+								</span>
+								<select 
+									className="theme-selector"
+									value={themeMode || 'dark'}
+									onChange={handleThemeModeChange}
+									style={{
+										width: '100%',
+										padding: '8px 12px',
+										borderRadius: '6px',
+										border: '1px solid var(--vscode-button-border)',
+										background: 'var(--vscode-dropdown-background)',
+										color: 'var(--vscode-dropdown-foreground)',
+										cursor: 'pointer',
+										fontSize: '13px'
+									}}>
+									<option value="dark">Dark Mode</option>
+									{IS_DEV ? (
+										<option value="light">Light Mode</option>
+									) : (
+										<option value="light" disabled>Light Mode (Coming Soon)</option>
+									)}
+								</select>
 							</div>
 						</div>
-						<S.SettingsDescription mode={themeMode || 'dark'}>
-							Customize the appearance of the Cline interface with different themes and color modes.
-						</S.SettingsDescription>
 					</S.SettingsSection>
 
 					{IS_DEV && (
@@ -171,19 +197,18 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				</S.SettingsContent>
 
 				<S.SettingsFooter mode={themeMode || 'dark'}>
-					<p style={{ margin: 0 }}>
-						If you have any questions or feedback, feel free to open an issue at{" "}
-						<VSCodeLink href="https://github.com/cline/cline" style={{ display: "inline" }}>
-							https://github.com/cline/cline
-						</VSCodeLink>
-					</p>
-					<p
-						style={{
-							fontStyle: "italic",
-							margin: "10px 0 0 0",
-						}}>
-						v{version}
-					</p>
+					<div className="footer-content">
+						<div className="feedback-section">
+							<i className="codicon codicon-github"></i>
+							<span>Have questions or feedback?</span>
+							<VSCodeLink href="https://github.com/cline/cline">
+								Find us on GitHub
+							</VSCodeLink>
+						</div>
+						<span className="version">
+							v{version}
+						</span>
+					</div>
 				</S.SettingsFooter>
 			</S.SettingsContainer>
 		</S.SettingsWrapper>

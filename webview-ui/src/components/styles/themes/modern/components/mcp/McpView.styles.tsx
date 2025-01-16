@@ -150,7 +150,6 @@ export const Description = styled.div`
 
 export const StyledLink = styled(VSCodeLink)`
   display: inline;
-  color: ${({ mode }) => getThemeColors(mode).mcp.doneButton.background};
   text-decoration: none;
 
   &:hover {
@@ -257,13 +256,12 @@ export const StatusIndicator = styled.div<{ status: string }>`
 
 export const SettingsButtonContainer = styled.div<{ mode: ThemeMode }>`
   margin-top: auto;
-  padding: 16px 20px;
   width: 100%;
   position: sticky;
   bottom: 0;
-  background: ${({ mode }) => getThemeColors(mode).chatView.container.background};
-  backdrop-filter: ${({ mode }) => getThemeColors(mode).chatView.container.backdropBlur};
-  border-top: 1px solid ${({ mode }) => `${getThemeColors(mode).border}0A`};
+  background: transparent;
+  display: flex;
+  justify-content: center;
 `
 
 export const Button = styled.button<{ disabled?: boolean; mode: ThemeMode }>`

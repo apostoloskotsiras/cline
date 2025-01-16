@@ -43,7 +43,7 @@ const WelcomeView = () => {
 			</S.FeatureList>
 
 			<S.Highlight mode={themeMode || 'dark'}>
-				To get started, this extension needs an API provider.
+				To get started, Cline needs an API provider.
 			</S.Highlight>
 
 			<S.ButtonContainer mode={themeMode || 'dark'}>

@@ -117,8 +117,54 @@ export const SettingsFooter = styled.div<{ mode: ThemeMode }>`
   color: ${props => getThemeColors(props.mode).textSecondary};
   font-size: 12px;
   line-height: 1.2;
-  padding: 10px 20px 15px;
+  padding: 16px 20px;
   border-top: 1px solid ${props => getThemeColors(props.mode).border};
+  background: ${props => getThemeColors(props.mode).chatView.container.background};
+  backdrop-filter: blur(8px);
+  border-radius: 0 0 12px 12px;
+
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .feedback-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: ${props => getThemeColors(props.mode).text};
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    i {
+      font-size: 14px;
+    }
+
+    a {
+      color: ${props => getThemeColors(props.mode).text};
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBackground};
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .version {
+    font-size: 11px;
+    font-style: italic;
+    opacity: 0.5;
+    letter-spacing: 0.3px;
+  }
 `
 
 export const SettingsLabel = styled.span<{ mode: ThemeMode }>`
