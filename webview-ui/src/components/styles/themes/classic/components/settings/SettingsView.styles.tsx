@@ -34,6 +34,13 @@ export const SettingsHeader = styled.header<{ mode: ThemeMode }>`
 export const SettingsTitle = styled.h3<{ mode: ThemeMode }>`
   color: var(--vscode-foreground);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    font-size: 16px;
+  }
 `
 
 export const DoneButton = styled.div<{ mode: ThemeMode }>`
@@ -49,6 +56,13 @@ export const DoneButton = styled.div<{ mode: ThemeMode }>`
   text-align: center;
   white-space: nowrap;
   transition: background-color 0.2s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    font-size: 14px;
+  }
 
   &:hover {
     background-color: var(--vscode-button-hoverBackground);

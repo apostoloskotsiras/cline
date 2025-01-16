@@ -1,25 +1,29 @@
 import styled from 'styled-components'
+import { ThemeMode } from '../../../../../../utils/theme'
+import getThemeColors from '../../theme'
+
+interface Props {
+  mode: ThemeMode
+}
 
 export const PreviewWrapper = styled.div`
   flex-shrink: 0;
   padding: 8px 0;
 `
 
-export const HistoryPreviewItem = styled.div`
-  background: var(--vscode-editor-background);
+export const HistoryPreviewItem = styled.div<Props>`
+  background: ${props => getThemeColors(props.mode).secondary};
   margin: 12px 16px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  border: 1px solid ${props => getThemeColors(props.mode).border};
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-out;
 
   &:hover {
-    transform: translateY(-1px);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: ${props => getThemeColors(props.mode).hover};
+    border-color: ${props => getThemeColors(props.mode).primary};
   }
 
   &::before {
@@ -28,28 +32,27 @@ export const HistoryPreviewItem = styled.div`
     left: 0;
     top: 0;
     bottom: 0;
-    width: 3px;
+    width: 2px;
     background: transparent;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.2s ease-out;
   }
 
   &:hover::before {
-    background: var(--vscode-textLink-foreground);
-    box-shadow: 0 0 8px rgba(103, 58, 183, 0.3);
+    background: ${props => getThemeColors(props.mode).primary};
   }
 `
 
-export const HistoryTitle = styled.div`
+export const HistoryTitle = styled.div<Props>`
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--vscode-foreground);
+  color: ${props => getThemeColors(props.mode).textPrimary};
   margin: 16px 24px 8px;
 
   i {
     font-size: 16px;
     opacity: 0.9;
-    color: var(--vscode-textLink-foreground);
+    color: ${props => getThemeColors(props.mode).primary};
   }
 
   span {
@@ -59,7 +62,7 @@ export const HistoryTitle = styled.div`
   }
 `
 
-export const HistoryMetadata = styled.div`
+export const HistoryMetadata = styled.div<Props>`
   display: flex;
   align-items: center;
   gap: 12px;
@@ -67,7 +70,7 @@ export const HistoryMetadata = styled.div`
   opacity: 0.85;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid ${props => getThemeColors(props.mode).border};
 `
 
 export const MetadataItem = styled.div`
@@ -76,9 +79,9 @@ export const MetadataItem = styled.div`
   gap: 6px;
 `
 
-export const MetadataLabel = styled.span`
+export const MetadataLabel = styled.span<Props>`
   font-weight: 500;
-  color: var(--vscode-descriptionForeground);
+  color: ${props => getThemeColors(props.mode).textSecondary};
 `
 
 export const MetadataValue = styled.div`
@@ -87,46 +90,46 @@ export const MetadataValue = styled.div`
   gap: 4px;
 `
 
-export const ViewAllButton = styled.button`
+export const ViewAllButton = styled.button<Props>`
   margin: 8px auto;
   padding: 4px 12px;
   font-size: 11px;
   font-weight: 400;
-  border-radius: 4px;
-  background: var(--vscode-button-secondaryBackground);
-  border: 1px solid var(--vscode-button-border);
-  color: var(--vscode-button-secondaryForeground);
+  border-radius: 2px;
+  background: ${props => getThemeColors(props.mode).chatView.button.secondaryBackground};
+  border: 1px solid ${props => getThemeColors(props.mode).chatView.button.border};
+  color: ${props => getThemeColors(props.mode).textPrimary};
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease-out;
   min-width: 120px;
   justify-content: center;
   height: 24px;
   opacity: 0.9;
 
   &:hover {
-    background: var(--vscode-button-secondaryHoverBackground);
+    background: ${props => getThemeColors(props.mode).chatView.button.secondaryHover};
     opacity: 1;
   }
 
   &:active {
-    transform: translateY(1px);
+    background: ${props => getThemeColors(props.mode).chatView.button.secondaryBackground};
   }
 `
 
-export const TimestampText = styled.span`
-  color: var(--vscode-textLink-foreground);
+export const TimestampText = styled.span<Props>`
+  color: ${props => getThemeColors(props.mode).textSecondary};
   font-size: 0.85em;
   font-weight: 600;
   opacity: 0.9;
   letter-spacing: 0.3px;
 `
 
-export const TaskText = styled.div`
+export const TaskText = styled.div<Props>`
   font-size: 13px;
-  color: var(--vscode-foreground);
+  color: ${props => getThemeColors(props.mode).textPrimary};
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;

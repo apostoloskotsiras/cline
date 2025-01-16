@@ -8,130 +8,38 @@ export const HistoryWrapper = styled.div<{ mode: ThemeMode }>`
   left: 0;
   right: 0;
   bottom: 0;
-  background: ${props => getThemeColors(props.mode).chatView.wrapper.background};
-  backdrop-filter: ${props => getThemeColors(props.mode).chatView.wrapper.backdropBlur};
+  padding: 10px 0px 0px 20px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: ${props => getThemeColors(props.mode).chatView.wrapper.radialGlow};
-    pointer-events: none;
-  }
+  background: ${props => getThemeColors(props.mode).chatView.wrapper.background};
 `
 
 export const HistoryContainer = styled.div<{ mode: ThemeMode }>`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: ${props => getThemeColors(props.mode).chatView.container.background};
-  backdrop-filter: ${props => getThemeColors(props.mode).chatView.container.backdropBlur};
+  background: transparent;
   position: relative;
-  border-radius: 12px;
-  margin: 12px;
-  box-shadow: ${props => getThemeColors(props.mode).chatView.container.shadow};
-  border: 1px solid ${props => getThemeColors(props.mode).chatView.container.border};
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: ${props => getThemeColors(props.mode).chatView.container.topGradient};
-  }
 `
 
 export const HistoryHeader = styled.header<{ mode: ThemeMode }>`
-  background: transparent;
-  border-bottom: 1px solid ${props => getThemeColors(props.mode).border};
-  padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 17px;
+  padding-right: 17px;
 `
 
-export const HistoryItem = styled.div<{ mode: ThemeMode }>`
-  background: ${props => getThemeColors(props.mode).mcp.serverCard.background};
-  margin: 8px 16px;
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  cursor: pointer;
-
-  &:hover {
-    background: ${props => getThemeColors(props.mode).mcp.serverCard.hoverBackground};
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: transparent;
-    transition: background 0.2s ease;
-  }
-
-  &:hover::before {
-    background: ${props => getThemeColors(props.mode).mcp.serverCard.hoverBorder};
-  }
-`
-
-export const DeleteButton = styled.span`
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  position: relative;
-
-  ${HistoryItem}:hover & {
-    opacity: 1;
-  }
-`
-
-export const ExportButton = styled.span`
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  position: relative;
-
-  ${HistoryItem}:hover & {
-    opacity: 1;
-  }
-`
-
-export const HistoryItemHighlight = styled.span<{ mode: ThemeMode }>`
-  background-color: ${props => getThemeColors(props.mode).mcp.doneButton.background};
-  color: inherit;
-  border-radius: 2px;
-  padding: 0 2px;
-`
-
-export const SearchContainer = styled.div<{ mode: ThemeMode }>`
-  position: sticky;
-  top: 0;
-  background: ${props => getThemeColors(props.mode).chatView.container.background};
-  z-index: 10;
-  padding: 10px;
-  border-bottom: 1px solid ${props => getThemeColors(props.mode).border};
-`
-
-export const HistoryTitle = styled.div`
+export const HistoryTitle = styled.div<{ mode: ThemeMode }>`
+  color: var(--vscode-foreground);
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--vscode-foreground);
 
   i {
     font-size: 16px;
-    opacity: 0.8;
   }
 
   span {
@@ -142,27 +50,42 @@ export const HistoryTitle = styled.div`
 `
 
 export const DoneButton = styled.div<{ mode: ThemeMode }>`
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: 1px solid var(--vscode-button-border);
   padding: 4px 12px;
-  font-size: 11px;
-  border-radius: 4px;
-  background: ${props => getThemeColors(props.mode).mcp.doneButton.background};
-  border: 1px solid ${props => getThemeColors(props.mode).mcp.doneButton.border};
-  color: ${props => getThemeColors(props.mode).mcp.doneButton.text};
+  border-radius: 2px;
   cursor: pointer;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease-out;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBackground};
-    border-color: ${props => getThemeColors(props.mode).mcp.doneButton.hoverBorder};
-  }
 
   i {
     font-size: 14px;
-    opacity: 0.8;
   }
+
+  &:hover {
+    background-color: var(--vscode-button-hoverBackground);
+  }
+
+  &:active {
+    background-color: var(--vscode-button-background);
+  }
+`
+
+export const SearchContainer = styled.div<{ mode: ThemeMode }>`
+  position: sticky;
+  top: 0;
+  background: transparent;
+  z-index: 10;
+  padding: 10px 10px 10px 0;
+  border-bottom: 1px solid var(--vscode-widget-border);
 `
 
 export const SortOptionsContainer = styled.div<{ mode: ThemeMode }>`
@@ -170,20 +93,20 @@ export const SortOptionsContainer = styled.div<{ mode: ThemeMode }>`
   flex-wrap: wrap;
   gap: 4px;
   padding: 4px;
-  background: ${props => getThemeColors(props.mode).chatView.container.background};
-  border-radius: 6px;
+  background: transparent;
+  border-radius: 2px;
 `
 
 export const SortOption = styled.div<{ selected?: boolean; disabled?: boolean; mode: ThemeMode }>`
   padding: 4px 10px;
   font-size: 11px;
-  border-radius: 4px;
+  border-radius: 2px;
   cursor: pointer;
-  color: ${props => getThemeColors(props.mode).text};
+  color: var(--vscode-foreground);
   opacity: ${props => props.disabled ? 0.4 : 0.6};
   transition: all 0.2s ease;
-  background: transparent;
-  border: 1px solid transparent;
+  background: ${props => props.selected ? 'var(--vscode-button-secondaryBackground)' : 'transparent'};
+  border: 1px solid ${props => props.selected ? 'var(--vscode-button-secondaryBorder)' : 'transparent'};
   display: flex;
   align-items: center;
   gap: 6px;
@@ -191,14 +114,8 @@ export const SortOption = styled.div<{ selected?: boolean; disabled?: boolean; m
 
   &:hover:not(.selected) {
     opacity: ${props => props.disabled ? 0.4 : 0.8};
-    background: ${props => props.disabled ? 'transparent' : getThemeColors(props.mode).hover};
+    background: ${props => props.disabled ? 'transparent' : 'var(--vscode-list-hoverBackground)'};
   }
-
-  ${props => props.selected && `
-    background: ${getThemeColors(props.mode).mcp.doneButton.background};
-    border-color: ${getThemeColors(props.mode).mcp.doneButton.border};
-    opacity: 1;
-  `}
 
   ${props => props.disabled && `
     cursor: not-allowed;
@@ -211,6 +128,60 @@ export const SortOption = styled.div<{ selected?: boolean; disabled?: boolean; m
   }
 `
 
+export const HistoryItem = styled.div<{ mode: ThemeMode }>`
+  background: transparent;
+  margin: 4px 16px 4px 0;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  padding: 8px;
+
+  &:hover {
+    background: var(--vscode-list-hoverBackground);
+    border-color: var(--vscode-list-focusBorder);
+  }
+`
+
+export const DeleteButton = styled.span`
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  position: relative;
+  color: var(--vscode-icon-foreground);
+
+  ${HistoryItem}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    color: var(--vscode-errorForeground);
+  }
+`
+
+export const ExportButton = styled.span`
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  position: relative;
+  color: var(--vscode-icon-foreground);
+
+  ${HistoryItem}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    color: var(--vscode-textLink-activeForeground);
+  }
+`
+
+export const HistoryItemHighlight = styled.span<{ mode: ThemeMode }>`
+  background-color: var(--vscode-editor-findMatchHighlightBackground);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+`
+
 export const TaskContent = styled.div`
   font-size: 13px;
   color: var(--vscode-foreground);
@@ -220,7 +191,6 @@ export const TaskContent = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   white-space: pre-wrap;
-  opacity: 0.9;
 `
 
 export const MetadataContainer = styled.div`
@@ -228,18 +198,20 @@ export const MetadataContainer = styled.div`
   flex-direction: column;
   gap: 6px;
   font-size: 0.85em;
-  opacity: 0.8;
+  margin-top: 8px;
 `
 
 export const MetadataRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--vscode-descriptionForeground);
 `
 
 export const MetadataLabel = styled.span`
   font-weight: 500;
   color: var(--vscode-descriptionForeground);
+  opacity: 0.8;
 `
 
 export const MetadataValue = styled.span`
@@ -247,4 +219,5 @@ export const MetadataValue = styled.span`
   align-items: center;
   gap: 3px;
   color: var(--vscode-descriptionForeground);
+  opacity: 0.8;
 ` 
