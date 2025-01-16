@@ -220,39 +220,45 @@ vscode-dropdown:focus-within .control {
 vscode-dropdown::part(listbox) {
   background: ${getThemeColors(mode).mcp.serverCard.background} !important;
   border: 1px solid ${getThemeColors(mode).mcp.serverCard.border} !important;
-  border-radius: 4px !important;
-  padding: 4px !important;
+  border-radius: 6px !important;
+  padding: 6px !important;
   box-shadow: ${getThemeColors(mode).chatView.container.shadow} !important;
   backdrop-filter: ${getThemeColors(mode).chatView.container.backdropBlur} !important;
+  margin-top: 4px !important;
 }
 
 vscode-option {
   background: transparent !important;
   transition: all 0.2s ease !important;
-  border-radius: 3px !important;
-  padding: 6px 8px !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
   margin: 2px 0 !important;
   cursor: pointer !important;
   font-size: 13px !important;
+  color: ${getThemeColors(mode).text} !important;
 }
 
 vscode-option:hover {
-  background: ${getThemeColors(mode).mcp.doneButton.background} !important;
+  background: ${getThemeColors(mode).mcp.doneButton.hoverBackground} !important;
 }
 
 vscode-option[selected] {
   background: ${getThemeColors(mode).mcp.doneButton.background} !important;
   color: ${getThemeColors(mode).text} !important;
+  font-weight: 500 !important;
 }
 
 /* Enhance dropdown trigger button */
 vscode-dropdown::part(control) {
   background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
   border: 1px solid ${getThemeColors(mode).border} !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  height: 28px !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  height: 32px !important;
   transition: all 0.2s ease !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 vscode-dropdown:hover::part(control) {
@@ -263,6 +269,7 @@ vscode-dropdown:hover::part(control) {
 vscode-dropdown:focus-within::part(control) {
   border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
   background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
+  box-shadow: 0 0 0 2px ${getThemeColors(mode).mcp.doneButton.hoverBorder}33 !important;
 }
 
 /* Style dropdown indicators */
@@ -275,4 +282,4 @@ vscode-dropdown::part(indicator) {
 vscode-dropdown:hover::part(indicator) {
   color: ${getThemeColors(mode).text} !important;
 }
-` 
+`

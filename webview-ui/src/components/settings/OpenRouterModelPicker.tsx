@@ -309,6 +309,7 @@ export const ModelDescriptionMarkdown = memo(
 						position: "relative",
 						wordBreak: "break-word",
 						overflowWrap: "anywhere",
+						paddingBottom: showSeeMore ? "32px" : "0",
 					}}>
 					<div
 						ref={textRef}
@@ -320,15 +321,21 @@ export const ModelDescriptionMarkdown = memo(
 						}}>
 						{reactContent}
 					</div>
-					{!isExpanded && showSeeMore && (
-						<div className="see-more-container">
-							<button className="see-more-button" onClick={() => setIsExpanded(true)}>
-								<i className="codicon codicon-chevron-down" style={{ fontSize: "10px" }} />
-								<span>See more</span>
-							</button>
-						</div>
-					)}
+					{showSeeMore && (
+					<div style={{ 
+						position: "absolute", 
+						bottom: 0, 
+						right: 0,
+						padding: "4px"
+					}}>
+						<S.SeeMoreButton mode={themeMode} onClick={() => setIsExpanded(!isExpanded)}>
+							<i className={`codicon ${isExpanded ? 'codicon-chevron-up' : 'codicon-chevron-down'}`} />
+							<span>{isExpanded ? 'See less' : 'See more'}</span>
+						</S.SeeMoreButton>
+					</div>
+				)}
 				</div>
+				
 			</S.StyledMarkdown>
 		)
 	},

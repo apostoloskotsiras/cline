@@ -249,10 +249,13 @@ vscode-option[selected] {
 vscode-dropdown::part(control) {
   background: ${getThemeColors(mode).chatTextArea.textAreaBackground} !important;
   border: 1px solid ${getThemeColors(mode).border} !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  height: 28px !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  height: 32px !important;
   transition: all 0.2s ease !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 vscode-dropdown:hover::part(control) {
@@ -263,6 +266,7 @@ vscode-dropdown:hover::part(control) {
 vscode-dropdown:focus-within::part(control) {
   border-color: ${getThemeColors(mode).mcp.doneButton.hoverBorder} !important;
   background: ${getThemeColors(mode).chatTextArea.containerHover} !important;
+  box-shadow: 0 0 0 2px ${getThemeColors(mode).mcp.doneButton.hoverBorder}33 !important;
 }
 
 /* Style dropdown indicators */
@@ -275,4 +279,4 @@ vscode-dropdown::part(indicator) {
 vscode-dropdown:hover::part(indicator) {
   color: ${getThemeColors(mode).text} !important;
 }
-` 
+`

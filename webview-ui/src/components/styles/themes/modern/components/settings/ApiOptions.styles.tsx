@@ -8,11 +8,14 @@ export const Container = styled.div`
 `
 
 export const DropdownContainer = styled.div`
-  margin-top: 5px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 `
 
 export const SettingsLabel = styled.span`
   font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
 `
 
 export const ErrorMessage = styled.p`

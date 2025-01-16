@@ -78,4 +78,39 @@ export const StyledMarkdown = styled.div<{ mode: ThemeMode }>`
       text-decoration: underline;
     }
   }
-` 
+`
+
+export const SeeMoreButton = styled.button<{ mode: ThemeMode }>`
+  position: relative;
+  width: auto;
+  min-width: 80px;
+  margin: 2px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: var(--vscode-button-foreground);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+  z-index: 1;
+  opacity: 0.85;
+
+  &:hover {
+    background: var(--vscode-button-background);
+    opacity: 1;
+  }
+
+  i {
+    font-size: 10px;
+    transition: transform 0.15s ease;
+  }
+
+  &:hover i {
+    transform: translateY(1px);
+  }
+`
